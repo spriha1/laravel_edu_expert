@@ -13,6 +13,7 @@
             <p class="login-box-msg">Create Account</p>
 
             <form method="POST" action="" id="registration" name="registration">
+                @csrf
                 <div id="alert" class='alert alert-danger' style="display: none;">
                 </div>
                 <div class="form-group has-feedback">
@@ -42,22 +43,18 @@
                 <div class="form-group has-feedback">
                     <select class="form-control" id="user_type" name="user_type">
                         <option value="0">Select User Type</option>
-                        <!-- <?php
-                            //foreach ($result as $key => $value) {
-                                //echo '<option value="'.$value['user_type'].'">'.$value['user_type'].'</option>';
-                            //}
-                        ?> -->
+                        @foreach ($user_types as $user_type)
+                            <option value="{{ $user_type->user_type }}"> {{ $user_type->user_type }} </option>
+                        @endforeach
                     </select>
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
                 </div>
                 <div class="form-group has-feedback" style="display:none;">
                     <select class="form-control subject" id="subject" name="subject[]" multiple="multiple" style="width:100%">
                         <option value="0">Select Subjects</option>
-                        <!-- <?php
-                            //foreach ($result2 as $key => $value) {
-                                //echo '<option value="'.$value['id'].'">'.$value['name'].'</option>';
-                            //}
-                        ?> -->
+                        @foreach ($subjects as $subject)
+                            <option value="{{ $subject->id }}"> {{ $subject->name }} </option>
+                        @endforeach
                     </select>
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
                 </div>

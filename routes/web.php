@@ -11,14 +11,19 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
-Route::get('/register', function () {
-    return view('register');
-});
+// Route::get('/register', function () {
+//     return view('register');
+// });
 
-Route::get('/forgot_password', function () {
-    return view('forgot_password');
-});
+// Route::get('/forgot_password', function () {
+//     return view('forgot_password');
+// });
+
+Route::get('/', 'ProjectController@home');
+Route::get('/register', 'ProjectController@register');
+Route::get('/forgot_password', 'ProjectController@forgot_password');
+Route::post('/register', 'ProjectController@ajax_register');

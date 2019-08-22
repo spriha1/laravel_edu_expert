@@ -203,7 +203,7 @@ $(document).ready(function () {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /home/spriha/Documents/laravel/edu_expert/resources/js/footer.js */"./resources/js/footer.js");
+module.exports = __webpack_require__(/*! /home/spriha/Documents/laravel/laravel_edu_expert/resources/js/footer.js */"./resources/js/footer.js");
 
 
 /***/ })
