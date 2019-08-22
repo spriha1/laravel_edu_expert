@@ -26,4 +26,4 @@
 Route::get('/', 'ProjectController@home');
 Route::get('/register', 'ProjectController@register');
 Route::get('/forgot_password', 'ProjectController@forgot_password');
-Route::post('/register', 'ProjectController@ajax_register');
+Route::post('/register', 'AjaxController@register');

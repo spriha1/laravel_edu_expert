@@ -40,37 +40,20 @@ $(document).ready(function() {
 		}
 
 		if (event.target.id === 'registration') {
-			// var check,c = 0,size = 0;
-			// $('#registration input').not('.select2-search__field').each(function(){
-			//     check = $(this).val().trim();
-			// 	if (check === "") {
-			// 		$(this).css("borderColor" , "red");
-			// 		c++;
-			// 	}
-			// });
-			// $('#registration').find('select').each(function(){
-			//     check = $(this).val();
-			//     console.log(check);
-				
-			// });
-			// if (c > 0) {
-			// 	$("#alert").text("Please fill in the highlighted fields");
-			// 	$("#alert").css("display" , "block");
-			// 	event.preventDefault();
-			// }
-			// else {
-				event.preventDefault();
+			
+			event.preventDefault();
 
-				$.post('register' , $('#registration').serialize() , function(result){
-					console.log('success');
-				})
-				.fail(function(result) {
-					console.log(result.responseText);
-				    var res = JSON.parse(result.responseText);
-					$('#alert').text(res.message);
-					$("#alert").css("display" , "block");
-				});
-			// }
+			$.post('register' , $('#registration').serialize() , function(result){
+				console.log('success');
+			})
+			.fail(function(result) {
+				console.log(result.responseText);
+			    var res = JSON.parse(result.responseText);
+			    var errors = res.errors;
+				$('#alert').html(errors.fname + '<br>' + errors.lname + '<br>' + errors.username + '<br>' + errors.email + '<br>' + errors.password);
+				
+				$("#alert").css("display" , "block");
+			});
 		}
 	});
 
@@ -97,6 +80,15 @@ $(document).ready(function() {
 			}
 			else if (event.target.id === 'username') {
 				$("#info_username").css("display" , "none");
+				var username_pattern = /^([a-zA-Z0-9@_]+)$/;
+				var username = $('#username').val();
+				$.get("fetch_info" , {q1: "username", q2: username} , function(data) {
+					if (Number(data) === 1) {
+						$('#username').css("borderColor" , "red");
+						$("#alert").text("This username already exists");
+						$("#alert").css("display" , "block");
+					}
+				})
 			}
 		}
 	});	

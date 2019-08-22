@@ -19,7 +19,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name', 'email', 'password',
     ];
 
-    Auth::routes(['verify' => true]);
+    
 
     /**
      * The attributes that should be hidden for arrays.
