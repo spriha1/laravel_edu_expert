@@ -10,7 +10,7 @@
         </div>
         <div class="login-box-body">
             <p class="login-box-msg">Sign in to start</p>
-            <form action="" method="POST" id="login" name="login">
+            <form action="login" method="POST" id="login" name="login">
                 @csrf
                 <div id="alert" class='alert alert-danger' style="display: none;">
                 </div>

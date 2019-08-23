@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use App\User;
 use App\UserType;
 use App\TeacherSubject;
-
+use Illuminate\Support\Facades\Hash;
 class AjaxController extends Controller
 {
     public function register(Request $request)
@@ -26,7 +26,7 @@ class AjaxController extends Controller
 		$email = $request->input('email');
 		$username = $request->input('username');
 		$password = $request->input('password');
-		$password = MD5($password);
+		$password = Hash::make($password);
 		$usertype = $request->input('user_type');
 		$hash = md5(uniqid());
 		$msg = "";
