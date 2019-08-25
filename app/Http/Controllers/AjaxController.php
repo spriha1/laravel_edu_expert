@@ -7,9 +7,41 @@ use Illuminate\Support\Facades\Validator;
 use App\User;
 use App\UserType;
 use App\TeacherSubject;
+use App\GoalPlan;
+
 use Illuminate\Support\Facades\Hash;
 class AjaxController extends Controller
 {
+	public function add_goals(Request $request)
+	{
+		$goal_plan = new GoalPlan;
+		$frim_time = time();
+		$id = $goal_plan->insertGetId(
+			['user_id' => $request->input('user_id'), 'goal' => $request->input('goal'), 'on_date' => $request->input('on_date'), 'from_time' => $from_time]
+		)
+		$goal_plan = GoalPlan::where('user_id', $request->input('user_id'))->andWhere('id', $id)->get();
+		print_r(json_encode($goal_plan));
+	}
+
+	public function update_goals(Request $request)
+	{
+		$to_time = time();
+		GoalPlan::where('id', $request->input('goal_id'))->update(['to_time' => $to_time], 'check_status' => 1);
+		$goal_plan = GoalPlan::where('id', $request->input('goal_id'))->select('total_time')->get();
+		print_r(json_encode($goal_plan));
+	}
+
+	public function display_goals(Request $request)
+	{
+		$goal_plan = GoalPlan::where('user_id', $request('user_id'))->andWhere('on_date', $request->input('request'))->get();
+		print_r(json_encode($goal_plan));
+	}
+
+	public function remove_goals(Request $request)
+	{
+		GoalPlan::where('id', $request->input('goal_id'))->delete();
+	}
+
     public function register(Request $request)
     { 
     	Validator::make($request->all(), [

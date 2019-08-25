@@ -12,56 +12,180 @@ class ProjectController extends Controller
  //    {
  //        return view('user.profile', ['user' => User::findOrFail($id)]);
  //    }
+    public function check_login_status()
+    {
+        if (session()->has('username')) {
+            $user_type = \App\User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->select('user_types.user_type')->get();
+            foreach ($user_type as $value) {
+                if ($value->user_type === 'Admin') {
+                    return redirect('admin_dashboard');
+                }
+                else if ($value->user_type === 'Teacher') {
+                    return redirect('teacher_dashboard');
+                }
+                else if ($value->user_type === 'Student') {
+                    return redirect('student_dashboard');
+                }
+            }
+        }
+        else {
+            return true;
+        }
+    }
 
     public function home()
     {
-        return view('welcome');
+        if ($this->check_login_status())
+        {
+            return view('welcome');
+        }
     }
 
     public function register()
     {
-    	$user_types = \App\UserType::where('user_type', '!=', "Admin")->get();
-    	$subjects = \App\Subject::all();
+        if ($this->check_login_status())
+        {
+            $user_types = \App\UserType::where('user_type', '!=', "Admin")->get();
+            $subjects = \App\Subject::all();
 
-        return view('register', [
-        	'user_types' => $user_types, 
-        	'subjects' => $subjects
-        ]);
+            return view('register', [
+                'user_types' => $user_types, 
+                'subjects' => $subjects
+            ]);
+        }
     }
 
     public function forgot_password()
     {
-        return view('forgot_password');
+        if ($this->check_login_status()) {
+            return view('forgot_password');
+        }
     }
 
     public function login(Request $request)
     {
-        if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'user_type_id' => 1])) {
-            return redirect('admin_dashboard');
-        }
-        else if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'user_type_id' => 2])) {
-            return redirect('teacher_dashboard');
-        }
-        else if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'user_type_id' => 3])) {
-            return redirect('student_dashboard');
+        if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'user_reg_status' => 1, 'block_status' => 0])) {
+            $user = \App\User::where('username', $request->username)->get();
+            foreach ($user as $value) {                
+                session(['firstname' => $value->firstname, 'username' => $value->username, 'id' => $value->id]);                
+                $user_type = \App\UserType::where('id', $value->user_type_id)->get();
+                foreach ($user_type as $val) {                    
+                    if ($val->user_type === 'Admin') {                        
+                        return redirect('admin_dashboard');
+                    }
+                    else if ($val->user_type === 'Teacher') {
+                        return redirect('teacher_dashboard');
+                    }
+                    else if ($val->user_type === 'Student') {
+                        return redirect('student_dashboard');
+                    }
+                }
+            }
         }
         else {
-            return redirect('welcome');
+            return redirect('/');
         }
     }
 
-    public function admin_dashboard()
+    public function render_admin_dashboard()
     {
-        return view('admin_dashboard');
+        if (session()->has('username')) {
+            $result = \App\User::where('username', session('username'))->select('date_format')->get();
+            return view('admin_dashboard', [
+                'result' => $result
+            ]);
+        }
+        else {
+            return view('/');
+        }
     }
 
-    public function teacher_dashboard()
+    public function pending_requests()
     {
-        return view('teacher_dashboard');
+        $user_types = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
+        $results = \App\User::whereRaw("user_reg_status = 0 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
+        return view('pending_requests', [
+            'user_types' => $user_types,
+            'results' => $results,
+            'search' => ""
+        ]);
     }
 
-    public function student_dashboard()
+    public function post_pending_requests(Request $request)
     {
-        return view('student_dashboard');
+        $user_types = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
+
+        $c = 0;
+        $result = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
+        foreach ($result as $key => $value) {
+            if ($value['user_type'] === $request->input('user_type')) {
+                $c++;
+            }
+        }
+        if ($c > 0) {
+            $results = \App\User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where(['user_reg_status', 0], ['user_type', $request->input('user_type')])->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
+        }
+        return view('pending_requests', [
+            'user_types' => $user_types,
+            'results' => $results,
+            'search' => $request->input('user_type')
+        ]);
+    }
+
+    public function add_users($id)
+    {
+        \App\User::where('id', $id)->update(['user_reg_status', 1]);
+        return redirect(Request::server('HTTP_REFERER'));
+    }
+
+    public function remove_users($id)
+    {
+        \App\User::where('id', $id)->delete();
+        return redirect(Request::server('HTTP_REFERER'));
+    }
+
+    public function block_users($id)
+    {
+        \App\User::where('id', $id)->update('block_status', 1);
+        return redirect(Request::server('HTTP_REFERER'));
+    }
+
+    public function unblock_users($id)
+    {
+        \App\User::where('id', $id)->update('block_status', 0);
+        return redirect(Request::server('HTTP_REFERER'));
+    }
+
+    public function regd_users()
+    {
+
+    }
+
+    public function render_teacher_dashboard()
+    {
+        if (session()->has('username')) {
+            return view('teacher_dashboard');
+        }
+        else {
+            return view('/');
+        }
+    }
+
+    public function render_student_dashboard()
+    {
+        if (session()->has('username')) {
+            return view('student_dashboard');
+        }
+        else {
+            return view('/');
+        }
+    }
+
+    public function logout()
+    {
+        if (session()->has('username')) {
+            session()->flush();
+            return redirect('/');
+        }
     }
 }

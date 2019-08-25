@@ -14,5 +14,8 @@ const mix = require('laravel-mix');
 mix.js('resources/js/app.js', 'public/js')
 	.js('resources/js/validate.js', 'public/js')
 	.js('resources/js/footer.js', 'public/js')
+	.js('resources/js/goals.js', 'public/js')
+	.js('resources/js/users_list.js', 'public/js')
+	.js('resources/js/admin_lte_dashboard.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css')
     .version();

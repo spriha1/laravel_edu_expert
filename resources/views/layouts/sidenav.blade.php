@@ -66,12 +66,16 @@
 					<!-- User Account: style can be found in dropdown.less -->
 					<li class="dropdown user user-menu">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-							<span class="hidden-xs"><!-- <?php //echo $_SESSION['firstname'] ?> --></span>
+							<span class="hidden-xs">
+								<!-- <?php //echo $_SESSION['firstname'] ?> -->
+								{{ session('firstname') }}
+							</span>
 						</a>
 						<ul class="dropdown-menu">
 							<!-- User image -->
 							<li class="user-header">
 								<p>
+									{{ session('firstname') }}
 									<!-- <?php //echo $_SESSION['firstname'] ?> -->
 								</p>
 							</li>
@@ -82,7 +86,7 @@
 									<a href="student_profile.php" class="btn btn-default btn-flat">Profile</a>
 								</div>
 								<div class="pull-right">
-									<a href="logout.php" class="btn btn-default btn-flat">Sign out</a>
+									<a href="logout" class="btn btn-default btn-flat">Sign out</a>
 								</div>
 							</li>
 						</ul>
