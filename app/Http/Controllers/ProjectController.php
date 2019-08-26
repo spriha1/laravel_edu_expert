@@ -87,19 +87,6 @@ class ProjectController extends Controller
         }
     }
 
-    public function render_admin_dashboard()
-    {
-        if (session()->has('username')) {
-            $result = \App\User::where('username', session('username'))->select('date_format')->get();
-            return view('admin_dashboard', [
-                'result' => $result
-            ]);
-        }
-        else {
-            return view('/');
-        }
-    }
-
     public function pending_requests()
     {
         $user_types = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
@@ -161,24 +148,22 @@ class ProjectController extends Controller
 
     }
 
+    public function render_admin_dashboard()
+    {
+        $result = \App\User::where('username', session('username'))->select('date_format')->get();
+        return view('admin_dashboard', [
+            'result' => $result
+        ]);
+    }
+
     public function render_teacher_dashboard()
     {
-        if (session()->has('username')) {
-            return view('teacher_dashboard');
-        }
-        else {
-            return view('/');
-        }
+        return view('teacher_dashboard');
     }
 
     public function render_student_dashboard()
     {
-        if (session()->has('username')) {
-            return view('student_dashboard');
-        }
-        else {
-            return view('/');
-        }
+        return view('student_dashboard');
     }
 
     public function profile()
@@ -192,6 +177,8 @@ class ProjectController extends Controller
     public function logout()
     {
         if (session()->has('username')) {
+            // Auth::logout();
+            session()->forget('username');
             session()->flush();
             return redirect('/');
         }
