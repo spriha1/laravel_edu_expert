@@ -12,7 +12,7 @@
 <div class="content-wrapper">
 	<br><br>
 	<nav class="navbar navbar-transparent justify-content-center">
-		<form class="form-inline" method="POST" action="pending_requests">
+		<form class="form-inline" method="POST" action="regd_users">
 		  	@csrf
 			<div class="form-group mx-auto">
 		    <select class="form-control mb-2 mr-sm-2" id="user_type" name="user_type">
@@ -47,7 +47,6 @@
 									<th>Email</th>
 									<th></th>
 									<th></th>
-									<th></th>
 									<th>Assign Class</th>
 								</tr>
 							</thead>
@@ -57,7 +56,6 @@
 									<td>{{ $result->lastname }}</td>
 									<td>{{ $result->username }}</td>
 									<td>{{ $result->email }}</td>
-									<td><a href="add_users/{{ $result->id }}"><button class="btn btn-success">Add</button></a></td>
 									<td><a href="remove_users/{{ $result->id }}"><button class="btn btn-success">Remove</button></a></td>
 									@if ($result->block_status==0)
 										<td><a href="block_users/{{ $result->id }}"><button class="btn btn-success">Block</button></a></td>

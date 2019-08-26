@@ -12,6 +12,7 @@ use App\GoalPlan;
 use App\Mail\UserVerification;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Hash;
 class AjaxController extends Controller
@@ -110,7 +111,7 @@ class AjaxController extends Controller
 					}
 				}
 				//mail
-				Mail::to($email)->send(new UserVerification($request));
+				Mail::to($email)->send(new UserVerification($request, $hash));
 				$msg = "Please verify it by clicking the activation link that has been send to your email.";
 			}
 			else {
@@ -156,6 +157,10 @@ class AjaxController extends Controller
         	}
         	else {
         		//mail
+        		$hash = Auth::user()->email_verification_code;
+        		User::where('id', Auth::user()->id)->update(['email_verification_status' => 0]);
+				Mail::to($email)->send(new UpdateMail($hash, $request->input('email')));
+				$msg->email = 1;
         	}
         }
         if($request->filled('username')) {

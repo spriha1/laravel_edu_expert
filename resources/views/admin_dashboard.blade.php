@@ -3,49 +3,8 @@
 @extends('layouts.sidenav')
 
 @section('sidenav_content')
-
-
-<li>
-	<a href="admin_dashboard">
-		<i class="fa fa-address-card"></i> <span>Dashboard</span>
-	</a>
-</li>
-
-<li>
-	<a href="profile">
-		<i class="fa fa-address-card"></i> <span>My Profile</span>
-	</a>
-</li>
-<li>
-	<a href="pending_requests">
-		<i class="fa fa-th"></i> <span>New Requests</span>
-	</a>
-</li>
-<li>
-	<a href="regd_users">
-		<i class="fa fa-users"></i> <span>Registered Users</span>
-	</a>
-</li>
-<li>
-	<a href="teacher_timesheets.php">
-		<i class="fa fa-th"></i> <span>Teacher Timesheet</span>
-	</a>
-</li>
-
-<li>
-	<a href="task_management.php">
-		<i class="fa fa-th"></i> <span>Task Management</span>
-	</a>
-</li>
-<li>
-	<a href="system_management.php">
-		<i class="fa fa-th"></i> <span>System Management</span>
-	</a>
-</li>
-
-
+@include('layouts.admin_sidenav')
 @endsection
-
 
 @section('content')
 <div class="content-wrapper">
@@ -55,9 +14,7 @@
 		Dashboard
 		</h1>
 	<input type="hidden" id="user_id" name="user_id" value="{{ Auth::user()->id }}">
-	@foreach($result as $res)
-		<input type="hidden" name="date_format" id="date_format" value="{{ $res->date_format }}">
-	@endforeach
+	<input type="hidden" name="date_format" id="date_format" value="{{ Auth::user()->date_format }}">
 	</section>
 	<!-- Main content -->
 	<section class="content">

@@ -3,48 +3,14 @@
 @extends('layouts.sidenav')
 
 @section('sidenav_content')
-
-
-<li>
-	<a href="admin_dashboard">
-		<i class="fa fa-address-card"></i> <span>Dashboard</span>
-	</a>
-</li>
-
-<li>
-	<a href="profile">
-		<i class="fa fa-address-card"></i> <span>My Profile</span>
-	</a>
-</li>
-<li>
-	<a href="pending_requests">
-		<i class="fa fa-th"></i> <span>New Requests</span>
-	</a>
-</li>
-<li>
-	<a href="regd_users">
-		<i class="fa fa-users"></i> <span>Registered Users</span>
-	</a>
-</li>
-<li>
-	<a href="teacher_timesheets.php">
-		<i class="fa fa-th"></i> <span>Teacher Timesheet</span>
-	</a>
-</li>
-
-<li>
-	<a href="task_management.php">
-		<i class="fa fa-th"></i> <span>Task Management</span>
-	</a>
-</li>
-<li>
-	<a href="system_management.php">
-		<i class="fa fa-th"></i> <span>System Management</span>
-	</a>
-</li>
-
+@if ($usertype === 'admin')
+	@include('layouts.admin_sidenav')
+@elseif ($usertype === 'teacher')
+	@include('layouts.teacher_sidenav')
+@elseif ($usertype === 'student')
+	@include('layouts.student_sidenav')
+@endif
 @endsection
-
 
 @section('content')
 <div class="content-wrapper">
@@ -57,46 +23,45 @@
 				</div>
 				@csrf
 				<div class="box-body">
-					@foreach ($results as $result)
 					<div class="form-group">
 						<label for="fname" class="col-sm-3 control-label">First Name</label>
 						<div class="col-sm-9">
-							<input type="text" class="form-control" id="fname" name="fname" readonly value="{{ $result->firstname }}">
+							<input type="text" class="form-control" id="fname" name="fname" readonly value="{{ Auth::user()->firstname }}">
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="lname" class="col-sm-3 control-label">Last Name</label>
 						<div class="col-sm-9">
-							<input type="text" class="form-control" id="lname" name="lname" readonly value="{{ $result->lastname }}">
+							<input type="text" class="form-control" id="lname" name="lname" readonly value="{{ Auth::user()->lastname }}">
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="username" class="col-sm-3 control-label">Username</label>
 						<div class="col-sm-9">
-							<input type="text" class="form-control" name="username" id="username" readonly value="{{ $result->username }}">
+							<input type="text" class="form-control" name="username" id="username" readonly value="{{ Auth::user()->username }}">
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="email" class="col-sm-3 control-label">Email</label>
 						<div class="col-sm-9">
-							<input type="email" class="form-control" name="email" id="email" readonly value="{{ $result->email }}">
+							<input type="email" class="form-control" name="email" id="email" readonly value="{{ Auth::user()->email }}">
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="date_format" class="col-sm-3 control-label">Date Format</label>
 						<div class="col-sm-9">
 							<select name="date_format" id="date_format" class="form-control" disabled>
-								<option value="yyyy-mm-dd" {{ $result->date_format === 'yyyy-mm-dd' ? 'selected="selected"' : '' }}>yyyy-mm-dd</option>
+								<option value="yyyy-mm-dd" {{ Auth::user()->date_format === 'yyyy-mm-dd' ? 'selected="selected"' : '' }}>yyyy-mm-dd</option>
 
-								<option value="yyyy/mm/dd" {{ $result->date_format === 'yyyy/mm/dd' ? 'selected="selected"' : '' }}>yyyy/mm/dd</option>
+								<option value="yyyy/mm/dd" {{ Auth::user()->date_format === 'yyyy/mm/dd' ? 'selected="selected"' : '' }}>yyyy/mm/dd</option>
 
-								<option value="yyyy.mm.dd" {{ $result->date_format === 'yyyy.mm.dd' ? 'selected="selected"' : '' }}>yyyy.mm.dd</option>
+								<option value="yyyy.mm.dd" {{ Auth::user()->date_format === 'yyyy.mm.dd' ? 'selected="selected"' : '' }}>yyyy.mm.dd</option>
 
-								<option value="dd-mm-yyyy" {{ $result->date_format === 'dd-mm-yyyy' ? 'selected="selected"' : '' }}>dd-mm-yyyy</option>
+								<option value="dd-mm-yyyy" {{ Auth::user()->date_format === 'dd-mm-yyyy' ? 'selected="selected"' : '' }}>dd-mm-yyyy</option>
 
-								<option value="dd/mm/yyyy" {{ $result->date_format === 'dd/mm/yyyy' ? 'selected="selected"' : '' }}>dd/mm/yyyy</option>
+								<option value="dd/mm/yyyy" {{ Auth::user()->date_format === 'dd/mm/yyyy' ? 'selected="selected"' : '' }}>dd/mm/yyyy</option>
 
-								<option value="dd.mm.yyyy" {{ $result->date_format === 'dd.mm.yyyy' ? 'selected="selected"' : '' }}>dd.mm.yyyy</option>
+								<option value="dd.mm.yyyy" {{ Auth::user()->date_format === 'dd.mm.yyyy' ? 'selected="selected"' : '' }}>dd.mm.yyyy</option>
 							</select>
 						</div>
 					</div>
@@ -106,7 +71,6 @@
 							<input type="password" class="form-control" id="password" name="password">
 						</div>
 					</div>
-				@endforeach
 				</div>
 				<!-- /.box-body -->
 				<div class="box-footer">

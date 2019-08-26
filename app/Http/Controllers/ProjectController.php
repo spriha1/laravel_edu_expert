@@ -101,8 +101,7 @@ class ProjectController extends Controller
         $user_types = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
 
         $c = 0;
-        $result = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
-        foreach ($result as $key => $value) {
+        foreach ($user_types as $key => $value) {
             if ($value['user_type'] === $request->input('user_type')) {
                 $c++;
             }
@@ -143,15 +142,38 @@ class ProjectController extends Controller
 
     public function regd_users()
     {
+        $user_types = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
+        $results = \App\User::whereRaw("user_reg_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
+        return view('regd_users', [
+            'user_types' => $user_types,
+            'results' => $results,
+            'search' => ""
+        ]);
+    }
 
+    public function post_regd_users(Request $request)
+    {
+        $user_types = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
+
+        $c = 0;
+        foreach ($user_types as $key => $value) {
+            if ($value['user_type'] === $request->input('user_type')) {
+                $c++;
+            }
+        }
+        if ($c > 0) {
+            $results = \App\User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([['user_reg_status', 1], ['user_type', $request->input('user_type')]])->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
+        }
+        return view('regd_users', [
+            'user_types' => $user_types,
+            'results' => $results,
+            'search' => $request->input('user_type')
+        ]);
     }
 
     public function render_admin_dashboard()
     {
-        $result = \App\User::where('username', Auth::user()->username)->select('date_format')->get();
-        return view('admin_dashboard', [
-            'result' => $result
-        ]);
+        return view('admin_dashboard');
     }
 
     public function render_teacher_dashboard()
@@ -164,19 +186,58 @@ class ProjectController extends Controller
         return view('student_dashboard');
     }
 
-    public function profile()
+    public function profile($usertype)
     {
-        $results = \App\User::where('username', Auth::user()->username)->select('firstname', 'lastname', 'username', 'email', 'date_format')->get();
         return view('profile', [
-            'results' => $results
+            'usertype' => $usertype
         ]);
+    }
+
+    public function verify_mail($code)
+    {
+        $hash = base64_decode($code);
+        $results = \App\User::where([
+            ['email_verification_code', $hash],
+            ['email_verification_status', 0]
+        ])->get();
+        if($results->count()) {
+            \App\User::where([
+                ['email_verification_code', $hash],
+                ['email_verification_status', 0]
+            ])->update(['email_verification_status' => 1]);
+            echo '<div>Your account has been activated, you can now <a href="/">login</a></div>';
+        }
+        else {
+            echo '<div>The url is either invalid or you already have activated your account.</div>';
+        }
+    }
+
+    public function update_mail($hash, $email)
+    {
+        $hash = base64_decode($hash);
+        $email = base64_decode($email);
+        $result = \App\User::where([
+            ['email_verification_code', $hash],
+            ['email_verification_status', 0]
+        ])->select('id')->get();
+        if($result->count()) {
+            foreach($result as $res)
+            {
+                \App\User::where([
+                    ['id', $res->id],
+                    ['email_verification_status', 0]
+                ])->update(['email_verification_status' => 1, 'email' => $email]);
+            }
+            echo '<div>Your email has been updated, you can continue';
+        }
+        else {
+            echo '<div>The url is either invalid or you already have activated your account.</div>';
+        }
     }
 
     public function logout()
     {
         Auth::logout();
-        // session()->forget('username');
-        // session()->flush();
         return redirect('/');
     }
 }

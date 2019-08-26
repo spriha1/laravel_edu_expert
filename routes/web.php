@@ -29,13 +29,15 @@ Route::get('/forgot_password', 'ProjectController@forgot_password');
 Route::post('/register', 'AjaxController@register');
 Route::post('/login', 'ProjectController@login');
 Route::get('/logout', 'ProjectController@logout');
+Route::get('/verify_mail/{code}', 'ProjectController@verify_mail');
+Route::get('/update_mail/{hash}/{email}', 'ProjectController@update_mail');
 
 Route::middleware('auth')->group(function () {
     Route::get('/admin_dashboard', 'ProjectController@render_admin_dashboard');
 	Route::get('/teacher_dashboard', 'ProjectController@render_teacher_dashboard');
 	Route::get('/student_dashboard', 'ProjectController@render_student_dashboard');
 
-	Route::get('/profile', 'ProjectController@profile');
+	Route::get('/profile/{usertype}', 'ProjectController@profile');
 	Route::post('/update_profile', 'AjaxController@update_profile');
 
 	Route::post('/add_goals', 'AjaxController@add_goals');
