@@ -181,6 +181,14 @@ class ProjectController extends Controller
         }
     }
 
+    public function profile()
+    {
+        $results = \App\User::where('username', session('username'))->select('firstname', 'lastname', 'username', 'email', 'date_format')->get();
+        return view('profile', [
+            'results' => $results
+        ]);
+    }
+
     public function logout()
     {
         if (session()->has('username')) {

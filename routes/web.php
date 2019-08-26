@@ -30,6 +30,10 @@ Route::post('/register', 'AjaxController@register');
 Route::post('/login', 'ProjectController@login');
 Route::get('/logout', 'ProjectController@logout');
 
+Route::get('/profile', 'ProjectController@profile');
+Route::post('/update_profile', 'AjaxController@update_profile');
+
+
 Route::post('/add_goals', 'AjaxController@add_goals');
 Route::post('/update_goals', 'AjaxController@update_goals');
 Route::post('/display_goals', 'AjaxController@display_goals');

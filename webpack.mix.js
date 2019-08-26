@@ -16,6 +16,7 @@ mix.js('resources/js/app.js', 'public/js')
 	.js('resources/js/footer.js', 'public/js')
 	.js('resources/js/goals.js', 'public/js')
 	.js('resources/js/users_list.js', 'public/js')
+	.js('resources/js/edit.js', 'public/js')
 	.js('resources/js/admin_lte_dashboard.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css')
     .version();

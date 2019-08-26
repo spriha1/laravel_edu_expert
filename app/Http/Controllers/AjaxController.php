@@ -18,7 +18,7 @@ class AjaxController extends Controller
 		$frim_time = time();
 		$id = $goal_plan->insertGetId(
 			['user_id' => $request->input('user_id'), 'goal' => $request->input('goal'), 'on_date' => $request->input('on_date'), 'from_time' => $from_time]
-		)
+		);
 		$goal_plan = GoalPlan::where('user_id', $request->input('user_id'))->andWhere('id', $id)->get();
 		print_r(json_encode($goal_plan));
 	}
@@ -26,7 +26,7 @@ class AjaxController extends Controller
 	public function update_goals(Request $request)
 	{
 		$to_time = time();
-		GoalPlan::where('id', $request->input('goal_id'))->update(['to_time' => $to_time], 'check_status' => 1);
+		GoalPlan::where('id', $request->input('goal_id'))->update(['to_time' => $to_time, 'check_status' => 1]);
 		$goal_plan = GoalPlan::where('id', $request->input('goal_id'))->select('total_time')->get();
 		print_r(json_encode($goal_plan));
 	}
@@ -116,6 +116,48 @@ class AjaxController extends Controller
 			}
 		}
     	print_r($msg);
+    }
+
+    public function update_profile(Request $request)
+    {
+    	$msg = (object) null;
+        if($request->filled('fname')) {
+        	User::where('id', session('id'))->update(['firstname' => $request->input('fname')]);
+        	$msg->success = 1;
+        }
+        if($request->filled('lname')) {
+        	User::where('id', session('id'))->update(['lastname' => $request->input('lname')]);
+        	$msg->success = 1;
+        }
+        if($request->filled('date_format')) {
+        	User::where('id', session('id'))->update(['date_format' => $request->input('date_format')]);
+        	$msg->success = 1;
+        }
+        if($request->filled('password')) {
+        	User::where('id', session('id'))->update(['password' => Hash::make($request->input('fname'))]);
+        	$msg->success = 1;
+        }
+        if($request->filled('email')) {
+        	$result = User::where('email', $request->input('email'))->select('id')->get();
+        	if ($result->count()) {
+        		$msg->email = 0;
+        	}
+        	else {
+        		//mail
+        	}
+        }
+        if($request->filled('username')) {
+        	$result = User::where('username', $request->input('username'))->select('id')->get();
+        	if ($result->count()) {
+        		$msg->username = 0;
+        	}
+        	else {
+        		User::where('id', session('id'))->update(['username' => $request->input('username')]);
+        		$msg->success = 1;
+        	}
+        }
+        $res = json_encode($msg);
+		print_r($res);
     }
 
 }
