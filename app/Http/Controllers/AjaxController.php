@@ -9,6 +9,10 @@ use App\UserType;
 use App\TeacherSubject;
 use App\GoalPlan;
 
+use App\Mail\UserVerification;
+use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\Controller;
+
 use Illuminate\Support\Facades\Hash;
 class AjaxController extends Controller
 {
@@ -106,6 +110,8 @@ class AjaxController extends Controller
 					}
 				}
 				//mail
+				Mail::to($email)->send(new UserVerification($request));
+				$msg = "Please verify it by clicking the activation link that has been send to your email.";
 			}
 			else {
 				$msg = 'Username already exists';
@@ -128,19 +134,19 @@ class AjaxController extends Controller
     {
     	$msg = (object) null;
         if($request->filled('fname')) {
-        	User::where('id', session('id'))->update(['firstname' => $request->input('fname')]);
+        	User::where('id', Auth::user()->id)->update(['firstname' => $request->input('fname')]);
         	$msg->success = 1;
         }
         if($request->filled('lname')) {
-        	User::where('id', session('id'))->update(['lastname' => $request->input('lname')]);
+        	User::where('id', Auth::user()->id)->update(['lastname' => $request->input('lname')]);
         	$msg->success = 1;
         }
         if($request->filled('date_format')) {
-        	User::where('id', session('id'))->update(['date_format' => $request->input('date_format')]);
+        	User::where('id', Auth::user()->id)->update(['date_format' => $request->input('date_format')]);
         	$msg->success = 1;
         }
         if($request->filled('password')) {
-        	User::where('id', session('id'))->update(['password' => Hash::make($request->input('fname'))]);
+        	User::where('id', Auth::user()->id)->update(['password' => Hash::make($request->input('password'))]);
         	$msg->success = 1;
         }
         if($request->filled('email')) {
@@ -158,7 +164,7 @@ class AjaxController extends Controller
         		$msg->username = 0;
         	}
         	else {
-        		User::where('id', session('id'))->update(['username' => $request->input('username')]);
+        		User::where('id', Auth::user()->id)->update(['username' => $request->input('username')]);
         		$msg->success = 1;
         	}
         }

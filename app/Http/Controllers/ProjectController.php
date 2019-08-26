@@ -65,22 +65,20 @@ class ProjectController extends Controller
     public function login(Request $request)
     {
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'user_reg_status' => 1, 'block_status' => 0])) {
-            $user = \App\User::where('username', $request->username)->get();
-            foreach ($user as $value) {                
-                session(['firstname' => $value->firstname, 'username' => $value->username, 'id' => $value->id]);                
-                $user_type = \App\UserType::where('id', $value->user_type_id)->get();
-                foreach ($user_type as $val) {                    
-                    if ($val->user_type === 'Admin') {                        
-                        return redirect('admin_dashboard');
-                    }
-                    else if ($val->user_type === 'Teacher') {
-                        return redirect('teacher_dashboard');
-                    }
-                    else if ($val->user_type === 'Student') {
-                        return redirect('student_dashboard');
-                    }
+                          
+            $user_type = \App\UserType::where('id', Auth::user()->user_type_id)->get();
+            foreach ($user_type as $val) {                    
+                if ($val->user_type === 'Admin') {                        
+                    return redirect('admin_dashboard');
+                }
+                else if ($val->user_type === 'Teacher') {
+                    return redirect('teacher_dashboard');
+                }
+                else if ($val->user_type === 'Student') {
+                    return redirect('student_dashboard');
                 }
             }
+            
         }
         else {
             return redirect('/');
@@ -110,7 +108,7 @@ class ProjectController extends Controller
             }
         }
         if ($c > 0) {
-            $results = \App\User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where(['user_reg_status', 0], ['user_type', $request->input('user_type')])->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
+            $results = \App\User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([['user_reg_status', 0], ['user_type', $request->input('user_type')]])->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
         }
         return view('pending_requests', [
             'user_types' => $user_types,
@@ -121,26 +119,26 @@ class ProjectController extends Controller
 
     public function add_users($id)
     {
-        \App\User::where('id', $id)->update(['user_reg_status', 1]);
-        return redirect(Request::server('HTTP_REFERER'));
+        \App\User::where('id', $id)->update(['user_reg_status' => 1]);
+        return redirect()->back();
     }
 
     public function remove_users($id)
     {
         \App\User::where('id', $id)->delete();
-        return redirect(Request::server('HTTP_REFERER'));
+        return redirect()->back();
     }
 
     public function block_users($id)
     {
-        \App\User::where('id', $id)->update('block_status', 1);
-        return redirect(Request::server('HTTP_REFERER'));
+        \App\User::where('id', $id)->update(['block_status' => 1]);
+        return redirect()->back();
     }
 
     public function unblock_users($id)
     {
-        \App\User::where('id', $id)->update('block_status', 0);
-        return redirect(Request::server('HTTP_REFERER'));
+        \App\User::where('id', $id)->update(['block_status' => 0]);
+        return redirect()->back();
     }
 
     public function regd_users()
@@ -150,7 +148,7 @@ class ProjectController extends Controller
 
     public function render_admin_dashboard()
     {
-        $result = \App\User::where('username', session('username'))->select('date_format')->get();
+        $result = \App\User::where('username', Auth::user()->username)->select('date_format')->get();
         return view('admin_dashboard', [
             'result' => $result
         ]);
@@ -168,7 +166,7 @@ class ProjectController extends Controller
 
     public function profile()
     {
-        $results = \App\User::where('username', session('username'))->select('firstname', 'lastname', 'username', 'email', 'date_format')->get();
+        $results = \App\User::where('username', Auth::user()->username)->select('firstname', 'lastname', 'username', 'email', 'date_format')->get();
         return view('profile', [
             'results' => $results
         ]);
@@ -176,11 +174,9 @@ class ProjectController extends Controller
 
     public function logout()
     {
-        if (session()->has('username')) {
-            // Auth::logout();
-            session()->forget('username');
-            session()->flush();
-            return redirect('/');
-        }
+        Auth::logout();
+        // session()->forget('username');
+        // session()->flush();
+        return redirect('/');
     }
 }

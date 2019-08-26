@@ -30,7 +30,7 @@ Route::post('/register', 'AjaxController@register');
 Route::post('/login', 'ProjectController@login');
 Route::get('/logout', 'ProjectController@logout');
 
-Route::middleware('AuthenticateUser')->group(function () {
+Route::middleware('auth')->group(function () {
     Route::get('/admin_dashboard', 'ProjectController@render_admin_dashboard');
 	Route::get('/teacher_dashboard', 'ProjectController@render_teacher_dashboard');
 	Route::get('/student_dashboard', 'ProjectController@render_student_dashboard');

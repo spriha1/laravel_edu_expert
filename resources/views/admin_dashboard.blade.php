@@ -54,7 +54,7 @@
 		<h1>
 		Dashboard
 		</h1>
-	<input type="hidden" id="user_id" name="user_id" value="{{ session('id') }}">
+	<input type="hidden" id="user_id" name="user_id" value="{{ Auth::user()->id }}">
 	@foreach($result as $res)
 		<input type="hidden" name="date_format" id="date_format" value="{{ $res->date_format }}">
 	@endforeach
@@ -155,7 +155,7 @@
 					</div>
 					<!-- /.box-body -->
 					<div class="box-footer clearfix no-border">
-						<button type="button" style="display: none" class="btn btn-success pull-right add" user_id="{{ session('id') }}">Add</button>
+						<button type="button" style="display: none" class="btn btn-success pull-right add" user_id="{{ Auth::user()->id }}">Add</button>
 						<button type="button" class="btn btn-default add_item pull-right"><i class="fa fa-plus"></i> Add item</button>
 					</div>
 				</div>

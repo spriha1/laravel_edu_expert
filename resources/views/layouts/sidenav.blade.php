@@ -68,14 +68,14 @@
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 							<span class="hidden-xs">
 								<!-- <?php //echo $_SESSION['firstname'] ?> -->
-								{{ session('firstname') }}
+								{{ Auth::user()->firstname }}
 							</span>
 						</a>
 						<ul class="dropdown-menu">
 							<!-- User image -->
 							<li class="user-header">
 								<p>
-									{{ session('firstname') }}
+									{{ Auth::user()->firstname }}
 									<!-- <?php //echo $_SESSION['firstname'] ?> -->
 								</p>
 							</li>
