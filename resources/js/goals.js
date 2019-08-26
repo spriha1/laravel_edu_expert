@@ -1,7 +1,12 @@
 $(document).ready(function() {
+	$.ajaxSetup({
+	    headers: {
+	        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+	    }
+	});
 	var date = new Date();
 	$('.datepicker').datepicker('setDate', date);
-	date = $('#date').val(); 
+	date = $('#date').val();
 	date = $(".datepicker").data('datepicker').getFormattedDate('yyyy-mm-dd');
 	console.log(date);
 	date = new Date(date);
@@ -27,7 +32,7 @@ $(document).ready(function() {
 		date_format = $('#date_format').val();
 		date = $(".datepicker").data('datepicker').getFormattedDate('yyyy-mm-dd');
 		date = new Date(date);
-		time = date.getTime()/1000;
+		on_date = date.getTime()/1000;
 		// if (date_format === "yyyy/mm/dd") {
 		// 	var date = date.split("/");
 		// 	var year = date[0];
@@ -68,7 +73,7 @@ $(document).ready(function() {
   //   	var time = date.getTime()/100;
 		var goal = $("textarea").val();
 		var user_id = $(".add").attr("user_id");
-		$.post('add_goals', {goal: goal, user_id: user_id, time: time}, function(result) {
+		$.post('add_goals', {goal: goal, user_id: user_id, on_date: on_date}, function(result) {
 			var response = JSON.parse(result);
 			let element = $(".editable").clone(true).css('display', 'block').removeClass('editable');
 			element.find('.text').html(response[0].goal);

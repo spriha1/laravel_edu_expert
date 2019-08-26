@@ -94,6 +94,11 @@
 /***/ (function(module, exports) {
 
 $(document).ready(function () {
+  $.ajaxSetup({
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+  });
   var date = new Date();
   $('.datepicker').datepicker('setDate', date);
   date = $('#date').val();
@@ -120,7 +125,7 @@ $(document).ready(function () {
     date_format = $('#date_format').val();
     date = $(".datepicker").data('datepicker').getFormattedDate('yyyy-mm-dd');
     date = new Date(date);
-    time = date.getTime() / 1000; // if (date_format === "yyyy/mm/dd") {
+    on_date = date.getTime() / 1000; // if (date_format === "yyyy/mm/dd") {
     // 	var date = date.split("/");
     // 	var year = date[0];
     // 	var month = date[1]+1;
@@ -164,7 +169,7 @@ $(document).ready(function () {
     $.post('add_goals', {
       goal: goal,
       user_id: user_id,
-      time: time
+      on_date: on_date
     }, function (result) {
       var response = JSON.parse(result);
       var element = $(".editable").clone(true).css('display', 'block').removeClass('editable');

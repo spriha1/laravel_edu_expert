@@ -54,7 +54,7 @@
 		<h1>
 		Dashboard
 		</h1>
-	<input type="hidden" id="user_id" name="user_id" value="">
+	<input type="hidden" id="user_id" name="user_id" value="{{ session('id') }}">
 	@foreach($result as $res)
 		<input type="hidden" name="date_format" id="date_format" value="{{ $res->date_format }}">
 	@endforeach
@@ -155,7 +155,7 @@
 					</div>
 					<!-- /.box-body -->
 					<div class="box-footer clearfix no-border">
-						<button type="button" style="display: none" class="btn btn-success pull-right add" user_id="">Add</button>
+						<button type="button" style="display: none" class="btn btn-success pull-right add" user_id="{{ session('id') }}">Add</button>
 						<button type="button" class="btn btn-default add_item pull-right"><i class="fa fa-plus"></i> Add item</button>
 					</div>
 				</div>
@@ -181,7 +181,6 @@
 
 @section('footer')
 
-	<script src="{{ mix('/js/goals.js') }}"></script>
 
     <script src="{{ asset('js/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('js/dist/bootstrap.min.js') }}"></script>
@@ -193,5 +192,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script>
     <script id="footer" footer="dashboard_footer" src="{{ mix('/js/footer.js') }}"></script>
+	<script src="{{ mix('/js/goals.js') }}"></script>
 
 @endsection
