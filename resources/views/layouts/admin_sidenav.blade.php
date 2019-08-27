@@ -1,21 +1,21 @@
 <li>
-	<a href="admin_dashboard">
+	<a href="/admin_dashboard">
 		<i class="fa fa-address-card"></i> <span>Dashboard</span>
 	</a>
 </li>
 
 <li>
-	<a href="profile/admin">
+	<a href="/profile/admin">
 		<i class="fa fa-address-card"></i> <span>My Profile</span>
 	</a>
 </li>
 <li>
-	<a href="pending_requests">
+	<a href="/pending_requests">
 		<i class="fa fa-th"></i> <span>New Requests</span>
 	</a>
 </li>
 <li>
-	<a href="regd_users">
+	<a href="/regd_users">
 		<i class="fa fa-users"></i> <span>Registered Users</span>
 	</a>
 </li>
@@ -31,7 +31,7 @@
 	</a>
 </li>
 <li>
-	<a href="system_management.php">
+	<a href="/system_management">
 		<i class="fa fa-th"></i> <span>System Management</span>
 	</a>
 </li>

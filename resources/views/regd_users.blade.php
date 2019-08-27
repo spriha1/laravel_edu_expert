@@ -12,7 +12,7 @@
 <div class="content-wrapper">
 	<br><br>
 	<nav class="navbar navbar-transparent justify-content-center">
-		<form class="form-inline" method="POST" action="regd_users">
+		<form class="form-inline" method="POST" action="/regd_users">
 		  	@csrf
 			<div class="form-group mx-auto">
 		    <select class="form-control mb-2 mr-sm-2" id="user_type" name="user_type">

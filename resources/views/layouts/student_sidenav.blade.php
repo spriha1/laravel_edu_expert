@@ -1,25 +1,21 @@
 <li>
-	<a href="/teacher_dashboard">
+	<a href="/student_dashboard">
 		<i class="fa fa-address-card"></i> <span>Dashboard</span>
 	</a>
 </li>
+
 <li>
-	<a href="/profile/teacher">
+	<a href="/profile/student">
 		<i class="fa fa-address-card"></i> <span>My Profile</span>
 	</a>
 </li>
 <li>
-	<a href="/daily_teacher_timetable">
+	<a href="daily_student_timetable.php">
 		<i class="fa fa-th"></i> <span>Daily Time Table</span>
 	</a>
 </li>
 <li>
-	<a href="/weekly_teacher_timetable">
+	<a href="weekly_student_timetable.php">
 		<i class="fa fa-th"></i> <span>Weekly Time Table</span>
-	</a>
-</li>
-<li>
-	<a href="/student_timesheets">
-		<i class="fa fa-th"></i> <span>Student Timesheet</span>
 	</a>
 </li>

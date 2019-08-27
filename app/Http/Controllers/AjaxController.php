@@ -8,7 +8,8 @@ use App\User;
 use App\UserType;
 use App\TeacherSubject;
 use App\GoalPlan;
-
+use App\Holiday;
+use Carbon\Carbon;
 use App\Mail\UserVerification;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
@@ -28,7 +29,7 @@ class AjaxController extends Controller
 			['user_id', $request->input('user_id')],
 			['id', $id]
 		])->get();
-		print_r(json_encode($goal_plan));
+		return(json_encode($goal_plan));
 	}
 
 	public function update_goals(Request $request)
@@ -36,7 +37,7 @@ class AjaxController extends Controller
 		$to_time = time();
 		GoalPlan::where('id', $request->input('goal_id'))->update(['to_time' => $to_time, 'check_status' => 1]);
 		$goal_plan = GoalPlan::where('id', $request->input('goal_id'))->select('total_time')->get();
-		print_r(json_encode($goal_plan));
+		return(json_encode($goal_plan));
 	}
 
 	public function display_goals(Request $request)
@@ -45,7 +46,7 @@ class AjaxController extends Controller
 			['user_id', $request->input('user_id')],
 			['on_date', $request->input('date')]
 		])->get();
-		print_r(json_encode($goal_plan));
+		return(json_encode($goal_plan));
 	}
 
 	public function remove_goals(Request $request)
@@ -128,7 +129,7 @@ class AjaxController extends Controller
 				}
 			}
 		}
-    	print_r($msg);
+    	return($msg);
     }
 
     public function update_profile(Request $request)
@@ -174,7 +175,49 @@ class AjaxController extends Controller
         	}
         }
         $res = json_encode($msg);
-		print_r($res);
+		return($res);
+    }
+
+    public function add_holiday(Request $request)
+    {
+    	if ($request->filled('day')) {
+    		$length = count($request->input('day'));
+    		for($i = 0; $i < $length; $i++)
+    		{
+    			Holiday::insert(['dow' => $request->input('day')[$i]]);
+    		}
+    	}
+    	else if ($request->filled('start_date') && $request->filled('end_date')) {
+    		$date_format = $request->input('date_format');
+    		$start_date = $request->input('start_date');
+    		$end_date = $request->input('end_date');
+    		if ($date_format === "yyyy/mm/dd") {
+        		$start_date = Carbon::createFromFormat("Y/m/d" , $start_date)->timestamp;
+        		$end_date = Carbon::createFromFormat("Y/m/d" , $end_date)->timestamp;
+        	}
+        	else if ($date_format === "yyyy.mm.dd") {
+        		$start_date = Carbon::createFromFormat("Y.m.d" , $start_date)->timestamp;
+        		$end_date = Carbon::createFromFormat("Y.m.d" , $end_date)->timestamp;
+        	}
+        	else if ($date_format === "yyyy-mm-dd") {
+        		$start_date = Carbon::createFromFormat("Y-m-d" , $start_date)->timestamp;
+        		$end_date = Carbon::createFromFormat("Y-m-d" , $end_date)->timestamp;
+        	}
+        	else if ($date_format === "dd/mm/yyyy") {
+        		$start_date = Carbon::createFromFormat("d/m/Y" , $start_date)->timestamp;
+        		$end_date = Carbon::createFromFormat("d/m/Y" , $end_date)->timestamp;
+        	}
+        	else if ($date_format === "dd-mm-yyyy") {
+        		$start_date = Carbon::createFromFormat("d-m-Y" , $start_date)->timestamp;
+        		$end_date = Carbon::createFromFormat("d-m-Y" , $end_date)->timestamp;
+        	}
+        	else if ($date_format === "dd.mm.yyyy") {
+        		$start_date = Carbon::createFromFormat("d.m.Y" , $start_date)->timestamp;
+        		$end_date = Carbon::createFromFormat("d.m.Y" , $end_date)->timestamp;
+        	}
+        	Holiday::insert(['start_date' => $start_date, 'end_date' => $end_date]);
+    	}
+		return("Added successfully");
     }
 
 }

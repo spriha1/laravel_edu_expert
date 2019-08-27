@@ -40,6 +40,29 @@ Route::middleware('auth')->group(function () {
 	Route::get('/profile/{usertype}', 'ProjectController@profile');
 	Route::post('/update_profile', 'AjaxController@update_profile');
 
+	Route::view('/system_management', 'system_management');
+	Route::view('/manage_subjects', 'manage_subjects');
+	Route::post('/add_subject', 'SubjectsController@add_subject');
+	Route::post('/remove_subject', 'SubjectsController@remove_subject');
+	Route::get('/display_subjects', 'SubjectsController@display_subjects');
+
+	Route::view('/holiday', 'holiday');
+	Route::post('/add_holiday', 'AjaxController@add_holiday');
+
+	Route::get('/manage_class', 'ClassController@render_view');
+	Route::get('/display_class', 'ClassController@display_class');
+	Route::post('/fetch_teachers', 'ClassController@fetch_teachers');
+	Route::post('/add_class', 'ClassController@add_class');
+	Route::post('/remove_class', 'ClassController@remove_class');
+	Route::post('/fetch_class_details', 'ClassController@fetch_class_details');
+	Route::post('/remove_class_subject', 'ClassController@remove_class_subject');
+	Route::post('/add_class_subject', 'ClassController@add_class_subject');
+	Route::post('/update_teacher', 'ClassController@update_teacher');
+
+	Route::get('/task_management', 'ProjectController@task_management');
+	Route::post('/add_timetable', 'ProjectController@add_timetable');
+	Route::post('/fetch_subjects', 'ProjectController@fetch_subjects');
+
 	Route::post('/add_goals', 'AjaxController@add_goals');
 	Route::post('/update_goals', 'AjaxController@update_goals');
 	Route::post('/display_goals', 'AjaxController@display_goals');

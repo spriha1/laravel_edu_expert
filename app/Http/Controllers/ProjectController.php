@@ -235,6 +235,27 @@ class ProjectController extends Controller
         }
     }
 
+    public function task_management()
+    {
+        $classes = \App\Class::distinct('class')->get();
+        return view('task_management', [
+            'classes' => $classes
+        ]);
+    }
+
+    public function add_timetable(Request $request)
+    {
+
+    }
+
+    public function fetch_subjects(Request $request)
+    {
+        if ($request->filled('class_id')) {
+            $result = \App\Subject::join('class', 'subjects.id', '=', 'class.subject_id')->where('class.class' = $request->input('class_id'))->select('subjects.id', 'name')->get();
+            return(json_encode($result));
+        }
+    }
+
     public function logout()
     {
         Auth::logout();

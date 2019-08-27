@@ -26,9 +26,9 @@
 									<ul class="menu">
 										<li><!-- start message -->
 										<a href="#">
-											<div class="pull-left">
+											<!-- <div class="pull-left">
 												<img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-											</div>
+											</div> -->
 											<h4>
 											Support Team
 											<small><i class="fa fa-clock-o"></i> 5 mins</small>
@@ -83,10 +83,10 @@
 							<!-- Menu Footer-->
 							<li class="user-footer">
 								<div class="pull-left">
-									<a href="student_profile.php" class="btn btn-default btn-flat">Profile</a>
+									<a href="/profile" class="btn btn-default btn-flat">Profile</a>
 								</div>
 								<div class="pull-right">
-									<a href="logout" class="btn btn-default btn-flat">Sign out</a>
+									<a href="/logout" class="btn btn-default btn-flat">Sign out</a>
 								</div>
 							</li>
 						</ul>
