@@ -20,13 +20,13 @@
 	</a>
 </li>
 <li>
-	<a href="teacher_timesheets.php">
+	<a href="/teacher_timesheets">
 		<i class="fa fa-th"></i> <span>Teacher Timesheet</span>
 	</a>
 </li>
 
 <li>
-	<a href="task_management.php">
+	<a href="/task_management">
 		<i class="fa fa-th"></i> <span>Task Management</span>
 	</a>
 </li>

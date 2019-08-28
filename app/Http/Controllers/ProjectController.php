@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class ProjectController extends Controller
 {
@@ -237,7 +238,7 @@ class ProjectController extends Controller
 
     public function task_management()
     {
-        $classes = \App\Class::distinct('class')->get();
+        $classes = \App\Clas::select('class')->distinct()->get();
         return view('task_management', [
             'classes' => $classes
         ]);
@@ -245,13 +246,78 @@ class ProjectController extends Controller
 
     public function add_timetable(Request $request)
     {
-
+        if ($request->filled('class') && $request->filled('subject') && $request->filled('start_date') && $request->filled('end_date')) {
+            $date_format = $request->input('date_format');
+            $start_date = $request->input('start_date');
+            $end_date = $request->input('end_date');
+            if ($date_format === "yyyy/mm/dd") {
+                $start_date = Carbon::createFromFormat("Y/m/d" , $start_date)->timestamp;
+                $end_date = Carbon::createFromFormat("Y/m/d" , $end_date)->timestamp;
+            }
+            else if ($date_format === "yyyy.mm.dd") {
+                $start_date = Carbon::createFromFormat("Y.m.d" , $start_date)->timestamp;
+                $end_date = Carbon::createFromFormat("Y.m.d" , $end_date)->timestamp;
+            }
+            else if ($date_format === "yyyy-mm-dd") {
+                $start_date = Carbon::createFromFormat("Y-m-d" , $start_date)->timestamp;
+                $end_date = Carbon::createFromFormat("Y-m-d" , $end_date)->timestamp;
+            }
+            else if ($date_format === "dd/mm/yyyy") {
+                $start_date = Carbon::createFromFormat("d/m/Y" , $start_date)->timestamp;
+                $end_date = Carbon::createFromFormat("d/m/Y" , $end_date)->timestamp;
+            }
+            else if ($date_format === "dd-mm-yyyy") {
+                $start_date = Carbon::createFromFormat("d-m-Y" , $start_date)->timestamp;
+                $end_date = Carbon::createFromFormat("d-m-Y" , $end_date)->timestamp;
+            }
+            else if ($date_format === "dd.mm.yyyy") {
+                $start_date = Carbon::createFromFormat("d.m.Y" , $start_date)->timestamp;
+                $end_date = Carbon::createFromFormat("d.m.Y" , $end_date)->timestamp;
+            }
+            $length = count($request->input('subject'));
+            for($i = 0; $i < $length; $i++)
+            {
+                $subject_id = $request->input('subject')[$i];
+                for($a = $start_date; $a < $end_date; $a = $a + 86400) {
+                    $result = \App\Task::where([
+                        ['subject_id', $subject_id],
+                        ['class', $request->input('class')],
+                        ['start_date', '<=', $a],
+                        ['end_date', '>=', $a]
+                    ])->select()->get();
+                    if ($result->count()) {
+                        return("The task has already been added");
+                    }
+                    else {
+                        $task_id = \App\Task::insertGetId([
+                            'subject_id' => $subject_id,
+                            'class' => $request->input('class'),
+                            'start_date' => $start_date,
+                            'end_date' => $end_date
+                        ]);
+                        $result = \App\Clas::where([
+                            ['class', $request->input('class')],
+                            ['subject_id', $subject_id]
+                        ])->select('teacher_id')->distinct()->get();
+                        foreach($result as $key => $value)
+                        {
+                            \App\TeacherTask::insert([
+                                'task_id' => $task_id,
+                                'teacher_id' => $value['teacher_id']
+                            ]);
+                            //student
+                            return("Successfully added");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public function fetch_subjects(Request $request)
     {
         if ($request->filled('class_id')) {
-            $result = \App\Subject::join('class', 'subjects.id', '=', 'class.subject_id')->where('class.class' = $request->input('class_id'))->select('subjects.id', 'name')->get();
+            $result = \App\Subject::join('class', 'subjects.id', '=', 'class.subject_id')->where('class.class', $request->input('class_id'))->select('subjects.id', 'name')->get();
             return(json_encode($result));
         }
     }

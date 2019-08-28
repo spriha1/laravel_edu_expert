@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Subject;
-use App\Class;
+use App\Clas;
 use App\User;
 
 class ClassController extends Controller
@@ -19,14 +19,14 @@ class ClassController extends Controller
 
     public function display_class()
     {
-    	$classes = Class::distinct()->get();
+    	$classes = Clas::select('class')->distinct()->get();
     	return(json_encode($classes));
     }
 
     public function fetch_teachers(Request $request)
     {
     	if ($request->filled('subject_id')) {
-    		$teachers = User::join('teacher_subject', 'users.id', '=', 'teacher_subject.teacher_id')->where('subject_id', $request->input('subject_id'))->select('users.id', 'firstname')->get();
+    		$teachers = User::join('teacher_subjects', 'users.id', '=', 'teacher_subjects.teacher_id')->where('subject_id', $request->input('subject_id'))->select('users.id', 'firstname')->get();
     		return(json_encode($teachers));
     	}
     }
@@ -37,13 +37,13 @@ class ClassController extends Controller
     		$length = count($request->input('subjects'));
     		for($i = 0; $i < $length; $i++)
     		{
-    			$id = Class::insertGetId([
+    			$id = Clas::insertGetId([
     				'class' => $request->input('class'),
     				'subject_id' => $request->input('subjects')[$i],
     				'teacher_id' => $request->input($request->input('subjects')[$i])
     			]);    			
     		}
-    		$result = Class::where('id', $id)->select('class')->get();
+    		$result = Clas::where('id', $id)->select('class')->get();
     		return(json_encode($result));
     	}
     }
@@ -52,7 +52,7 @@ class ClassController extends Controller
     {
     	if ($request->filled('class_id'))
     	{
-    		Class::where('class', $request->input('class_id'))->delete();
+    		Clas::where('class', $request->input('class_id'))->delete();
     	}
     }
 
@@ -68,7 +68,7 @@ class ClassController extends Controller
     {
     	if ($request->filled('class_id') && $request->filled('subject_id'))
     	{
-    		Class::where([
+    		Clas::where([
     			['class', $request->input('class_id')],
     			['subject_id', $request->input('subject_id')]
     		])->delete();
@@ -81,7 +81,7 @@ class ClassController extends Controller
     		$length = count($request->input('subjects'));
     		for($i = 0; $i < $length; $i++)
     		{
-    			$id = Class::insertGetId([
+    			$id = Clas::insertGetId([
     				'class' => $request->input('class'),
     				'subject_id' => $request->input('subjects')[$i],
     				'teacher_id' => $request->input($request->input('subjects')[$i])
@@ -95,7 +95,7 @@ class ClassController extends Controller
     public function update_teacher(Request $request)
     {
     	if ($request->filled('subject_id') && $request->filled('class_id') && $request->filled('teacher_id')) {
-    		Class::where([
+    		Clas::where([
     			['subject_id', $request->input('subject_id')],
     			['class', $request->input('class_id')]
     		])->update(['teacher_id' => $request->input('teacher_id')]);

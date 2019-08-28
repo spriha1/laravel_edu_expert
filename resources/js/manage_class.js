@@ -1,5 +1,10 @@
 $(document).ready(function() {
-
+	$.ajaxSetup({
+	    headers: {
+	        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+	    }
+	});
+	
 	$.get('display_class', function(result) {
 		var response = JSON.parse(result);
 		var length = response.length;

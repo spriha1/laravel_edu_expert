@@ -81,15 +81,15 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 9);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./resources/js/task.js":
-/*!******************************!*\
-  !*** ./resources/js/task.js ***!
-  \******************************/
+/***/ "./resources/js/daily_timetable.js":
+/*!*****************************************!*\
+  !*** ./resources/js/daily_timetable.js ***!
+  \*****************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -99,68 +99,106 @@ $(document).ready(function () {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
   });
-  $('#task').submit(function (event) {
+  var date = new Date();
+  $('.datepicker').datepicker('setDate', date);
+  var date = $('#date').val();
+  var user_id = $('#user_id').val();
+  var user_type = $('#user_type').val();
+  var date_format = $('#date_format').val();
+  load_display_data(date, user_id, user_type, date_format);
+  $('#share').click(function (event) {
     event.preventDefault();
-    $("#spinner").css('display', 'block');
-    $.post('/add_timetable', $('#task').serialize(), function (result) {
-      $('#spinner').css('display', 'none');
-      $('#alert').text(result).css('display', 'block');
-      $('.datepicker').val('');
-      $('.subject').val('');
-      $('.subject').html('');
-      $('.subject').select2('destroy').select2();
-      $('#class').val('');
+    var user_id = $("#user_id").val();
+    var date_format = $('#date_format').val();
+    var date = $("#date").val();
+    $.post('/add_shared_timesheets', {
+      user_id: user_id,
+      date: date,
+      date_format: date_format
     });
   });
-  $('#class').change(function () {
-    var class_id = $(this).val();
-    $('.subject').val('');
-    $('.subject').html('');
-    $('.subject').select2('destroy').select2();
-    $.post('/fetch_subjects', {
-      class_id: class_id
-    }, function (result) {
-      var response = JSON.parse(result);
-      var length = response.length; // console.log(response);
-
-      for (var i = 0; i < length; i++) {
-        var element = $('.clone').clone(true).removeClass('clone');
-        element.attr('value', response[i].id);
-        console.log(element);
-        element.text(response[i].name);
-        element.appendTo('.subject');
-      }
-    });
+  $('.datepicker').datepicker().on('changeDate', function (e) {
+    var date = e.format();
+    var user_id = $('#user_id').val();
+    var user_type = $('#user_type').val();
+    var date_format = $('#date_format').val();
+    $('.timetable').html("");
+    load_display_data(date, user_id, user_type, date_format);
   });
 });
 
-function format_date(date) {
-  var today = new Date(date);
-  var year = today.getFullYear();
-  var month = today.getMonth() + 1;
-  var date = today.getDate();
+function load_display_data(date, user_id, user_type, date_format) {
+  $.post('/display_daily_timetable', {
+    date: date,
+    user_id: user_id,
+    user_type: user_type,
+    date_format: date_format
+  }, function (result) {
+    var response = JSON.parse(result);
+    console.log(date);
 
-  if (month < 10 && date < 10) {
-    var date = year + '-0' + month + '-0' + date;
-  } else if (month < 10) {
-    var date = year + '-0' + month + '-' + date;
-  } else if (date < 10) {
-    var date = year + '-' + month + '-0' + date;
-  }
+    if (date_format === "yyyy/mm/dd") {
+      date = date.split('/');
+      date = new Date(date[0], date[1] - 1, date[2]).getTime();
+    } else if (date_format === "yyyy.mm.dd") {
+      date = date.split('.');
+      date = new Date(date[0], date[1] - 1, date[2]).getTime();
+    } else if (date_format === "yyyy-mm-dd") {
+      date = date.split('-');
+      date = new Date(date[0], date[1] - 1, date[2]).getTime();
+    } else if (date_format === "dd/mm/yyyy") {
+      date = date.split('/');
+      date = new Date(date[2], date[1] - 1, date[0]).getTime();
+    } else if (date_format === "dd-mm-yyyy") {
+      date = date.split('-');
+      date = new Date(date[2], date[1] - 1, date[0]).getTime();
+    } else if (date_format === "dd.mm.yyyy") {
+      date = date.split('.');
+      date = new Date(date[2], date[1] - 1, date[0]).getTime();
+    }
 
-  return date;
+    date = date / 1000;
+    console.log(date);
+    var length = response.length;
+
+    if (user_type === 'teacher') {
+      for (var i = 0; i < length; i++) {
+        var element = $(".editable").clone(true).css('display', 'table-row').removeClass('editable');
+        element.attr('task_id', response[i].task_id);
+        element.appendTo('.timetable');
+        var task_id = response[i].task_id;
+        var seconds = response[i].total_time;
+
+        if (seconds > 0) {
+          var hours = Math.floor(seconds / 3600);
+          seconds = seconds - hours * 3600;
+          var minutes = Math.floor(seconds / 60);
+          seconds = seconds - minutes * 60;
+          var time = hours + ':' + minutes + ':' + seconds;
+
+          if (date == response[i].on_date) {
+            $("tbody tr[task_id=" + task_id + "] .timer").val(time);
+          }
+        }
+
+        $("tbody tr[task_id=" + task_id + "] .name").text(response[i].name);
+        $("tbody tr[task_id=" + task_id + "] .class").text(response[i]["class"]);
+        $("tbody tr[task_id=" + task_id + "] .stop").attr('task_id', response[i].task_id);
+      }
+    }
+  });
 }
 
 /***/ }),
 
-/***/ 9:
-/*!************************************!*\
-  !*** multi ./resources/js/task.js ***!
-  \************************************/
+/***/ 10:
+/*!***********************************************!*\
+  !*** multi ./resources/js/daily_timetable.js ***!
+  \***********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /home/spriha/Documents/laravel/laravel_edu_expert/resources/js/task.js */"./resources/js/task.js");
+module.exports = __webpack_require__(/*! /home/spriha/Documents/laravel/laravel_edu_expert/resources/js/daily_timetable.js */"./resources/js/daily_timetable.js");
 
 
 /***/ })

@@ -63,6 +63,13 @@ Route::middleware('auth')->group(function () {
 	Route::post('/add_timetable', 'ProjectController@add_timetable');
 	Route::post('/fetch_subjects', 'ProjectController@fetch_subjects');
 
+	Route::view('/daily_teacher_timetable', 'daily_teacher_timetable');
+	Route::view('/weekly_teacher_timetable', 'weekly_teacher_timetable');
+	Route::post('/add_shared_timesheets', 'TimesheetController@add_shared_timesheets');
+	Route::post('/display_daily_timetable', 'TimesheetController@display_daily_timetable');
+	Route::post('/display_timetable', 'TimesheetController@display_timetable');
+	Route::get('/teacher_timesheets', 'TimesheetController@teacher_timesheets');
+
 	Route::post('/add_goals', 'AjaxController@add_goals');
 	Route::post('/update_goals', 'AjaxController@update_goals');
 	Route::post('/display_goals', 'AjaxController@display_goals');
