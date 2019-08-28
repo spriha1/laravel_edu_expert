@@ -1,0 +1,11 @@
+1.  Code uses 4 spaces for indenting, not tabs.
+2.  Opening braces for classes goes on the next line, and closing braces goes on the next line after 
+    the body.
+3.  Opening braces for methods goes on the next line, and closing braces goes on the next line after 
+	the body.
+4.  Control structure keywords have one space after them, method and function calls do not have.
+5.  Opening braces for control structures goes on the same line, and closing braces goes on the next line 
+    after the body.
+6.  Opening parentheses for control structures do not have a space after them, and closing parentheses 
+	for control structures do not have a space before.
+7.  Operators have a space before and after them.
