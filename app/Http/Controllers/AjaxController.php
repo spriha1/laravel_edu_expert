@@ -4,11 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\User;
-use App\UserType;
-use App\TeacherSubject;
-use App\GoalPlan;
-use App\Holiday;
+use App\{User, UserType, TeacherSubject, GoalPlan, Holiday};
 use Carbon\Carbon;
 use App\Mail\UserVerification;
 use Illuminate\Support\Facades\Mail;

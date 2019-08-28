@@ -24,25 +24,16 @@
 								<th></th>
 							</tr>
 						</thead>
-						<?php
-						foreach ($result as $key => $value) {
-							$query2 = "SELECT firstname, username FROM users WHERE id =".$value['from_id'];
-							$result2 = $obj->select_records($conn, $query2);
-						    foreach ($result2 as $key2 => $value2) { ?>
-						     	<tr>
-									<td><?php echo $value2['firstname']; ?></td>
-									<td><?php echo $value2['username']; ?></td>
-									<?php foreach ($result3 as $key => $value3) { ?>
-									<td><?php echo format_date($value['of_date'], $value3['date_format']); ?></td>
-									<?php } ?>
-									<td>
-										<button type="button" user_type="teacher" class="btn btn-success view" from_id="<?php echo $value['from_id']; ?>" of_date="<?php echo $value['of_date']; ?>" data-toggle="modal" data-target="#view_timesheets">View</button>
-									</td>
-								</tr>
-								<?php
-								}
-						    }
-						?>
+						@foreach ($results as $result) {
+					     	<tr>
+								<td>{{ $result->firstname }}</td>
+								<td>{{ $result->username }}</td>
+								<td>{{ format_date($result->of_date, Auth::user()->date_format) }}</td>
+								<td>
+									<button type="button" user_type="teacher" class="btn btn-success view" from_id="{{ $result->from_id }}" of_date="{{ $result->of_date }}" data-toggle="modal" data-target="#view_timesheets">View</button>
+								</td>
+							</tr>
+						@endforeach
 					    </table></div>
 					</div>
 				</div>

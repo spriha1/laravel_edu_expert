@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Subject;
-use App\Clas;
-use App\User;
+use App\{Subject, Clas, User};
 
 class ClassController extends Controller
 {

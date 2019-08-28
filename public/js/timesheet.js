@@ -81,91 +81,81 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./resources/js/validate.js":
-/*!**********************************!*\
-  !*** ./resources/js/validate.js ***!
-  \**********************************/
+/***/ "./resources/js/timesheet.js":
+/*!***********************************!*\
+  !*** ./resources/js/timesheet.js ***!
+  \***********************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
 $(document).ready(function () {
-  $('body').submit(function (event) {
-    if (event.target.id === 'registration') {
-      event.preventDefault();
-      $.post('register', $('#registration').serialize(), function (result) {
-        console.log('success');
-      }).fail(function (result) {
-        console.log(result.responseText);
-        var res = JSON.parse(result.responseText);
-        var errors = res.errors;
-        $('#alert').html(errors.fname + '<br>' + errors.lname + '<br>' + errors.username + '<br>' + errors.email + '<br>' + errors.password);
-        $("#alert").css("display", "block");
-      });
-    }
+  $(function () {
+    $('#timesheet').DataTable({
+      'paging': true,
+      'lengthChange': true,
+      'searching': true,
+      'ordering': true,
+      'info': true,
+      'autoWidth': false
+    });
   });
-  $('body').click(function () {
-    if (event.target.id === 'password' && event.target.closest("form").getAttribute("id") === 'registration') {
-      var msg = "The password :<br> Must be a minimum of 8 characters<br>Must contain at least 1 number<br>Must contain at least one uppercase character<br>Must contain at least one lowercase character";
-      $("#info_password").html(msg);
-      $("#info_password").css("display", "block");
-    }
+  $('.view').click(function () {
+    var from_id = $(this).attr('from_id');
+    var of_date = $(this).attr('of_date');
+    var user_type = $(this).attr('user_type');
+    $.post('/fetch_timesheet', {
+      from_id: from_id,
+      of_date: of_date,
+      timesheet_check: 1,
+      user_type: user_type
+    }, function (result) {
+      var response = JSON.parse(result);
+      var length = response.length;
+      $('#view_timesheet').html("");
 
-    if (event.target.id === 'username' && event.target.closest("form").getAttribute("id") === 'registration') {
-      var msg = "The username can contain letters, digits, @ and _";
-      $("#info_username").text(msg);
-      $("#info_username").css("display", "block");
-    }
-  });
-  $('input').blur(function () {
-    if (event.target.closest("form").getAttribute("id") === 'registration') {
-      if (event.target.id === 'password') {
-        $("#info_password").css("display", "none");
-      } else if (event.target.id === 'username') {
-        $("#info_username").css("display", "none");
-        var username_pattern = /^([a-zA-Z0-9@_]+)$/;
-        var username = $('#username').val();
-        $.get("fetch_info", {
-          q1: "username",
-          q2: username
-        }, function (data) {
-          if (Number(data) === 1) {
-            $('#username').css("borderColor", "red");
-            $("#alert").text("This username already exists");
-            $("#alert").css("display", "block");
-          }
-        });
+      if (user_type == 'teacher') {
+        for (var i = 0; i < length; i++) {
+          var element = $('.timesheet_body').clone(true).removeClass('timesheet_body');
+          element.find('.number').text(i + 1);
+          element.find('.subject').text(response[i].name);
+          element.find('.class').text(response[i]["class"]);
+          var time = new Date(null);
+          time.setSeconds(response[i].total_time);
+          var total_time = time.toISOString().substr(11, 8);
+          element.find('.total_time').text(total_time);
+          element.appendTo('#view_timesheet');
+        }
+      } else if (user_type == 'student') {
+        for (var i = 0; i < length; i++) {
+          var element = $('.timesheet_body').clone(true).removeClass('timesheet_body');
+          element.find('.number').text(i + 1);
+          element.find('.subject').text(response[i].name);
+          var time = new Date(null);
+          time.setSeconds(response[i].total_time);
+          var total_time = time.toISOString().substr(11, 8);
+          element.find('.total_time').text(total_time);
+          element.appendTo('#view_timesheet');
+        }
       }
-    }
-  });
-  $('#user_type').change(function (event) {
-    if ($('#user_type').val() === 'Teacher') {
-      $('.subject').closest('div').css('display', 'block');
-    }
-
-    if ($('#user_type').val() === 'Student') {
-      $('.subject').closest('div').css('display', 'none');
-    }
-  });
-  $('.subject').change(function () {
-    console.log($('.subject').val());
+    });
   });
 });
 
 /***/ }),
 
-/***/ 1:
-/*!****************************************!*\
-  !*** multi ./resources/js/validate.js ***!
-  \****************************************/
+/***/ 12:
+/*!*****************************************!*\
+  !*** multi ./resources/js/timesheet.js ***!
+  \*****************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /home/spriha/Documents/laravel/laravel_edu_expert/resources/js/validate.js */"./resources/js/validate.js");
+module.exports = __webpack_require__(/*! /home/spriha/Documents/laravel/laravel_edu_expert/resources/js/timesheet.js */"./resources/js/timesheet.js");
 
 
 /***/ })

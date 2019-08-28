@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-
+use App\{User, UserType, Subject, Clas, Task, TeacherTask};
 class ProjectController extends Controller
 {
 
@@ -16,7 +16,7 @@ class ProjectController extends Controller
     public function check_login_status()
     {
         if (session()->has('username')) {
-            $user_type = \App\User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->select('user_types.user_type')->get();
+            $user_type = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->select('user_types.user_type')->get();
             foreach ($user_type as $value) {
                 if ($value->user_type === 'Admin') {
                     return redirect('admin_dashboard');
@@ -46,8 +46,8 @@ class ProjectController extends Controller
     {
         if ($this->check_login_status())
         {
-            $user_types = \App\UserType::where('user_type', '!=', "Admin")->get();
-            $subjects = \App\Subject::all();
+            $user_types = UserType::where('user_type', '!=', "Admin")->get();
+            $subjects = Subject::all();
 
             return view('register', [
                 'user_types' => $user_types, 
@@ -67,7 +67,7 @@ class ProjectController extends Controller
     {
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'user_reg_status' => 1, 'block_status' => 0])) {
                           
-            $user_type = \App\UserType::where('id', Auth::user()->user_type_id)->get();
+            $user_type = UserType::where('id', Auth::user()->user_type_id)->get();
             foreach ($user_type as $val) {                    
                 if ($val->user_type === 'Admin') {                        
                     return redirect('admin_dashboard');
@@ -88,8 +88,8 @@ class ProjectController extends Controller
 
     public function pending_requests()
     {
-        $user_types = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
-        $results = \App\User::whereRaw("user_reg_status = 0 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
+        $user_types = UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
+        $results = User::whereRaw("user_reg_status = 0 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
         return view('pending_requests', [
             'user_types' => $user_types,
             'results' => $results,
@@ -99,7 +99,7 @@ class ProjectController extends Controller
 
     public function post_pending_requests(Request $request)
     {
-        $user_types = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
+        $user_types = UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
 
         $c = 0;
         foreach ($user_types as $key => $value) {
@@ -108,7 +108,7 @@ class ProjectController extends Controller
             }
         }
         if ($c > 0) {
-            $results = \App\User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([['user_reg_status', 0], ['user_type', $request->input('user_type')]])->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
+            $results = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([['user_reg_status', 0], ['user_type', $request->input('user_type')]])->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
         }
         return view('pending_requests', [
             'user_types' => $user_types,
@@ -119,32 +119,32 @@ class ProjectController extends Controller
 
     public function add_users($id)
     {
-        \App\User::where('id', $id)->update(['user_reg_status' => 1]);
+        User::where('id', $id)->update(['user_reg_status' => 1]);
         return redirect()->back();
     }
 
     public function remove_users($id)
     {
-        \App\User::where('id', $id)->delete();
+        User::where('id', $id)->delete();
         return redirect()->back();
     }
 
     public function block_users($id)
     {
-        \App\User::where('id', $id)->update(['block_status' => 1]);
+        User::where('id', $id)->update(['block_status' => 1]);
         return redirect()->back();
     }
 
     public function unblock_users($id)
     {
-        \App\User::where('id', $id)->update(['block_status' => 0]);
+        User::where('id', $id)->update(['block_status' => 0]);
         return redirect()->back();
     }
 
     public function regd_users()
     {
-        $user_types = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
-        $results = \App\User::whereRaw("user_reg_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
+        $user_types = UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
+        $results = User::whereRaw("user_reg_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
         return view('regd_users', [
             'user_types' => $user_types,
             'results' => $results,
@@ -154,7 +154,7 @@ class ProjectController extends Controller
 
     public function post_regd_users(Request $request)
     {
-        $user_types = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
+        $user_types = UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
 
         $c = 0;
         foreach ($user_types as $key => $value) {
@@ -163,7 +163,7 @@ class ProjectController extends Controller
             }
         }
         if ($c > 0) {
-            $results = \App\User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([['user_reg_status', 1], ['user_type', $request->input('user_type')]])->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
+            $results = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([['user_reg_status', 1], ['user_type', $request->input('user_type')]])->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
         }
         return view('regd_users', [
             'user_types' => $user_types,
@@ -197,12 +197,12 @@ class ProjectController extends Controller
     public function verify_mail($code)
     {
         $hash = base64_decode($code);
-        $results = \App\User::where([
+        $results = User::where([
             ['email_verification_code', $hash],
             ['email_verification_status', 0]
         ])->get();
         if($results->count()) {
-            \App\User::where([
+            User::where([
                 ['email_verification_code', $hash],
                 ['email_verification_status', 0]
             ])->update(['email_verification_status' => 1]);
@@ -217,14 +217,14 @@ class ProjectController extends Controller
     {
         $hash = base64_decode($hash);
         $email = base64_decode($email);
-        $result = \App\User::where([
+        $result = User::where([
             ['email_verification_code', $hash],
             ['email_verification_status', 0]
         ])->select('id')->get();
         if($result->count()) {
             foreach($result as $res)
             {
-                \App\User::where([
+                User::where([
                     ['id', $res->id],
                     ['email_verification_status', 0]
                 ])->update(['email_verification_status' => 1, 'email' => $email]);
@@ -238,7 +238,7 @@ class ProjectController extends Controller
 
     public function task_management()
     {
-        $classes = \App\Clas::select('class')->distinct()->get();
+        $classes = Clas::select('class')->distinct()->get();
         return view('task_management', [
             'classes' => $classes
         ]);
@@ -279,7 +279,7 @@ class ProjectController extends Controller
             {
                 $subject_id = $request->input('subject')[$i];
                 for($a = $start_date; $a < $end_date; $a = $a + 86400) {
-                    $result = \App\Task::where([
+                    $result = Task::where([
                         ['subject_id', $subject_id],
                         ['class', $request->input('class')],
                         ['start_date', '<=', $a],
@@ -289,19 +289,19 @@ class ProjectController extends Controller
                         return("The task has already been added");
                     }
                     else {
-                        $task_id = \App\Task::insertGetId([
+                        $task_id = Task::insertGetId([
                             'subject_id' => $subject_id,
                             'class' => $request->input('class'),
                             'start_date' => $start_date,
                             'end_date' => $end_date
                         ]);
-                        $result = \App\Clas::where([
+                        $result = Clas::where([
                             ['class', $request->input('class')],
                             ['subject_id', $subject_id]
                         ])->select('teacher_id')->distinct()->get();
                         foreach($result as $key => $value)
                         {
-                            \App\TeacherTask::insert([
+                            TeacherTask::insert([
                                 'task_id' => $task_id,
                                 'teacher_id' => $value['teacher_id']
                             ]);
@@ -317,7 +317,7 @@ class ProjectController extends Controller
     public function fetch_subjects(Request $request)
     {
         if ($request->filled('class_id')) {
-            $result = \App\Subject::join('class', 'subjects.id', '=', 'class.subject_id')->where('class.class', $request->input('class_id'))->select('subjects.id', 'name')->get();
+            $result = Subject::join('class', 'subjects.id', '=', 'class.subject_id')->where('class.class', $request->input('class_id'))->select('subjects.id', 'name')->get();
             return(json_encode($result));
         }
     }

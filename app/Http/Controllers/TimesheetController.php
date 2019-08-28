@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\UserType;
-use App\SharedTimesheet;
-use App\Holiday;
-use App\TeacherTask;
-
+use App\{UserType, SharedTimesheet, Holiday, TeacherTask, User};
 class TimesheetController extends Controller
 {
     public function add_shared_timesheets(Request $request)
@@ -219,9 +216,14 @@ class TimesheetController extends Controller
 
     public function teacher_timesheets()
     {
-    	$result = SharedTimesheet::where('to_id', Auth::id())->select('from_id', 'of_date')->get();
+    	$results = SharedTimesheet::join('users', 'shared_timesheets.from_id', '=', 'users.id')->where('to_id', Auth::id())->select('from_id', 'of_date', 'firstname', 'username')->get();
     	return view('teacher_timesheets', [
-    		'$result' => $result
+    		'results' => $results
     	]);
+    }
+
+    public function fetch_timesheet(Request $request)
+    {
+
     }
 }
