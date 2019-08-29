@@ -110,6 +110,9 @@ class ProjectController extends Controller
         if ($c > 0) {
             $results = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([['user_reg_status', 0], ['user_type', $request->input('user_type')]])->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
         }
+        else {
+            $results = User::whereRaw("user_reg_status = 0 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
+        }
         return view('pending_requests', [
             'user_types' => $user_types,
             'results' => $results,
@@ -164,6 +167,9 @@ class ProjectController extends Controller
         }
         if ($c > 0) {
             $results = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([['user_reg_status', 1], ['user_type', $request->input('user_type')]])->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
+        }
+        else {
+            $results = User::whereRaw("user_reg_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
         }
         return view('regd_users', [
             'user_types' => $user_types,

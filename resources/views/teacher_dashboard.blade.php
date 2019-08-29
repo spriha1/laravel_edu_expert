@@ -26,12 +26,12 @@
 				<div class="small-box bg-aqua">
 					<div class="inner">
 						<h3>0</h3>
-						<p>Time Table</p>
+						<p>Daily Time Table</p>
 					</div>
 					<div class="icon">
 						<i class="ion ion-person"></i>
 					</div>
-					<a href="teacher_timetable.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+					<a href="/daily_teacher_timetable" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
 				</div>
 			</div>
 			<!-- ./col -->
@@ -40,12 +40,12 @@
 				<div class="small-box bg-green">
 					<div class="inner">
 						<h3>0</h3>
-						<p>Attendance</p>
+						<p>Weekly Teacher Timetable</p>
 					</div>
 					<div class="icon">
 						<i class="ion ion-person"></i>
 					</div>
-					<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+					<a href="/weekly_teacher_timetable" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
 				</div>
 			</div>
 			<!-- ./col -->
@@ -59,7 +59,7 @@
 					<div class="icon">
 						<i class="ion ion-person"></i>
 					</div>
-					<a href="student_timesheets.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+					<a href="/student_timesheets" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
 				</div>
 			</div>
 			<!-- ./col -->
