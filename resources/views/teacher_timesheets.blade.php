@@ -97,8 +97,8 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script>
 	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script> -->
-	<script id="footer" footer="profile_footer" src="{{ mix('/js/footer.js') }}"></script>
-	<script src="{{ mix('/js/task.js') }}"></script>
+	<!-- <script id="footer" footer="profile_footer" src="{{ mix('/js/footer.js') }}"></script> -->
+	<script src="{{ mix('/js/timesheet.js') }}"></script>
     <!-- <script src="{{ asset('js/dist/dashboard.min.js') }}"></script> -->
 
    <!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>

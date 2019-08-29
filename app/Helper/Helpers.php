@@ -23,4 +23,31 @@
 	    	return $date;
 		}
 	}
+
+	function date_to_timestamp($date_format, $date)
+    {
+        switch ($date_format) {
+            case "yyyy/mm/dd":
+                $date = DateTime::createFromFormat("Y/m/d" , $date);
+                break;
+            case "yyyy.mm.dd":
+                $date = DateTime::createFromFormat("Y.m.d" , $date);
+                break;
+            case "yyyy-mm-dd":
+                $date = DateTime::createFromFormat("Y-m-d" , $date);
+                break;
+            case "dd/mm/yyyy":
+                $date = DateTime::createFromFormat("d/m/Y" , $date);
+                break;
+            case "dd-mm-yyyy":
+                $date = DateTime::createFromFormat("d-m-Y" , $date);
+                break;
+            case "dd.mm.yyyy":
+                $date = DateTime::createFromFormat("d.m.Y" , $date);
+                break;
+        }
+        $date = $date->format('Y-m-d');
+		$date = strtotime($date);
+        return($date);
+    }
 ?>

@@ -70,6 +70,7 @@ Route::middleware('auth')->group(function () {
 	Route::post('/display_timetable', 'TimesheetController@display_timetable');
 	Route::get('/teacher_timesheets', 'TimesheetController@teacher_timesheets');
 	Route::post('/fetch_timesheet', 'TimesheetController@fetch_timesheet');
+	Route::post('/add_completion_time', 'TimesheetController@add_completion_time');
 
 	Route::post('/add_goals', 'AjaxController@add_goals');
 	Route::post('/update_goals', 'AjaxController@update_goals');

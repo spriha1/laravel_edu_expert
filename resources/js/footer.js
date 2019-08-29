@@ -65,7 +65,7 @@ $(document).ready(function() {
 			var user_id = $('#user_id').val();
 			var user_type = $('#user_type').val();
 
-			$.post('add_completion_time.php', {task_id: task_id, user_id: user_id, time: time, user_type: user_type, date: date, date_format: date_format})
+			$.post('/add_completion_time', {task_id: task_id, user_id: user_id, time: time, user_type: user_type, date: date, date_format: date_format})
 		})
 		$('.resume').click(function() {
 			var task_id = $(this).closest('tr').attr('task_id');

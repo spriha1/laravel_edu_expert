@@ -12,24 +12,7 @@ class TimesheetController extends Controller
     	if ($request->filled('user_id') && $request->filled('date')) {
     		$date_format = $request->input('date_format');
         	$date = $request->input('date');
-        	if ($date_format === "yyyy/mm/dd") {
-        		$date = Carbon::createFromFormat("Y/m/d" , $date)->timestamp;
-        	}
-        	else if ($date_format === "yyyy.mm.dd") {
-        		$date = Carbon::createFromFormat("Y.m.d" , $date)->timestamp;
-        	}
-        	else if ($date_format === "yyyy-mm-dd") {
-        		$date = Carbon::createFromFormat("Y-m-d" , $date)->timestamp;
-        	}
-        	else if ($date_format === "dd/mm/yyyy") {
-        		$date = Carbon::createFromFormat("d/m/Y" , $date)->timestamp;
-        	}
-        	else if ($date_format === "dd-mm-yyyy") {
-        		$date = Carbon::createFromFormat("d-m-Y" , $date)->timestamp;
-        	}
-        	else if ($date_format === "dd.mm.yyyy") {
-        		$date = Carbon::createFromFormat("d.m.Y" , $date)->timestamp;
-        	}
+        	$date = date_to_timestamp($date_format, $date);
 
         	$results = UserType::join('users', 'users.user_type_id', '=', 'user_types.id')->where('users.id', $request->input('user_id'))->select('user_type')->get();
         	foreach($results as $result)
@@ -58,24 +41,7 @@ class TimesheetController extends Controller
     	if ($request->filled('date') && $request->filled('user_id') && $request->filled('user_type')) {
     		$date_format = $request->input('date_format');
         	$date = $request->input('date');
-        	if ($date_format === "yyyy/mm/dd") {
-        		$date = Carbon::createFromFormat("Y/m/d" , $date)->timestamp;
-        	}
-        	else if ($date_format === "yyyy.mm.dd") {
-        		$date = Carbon::createFromFormat("Y.m.d" , $date)->timestamp;
-        	}
-        	else if ($date_format === "yyyy-mm-dd") {
-        		$date = Carbon::createFromFormat("Y-m-d" , $date)->timestamp;
-        	}
-        	else if ($date_format === "dd/mm/yyyy") {
-        		$date = Carbon::createFromFormat("d/m/Y" , $date)->timestamp;
-        	}
-        	else if ($date_format === "dd-mm-yyyy") {
-        		$date = Carbon::createFromFormat("d-m-Y" , $date)->timestamp;
-        	}
-        	else if ($date_format === "dd.mm.yyyy") {
-        		$date = Carbon::createFromFormat("d.m.Y" , $date)->timestamp;
-        	}
+        	$date = date_to_timestamp($date_format, $date);
 			$dow = date('w', $date);
 			$counter = 0;
 
@@ -112,24 +78,7 @@ class TimesheetController extends Controller
     	if ($request->filled('date') && $request->filled('user_id') && $request->filled('user_type')) {
     		$date_format = $request->input('date_format');
         	$date = $request->input('date');
-        	if ($date_format === "yyyy/mm/dd") {
-        		$date = Carbon::createFromFormat("Y/m/d" , $date)->timestamp;
-        	}
-        	else if ($date_format === "yyyy.mm.dd") {
-        		$date = Carbon::createFromFormat("Y.m.d" , $date)->timestamp;
-        	}
-        	else if ($date_format === "yyyy-mm-dd") {
-        		$date = Carbon::createFromFormat("Y-m-d" , $date)->timestamp;
-        	}
-        	else if ($date_format === "dd/mm/yyyy") {
-        		$date = Carbon::createFromFormat("d/m/Y" , $date)->timestamp;
-        	}
-        	else if ($date_format === "dd-mm-yyyy") {
-        		$date = Carbon::createFromFormat("d-m-Y" , $date)->timestamp;
-        	}
-        	else if ($date_format === "dd.mm.yyyy") {
-        		$date = Carbon::createFromFormat("d.m.Y" , $date)->timestamp;
-        	}
+        	$date = date_to_timestamp($date_format, $date);
         	$ts = $date;
 			// calculate the number of days since Monday
 			$dow = date('w', $ts);
@@ -224,6 +173,60 @@ class TimesheetController extends Controller
 
     public function fetch_timesheet(Request $request)
     {
+        if ($request->filled('from_id') && $request->filled('of_date') && $request->filled('user_type')) {
+            if ($request->input('user_type') === 'teacher') {
+                $result = TeacherTask::join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')->join('subjects', 'subjects.id', '=', 'tasks.subject_id')->where([
+                    ['teacher_id', $request->input('from_id')],
+                    ['start_date', '<=', $request->input('of_date')],
+                    ['end_date', '>=', $request->input('of_date')]
+                ])->select('name', 'class', 'total_time')->get();
+            }
+            else if ($request->input('user_type') === 'student') {
+                //student
+            }
+            return(json_encode($result));
+        }
+    }
 
+    public function add_completion_time(Request $request)
+    {
+        if ($request->filled('task_id') && $request->filled('user_id') && $request->filled('time') && $request->filled('user_type')) {
+            $date_format = $request->input('date_format');
+            $date = $request->input('date');
+            $date = date_to_timestamp($date_format, $date);
+            if ($request->input('user_type') === 'teacher') {
+                $results = TeacherTask::where([
+                    ['task_id', $request->input('task_id')],
+                    ['teacher_id', $request->input('user_id')]
+                ])->select()->get();
+                foreach($results as $result) 
+                {
+                    if ($result->on_date == 0 && $result->total_time == 0) {
+                        TeacherTask::where([
+                            ['task_id', $request->input('task_id')],
+                            ['teacher_id', $request->input('user_id')]
+                        ])->update(['total_time' => $request->input('time'), 'on_date' => $date]);
+                    }
+                    else if ($result->on_date == $date) {
+                        TeacherTask::where([
+                            ['task_id', $request->input('task_id')],
+                            ['teacher_id', $request->input('user_id')],
+                            ['on_date', $date]
+                        ])->update(['total_time' => $request->input('time')]);
+                    }
+                    else {
+                        TeacherTask::insert([
+                            'task_id' => $request->input('task_id'),
+                            'teacher_id' => $request->input('user_id'),
+                            'on_date' => $date,
+                            'total_time' => $request->input('time')
+                        ]);
+                    }
+                }
+            }
+            else if ($request->input('user_type') === 'student') {
+                //student
+            }
+        }
     }
 }

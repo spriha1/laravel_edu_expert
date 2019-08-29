@@ -57,7 +57,7 @@ class ClassController extends Controller
     public function fetch_class_details(Request $request)
     {
     	if ($request->filled('class')) {
-    		$result = User::join('class', 'users.id', '=', 'class.teacher_id')->join('subjects', 'class.subject_id' , '=', 'subjects.id')->where('class.class', $request->input('class')->select('users.id as userid', 'firstname', 'subjects.id as subjectid', 'class.class', 'name'))->get();
+    		$result = User::join('class', 'users.id', '=', 'class.teacher_id')->join('subjects', 'class.subject_id' , '=', 'subjects.id')->where('class.class', $request->input('class'))->select('users.id as userid', 'firstname', 'subjects.id as subjectid', 'class.class', 'name')->get();
     		return(json_encode($result));
     	}
     }
