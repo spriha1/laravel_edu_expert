@@ -59,11 +59,11 @@ class TimesheetController extends Controller
 			}
 			if ($counter === 0) {
 				if ($request->input('user_type') === 'teacher') {
-					$result = TeacherTask::join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')->join('subjects', 'tasks.subject_id', '=', 'subjects.id')->where([
-						['teacher_id', $request->input('user_id')],
-						['start_date', '<=', $date],
-						['end_date', '>=', $date]
-					])->select('task_id', 'class', 'name', 'total_time', 'on_date')->get();
+					$result = TeacherTask::join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
+                    ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                    ->where('teacher_id', $request->input('user_id'))
+                    ->whereRaw('DATE(FROM_UNIXTIME(start_date)) <= DATE(FROM_UNIXTIME('.$date.')) && DATE(FROM_UNIXTIME(end_date)) >= DATE(FROM_UNIXTIME('.$date.'))')
+					->select('task_id', 'class', 'name', 'total_time', 'on_date')->get();
 				}
 				else if ($request->input('user_type') === 'student') {
 
