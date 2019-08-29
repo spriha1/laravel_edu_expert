@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\{User, UserType, Subject, Clas, Task, TeacherTask};
+use App\{User, UserType, Subject, Clas, Task, TeacherTask, StudentTask};
 class ProjectController extends Controller
 {
 
@@ -311,9 +311,18 @@ class ProjectController extends Controller
                                 'task_id' => $task_id,
                                 'teacher_id' => $value['teacher_id']
                             ]);
-                            //student
-                            return("Successfully added");
                         }
+                        $result = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([
+                            ['user_type', 'Student'],
+                            ['class', $request->class]
+                        ])->select('users.id')->get();
+                        foreach ($result as $key => $value) {
+                            StudentTask::insert([
+                                'task_id' => $task_id,
+                                'student_id' => $value['id']
+                            ]);
+                        }
+                        return("Successfully added");
                     }
                 }
             }

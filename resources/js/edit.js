@@ -1,7 +1,7 @@
 $(document).ready(function() {
 	$("#registration").submit(function() {
 		event.preventDefault();
-		$.post('update_profile', $('#registration').serialize() , function(result) {
+		$.post('/update_profile', $('#registration').serialize() , function(result) {
 				var response = JSON.parse(result);
 				if (response.email == 1) {
 					$('#alert').text("Please verify it by clicking the activation link that has been send to your email.");
