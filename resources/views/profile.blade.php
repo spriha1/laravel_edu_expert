@@ -73,8 +73,8 @@
 					</div>
 					<div class="form-group">
 						<label for="address" class="col-sm-3 control-label">Address</label>
-						<div class="col-sm-9">
-							<textarea name="address" id="address" style="width: 100%" value="{{ Auth::user()->address }}"></textarea>
+						<div id="geocoder" class="col-sm-9">
+							<!-- <textarea name="address" id="address" style="width: 100%" value="{{ Auth::user()->address }}"></textarea> -->
 						</div>
 					</div>
 				</div>
@@ -88,9 +88,10 @@
 			</form>
 		</div>
 	</div>
-	<div class="col-md-6">
+	<!-- <div class="col-md-6">
 		<div id="googleMap" style="width:400px;height:400px;"></div>
-	</div>
+	</div> -->
+	<div class="col-md-6" id = "map" style = "height: 60%"></div>
 </div>
 @endsection
 

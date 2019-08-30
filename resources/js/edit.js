@@ -1,6 +1,6 @@
 $(document).ready(function() {
-	var input = document.getElementById('address');
-	var autocomplete = new google.maps.places.Autocomplete(input);
+	// var input = document.getElementById('address');
+	// var autocomplete = new google.maps.places.Autocomplete(input);
 
 	// function myMap() {
 	// 	var mapProp= {
@@ -10,10 +10,100 @@ $(document).ready(function() {
 	// 	var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
 	// }
 	
+	//  // Creating map options
+	// var mapOptions = {
+	// 	center: [17.385044, 78.486671],
+	// 	zoom: 11
+	// }
+
+	// // Creating a map object
+	// var map = new L.map('map', mapOptions);
+
+	// // Creating a Layer object
+	// var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+
+	// // Adding layer to the map
+	// map.addLayer(layer);
+
+	// // Creating a marker
+	// var marker = L.marker([17.385044, 78.486671]);
+
+	// // Adding marker to the map
+	// marker.addTo(map);
+
+	// var search = document.getElementById('address');
+	var lat, long;
+	mapboxgl.accessToken = 'pk.eyJ1Ijoic3ByaWhhMSIsImEiOiJjanp4dHk1ZnIwb2Q4M2NsYWJiZXFhajNzIn0.q_cDP5GyFAGrHm20NsVnbg';
+	var map = new mapboxgl.Map({
+		container: 'map', // Container ID
+		style: 'mapbox://styles/mapbox/streets-v11', // Map style to use
+		center: [85.8245, 20.2961], // Starting position [lng, lat]
+		zoom: 12, // Starting zoom level
+	});
+
+	var marker = new mapboxgl.Marker() // Initialize a new marker
+	.setLngLat([85.8245, 20.2961]) // Marker [lng, lat] coordinates
+	.addTo(map); // Add the marker to the map
+
+	var geocoder = new MapboxGeocoder({ // Initialize the geocoder
+		accessToken: mapboxgl.accessToken, // Set the access token
+		marker: {
+			color: 'orange'
+		},
+		mapboxgl: mapboxgl, // Set the mapbox-gl instance
+		//marker: false, // Do not use the default marker style
+		placeholder: 'Search for places', // Placeholder text for the search bar
+		//bbox: [85.0985, 20.9517, 85.0985, 20.9517], // Boundary for Berkeley
+		proximity: {
+			longitude: 85.8245,
+			latitude: 20.2961
+		} // Coordinates of UC Berkeley
+	});
+
+	// Add the geocoder to the map
+	map.addControl(geocoder);
+	document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+
+	// After the map style has loaded on the page,
+	// add a source layer and default styling for a single point
+	map.on('load', function() {
+
+		map.addSource('single-point', {
+			type: 'geojson',
+			data: {
+				type: 'FeatureCollection',
+				features: []
+			}
+		});
+
+		// map.addLayer({
+		// 	id: 'point',
+		// 	source: 'single-point',
+		// 	type: 'circle',
+		// 	paint: {
+		// 		'circle-radius': 10,
+		// 		'circle-color': '#448ee4'
+		// 	}
+		// });
+
+		// Listen for the `result` event from the Geocoder
+		// `result` event is triggered when a user makes a selection
+		// Add a marker at the result's coordinates
+		geocoder.on('result', function(ev) {
+			console.log(ev);
+			lat = ev.result.center[0];
+			long = ev.result.center[1];
+
+			map.getSource('single-point').setData(ev.result.geometry);
+		});
+
+	});
+
 
 	$("#registration").submit(function() {
 		event.preventDefault();
 		$.post('/update_profile', $('#registration').serialize() , function(result) {
+			console.log($('#registration').serialize());
 				var response = JSON.parse(result);
 				if (response.email == 1) {
 					$('#alert').text("Please verify it by clicking the activation link that has been send to your email.");
@@ -41,7 +131,6 @@ $(document).ready(function() {
 				}
 			}
 		)
-		
 	});
 
 	$('body').click(function() {
