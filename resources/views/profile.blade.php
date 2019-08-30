@@ -71,6 +71,12 @@
 							<input type="password" class="form-control" id="password" name="password">
 						</div>
 					</div>
+					<div class="form-group">
+						<label for="address" class="col-sm-3 control-label">Address</label>
+						<div class="col-sm-9">
+							<textarea name="address" id="address" style="width: 100%" value="{{ Auth::user()->address }}"></textarea>
+						</div>
+					</div>
 				</div>
 				<!-- /.box-body -->
 				<div class="box-footer">
@@ -81,6 +87,9 @@
 				<!-- /.box-footer -->
 			</form>
 		</div>
+	</div>
+	<div class="col-md-6">
+		<div id="googleMap" style="width:400px;height:400px;"></div>
 	</div>
 </div>
 @endsection
@@ -97,6 +106,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 <script id="footer" footer="profile_footer" src="{{ mix('/js/footer.js') }}"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api
+js?key=AIzaSyCaXkuX2184-oGDsE6Y1HxBjo0l1c6zRYA&libraries=places"></script>
 
 <script src="{{ mix('/js/edit.js') }}"></script>
 

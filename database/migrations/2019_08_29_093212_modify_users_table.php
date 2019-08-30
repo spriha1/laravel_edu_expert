@@ -14,7 +14,7 @@ class ModifyUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function($table) {
-           $table->dropColumn('login_status');
+           $table->text('address');
         });
     }
 
@@ -26,7 +26,7 @@ class ModifyUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function($table) {
-           $table->integer('login_status');
+            $table->dropColumn('address');
         });
     }
 }
