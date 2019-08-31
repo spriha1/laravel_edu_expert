@@ -1,37 +1,5 @@
 $(document).ready(function() {
-	// var input = document.getElementById('address');
-	// var autocomplete = new google.maps.places.Autocomplete(input);
-
-	// function myMap() {
-	// 	var mapProp= {
-	// 		center:new google.maps.LatLng(51.508742,-0.120850),
-	// 		zoom:5,
-	// 	};
-	// 	var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
-	// }
 	
-	//  // Creating map options
-	// var mapOptions = {
-	// 	center: [17.385044, 78.486671],
-	// 	zoom: 11
-	// }
-
-	// // Creating a map object
-	// var map = new L.map('map', mapOptions);
-
-	// // Creating a Layer object
-	// var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-
-	// // Adding layer to the map
-	// map.addLayer(layer);
-
-	// // Creating a marker
-	// var marker = L.marker([17.385044, 78.486671]);
-
-	// // Adding marker to the map
-	// marker.addTo(map);
-
-	// var search = document.getElementById('address');
 	var lat, long;
 	mapboxgl.accessToken = 'pk.eyJ1Ijoic3ByaWhhMSIsImEiOiJjanp4dHk1ZnIwb2Q4M2NsYWJiZXFhajNzIn0.q_cDP5GyFAGrHm20NsVnbg';
 	var map = new mapboxgl.Map({
@@ -75,17 +43,6 @@ $(document).ready(function() {
 				features: []
 			}
 		});
-
-		// map.addLayer({
-		// 	id: 'point',
-		// 	source: 'single-point',
-		// 	type: 'circle',
-		// 	paint: {
-		// 		'circle-radius': 10,
-		// 		'circle-color': '#448ee4'
-		// 	}
-		// });
-
 		// Listen for the `result` event from the Geocoder
 		// `result` event is triggered when a user makes a selection
 		// Add a marker at the result's coordinates

@@ -20,61 +20,34 @@
 	<section class="content">
 		<!-- Small boxes (Stat box) -->
 		<div class="row">
-			<div class="col-lg-3 col-xs-6">
+			<div class="col-lg-6 col-xs-6">
 				<!-- small box -->
 				<div class="small-box bg-aqua">
 					<div class="inner">
 						<h3>0</h3>
-						<p>Time Table</p>
+						<p>Daily Time Table</p>
 					</div>
 					<div class="icon">
 						<i class="ion ion-person"></i>
 					</div>
-					<a href="student_timetable.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+					<a href="/daily_student_timetable" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
 				</div>
 			</div>
 			<!-- ./col -->
-			<div class="col-lg-3 col-xs-6">
+			<div class="col-lg-6 col-xs-6">
 				<!-- small box -->
 				<div class="small-box bg-green">
 					<div class="inner">
 						<h3>0</h3>
-						<p>Attendance</p>
+						<p>Weekly Time Table</p>
 					</div>
 					<div class="icon">
 						<i class="ion ion-person"></i>
 					</div>
-					<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+					<a href="/weekly_student_timetable" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
 				</div>
 			</div>
 			<!-- ./col -->
-			<div class="col-lg-3 col-xs-6">
-				<!-- small box -->
-				<div class="small-box bg-yellow">
-					<div class="inner">
-						<h3>0</h3>
-						<p>Dues</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-person"></i>
-					</div>
-					<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-				</div>
-			</div>
-			<!-- ./col -->
-			<div class="col-lg-3 col-xs-6">
-				<!-- small box -->
-				<div class="small-box bg-red">
-					<div class="inner">
-						<h3>0</h3>
-						<p>Feedbacks</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-person"></i>
-					</div>
-					<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-				</div>
-			</div>
 			<!-- ./col -->
 		</div>
 		<!-- /.row -->

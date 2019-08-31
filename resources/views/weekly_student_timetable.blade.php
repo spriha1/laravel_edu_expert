@@ -15,20 +15,48 @@
 					<div class="box-header">
 						<!-- <input class="date" id="date" type="date"> -->
 						<input id="date" class="datepicker">
-						<button type="button" id="share" class="btn btn-success pull-right">Submit</button>
+						
 					</div>
+
 					<input type="hidden" name="date_format" id="date_format" value="{{ Auth::user()->date_format }}">
 					<div class="box-body">
 						<input type="hidden" id="user_id" value="{{ Auth::id() }}">
-						<input type="hidden" id="user_type" value="teacher">
+						<input type="hidden" id="user_type" value="student">
 
-						<table id="timetable" class="table table-bordered table-striped">
+						<table id="timetable" class="table table-bordered table-striped responsive">
 							<thead>
 								<tr>
-									<th width="25%">Subject</th>
-									<th width="25%">Class</th>
-									<th width="25%"></th>
-									<th width="25%"></th>
+									<th width="30%">
+										Subject/Teacher
+									</th>
+									<th width="10%">
+										<p>Monday</p>
+										<p id="0"></p>
+									</th>
+									<th width="10%">
+										<p>Tuesday</p>
+										<p id="1"></p>
+									</th>
+									<th width="10%">
+										<p>Wednesday</p>
+										<p id="2"></p>
+									</th>
+									<th width="10%">
+										<p>Thursday</p>
+										<p id="3"></p>
+									</th>
+									<th width="10%">
+										<p>Friday</p>
+										<p id="4"></p>
+									</th>
+									<th width="10%">
+										<p>Saturday</p>
+										<p id="5"></p>
+									</th>
+									<th width="10%">
+										<p>Sunday</p>
+										<p id="6"></p>
+									</th>
 								</tr>
 							</thead>
 							<tbody class="timetable">
@@ -37,14 +65,27 @@
 						</table>
 						<table style="display:none">
 						<tr class="editable" width="25%" task_id="" style="display:none;">
-							<td class="name" width="25%"></td>
-							<td class="class" width="25%"></td>
-							<td width="25%"><input class="timer" type="text" value=""></td>
-							<td>
-								<button class="btn btn-info start">Start</button>
-								<button class="btn btn-info stop" style="display:none" task_id="">Stop</button>
-								<button class="btn btn-info pause" style="display:none">Pause</button>
-								<button class="btn btn-info resume" style="display:none">Resume</button>
+							<td class="task"></td>
+							<td width="10%" dow="0" date="">
+								<input class="input" type="text" size="4" style="display:none;">
+							</td>
+							<td width="10%" dow="1" date="">
+								<input class="input" type="text" size="4" style="display:none;">
+							</td>
+							<td width="10%" dow="2" date="">
+								<input class="input" type="text" size="4" style="display:none;">
+							</td>
+							<td width="10%" dow="3" date="">
+								<input class="input" type="text" size="4" style="display:none;">
+							</td>
+							<td width="10%" dow="4" date="">
+								<input class="input" type="text" size="4" style="display:none;">
+							</td>
+							<td width="10%" dow="5" date="">
+								<input class="input" type="text" size="4" style="display:none;">
+							</td>
+							<td width="10%" dow="6" date="">
+								<input class="input" type="text" size="4" style="display:none;">
 							</td>
 						</tr>
 					</table>
@@ -71,6 +112,6 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script>
 	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script> -->
     <script id="footer" footer="profile_footer" src="{{ mix('/js/footer.js') }}"></script>
-	<script src="{{ mix('/js/daily_timetable.js') }}"></script>
+	<script src="{{ mix('/js/timetable.js') }}"></script>
 
 @endsection

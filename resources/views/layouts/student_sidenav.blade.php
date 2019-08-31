@@ -10,12 +10,12 @@
 	</a>
 </li>
 <li>
-	<a href="daily_student_timetable.php">
+	<a href="/daily_student_timetable">
 		<i class="fa fa-th"></i> <span>Daily Time Table</span>
 	</a>
 </li>
 <li>
-	<a href="weekly_student_timetable.php">
+	<a href="/weekly_student_timetable">
 		<i class="fa fa-th"></i> <span>Weekly Time Table</span>
 	</a>
 </li>

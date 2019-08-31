@@ -3,7 +3,7 @@
 @extends('layouts.sidenav')
 
 @section('sidenav_content')
-@include('layouts.teacher_sidenav')
+@include('layouts.student_sidenav')
 @endsection
 
 @section('content')
@@ -20,13 +20,13 @@
 					<input type="hidden" name="date_format" id="date_format" value="{{ Auth::user()->date_format }}">
 					<div class="box-body">
 						<input type="hidden" id="user_id" value="{{ Auth::id() }}">
-						<input type="hidden" id="user_type" value="teacher">
+						<input type="hidden" id="user_type" value="student">
 
 						<table id="timetable" class="table table-bordered table-striped">
 							<thead>
 								<tr>
 									<th width="25%">Subject</th>
-									<th width="25%">Class</th>
+									<th width="25%">Teacher</th>
 									<th width="25%"></th>
 									<th width="25%"></th>
 								</tr>
@@ -38,7 +38,7 @@
 						<table style="display:none">
 						<tr class="editable" width="25%" task_id="" style="display:none;">
 							<td class="name" width="25%"></td>
-							<td class="class" width="25%"></td>
+							<td class="teacher" width="25%"></td>
 							<td width="25%"><input class="timer" type="text" value=""></td>
 							<td>
 								<button class="btn btn-info start">Start</button>
