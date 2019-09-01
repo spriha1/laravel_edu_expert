@@ -19,7 +19,7 @@ $(document).ready(function() {
 		var from_id = $(this).attr('from_id');
 		var of_date = $(this).attr('of_date');
 		var user_type = $(this).attr('user_type');
-		$.post('/fetch_timesheet', {from_id: from_id, of_date: of_date, timesheet_check: 1, user_type: user_type}, function(result) {
+		$.post('/fetch_timesheet', {from_id: from_id, of_date: of_date, user_type: user_type}, function(result) {
 			var response = JSON.parse(result);
 			var length = response.length;
 			$('#view_timesheet').html("");

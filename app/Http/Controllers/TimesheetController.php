@@ -236,6 +236,14 @@ class TimesheetController extends Controller
     	]);
     }
 
+    public function student_timesheets()
+    {
+        $results = SharedTimesheet::join('users', 'shared_timesheets.from_id', '=', 'users.id')->where('to_id', Auth::id())->select('from_id', 'of_date', 'firstname', 'username')->get();
+        return view('student_timesheets', [
+            'results' => $results
+        ]);
+    }
+
     public function fetch_timesheet(Request $request)
     {
         if ($request->filled('from_id') && $request->filled('of_date') && $request->filled('user_type')) {
@@ -247,7 +255,11 @@ class TimesheetController extends Controller
                 ])->select('name', 'class', 'total_time')->get();
             }
             else if ($request->input('user_type') === 'student') {
-                //student
+                $result = StudentTask::join('tasks', 'tasks.id', '=', 'student_tasks.task_id')->join('subjects', 'subjects.id', '=', 'tasks.subject_id')->where([
+                    ['student_id', $request->input('from_id')],
+                    ['start_date', '<=', $request->input('of_date')],
+                    ['end_date', '>=', $request->input('of_date')]
+                ])->select('name', 'total_time')->get();
             }
             return(json_encode($result));
         }

@@ -116,7 +116,6 @@ $(document).ready(function () {
     $.post('/fetch_timesheet', {
       from_id: from_id,
       of_date: of_date,
-      timesheet_check: 1,
       user_type: user_type
     }, function (result) {
       var response = JSON.parse(result);
