@@ -96,20 +96,38 @@
 $(document).ready(function () {
   var lat, _long;
 
+  lat = $('#lat').val();
+  _long = $('#long').val();
+
+  if (lat == 0 && _long == 0) {
+    lat = 20.2961;
+    _long = 85.8245;
+  }
+
   mapboxgl.accessToken = 'pk.eyJ1Ijoic3ByaWhhMSIsImEiOiJjanp4dHk1ZnIwb2Q4M2NsYWJiZXFhajNzIn0.q_cDP5GyFAGrHm20NsVnbg';
   var map = new mapboxgl.Map({
     container: 'map',
     // Container ID
     style: 'mapbox://styles/mapbox/streets-v11',
     // Map style to use
-    center: [85.8245, 20.2961],
-    // Starting position [lng, lat]
+    //center: [85.8245, 20.2961], // Starting position [lng, lat]
+    center: [_long, lat],
     zoom: 12 // Starting zoom level
 
   });
   var marker = new mapboxgl.Marker() // Initialize a new marker
-  .setLngLat([85.8245, 20.2961]) // Marker [lng, lat] coordinates
+  .setLngLat([_long, lat]) // Marker [lng, lat] coordinates
   .addTo(map); // Add the marker to the map
+  // var map = new mapboxgl.Map({
+  // 	container: 'map', // Container ID
+  // 	style: 'mapbox://styles/mapbox/streets-v11', // Map style to use
+  // 	//center: [85.8245, 20.2961], // Starting position [lng, lat]
+  // 	center: [85.8245, 20.2961],
+  // 	zoom: 12, // Starting zoom level
+  // });
+  // var marker = new mapboxgl.Marker() // Initialize a new marker
+  // .setLngLat([85.8245, 20.2961]) // Marker [lng, lat] coordinates
+  // .addTo(map); // Add the marker to the map
 
   var geocoder = new MapboxGeocoder({
     // Initialize the geocoder
@@ -125,13 +143,13 @@ $(document).ready(function () {
     // Placeholder text for the search bar
     //bbox: [85.0985, 20.9517, 85.0985, 20.9517], // Boundary for Berkeley
     proximity: {
-      longitude: 85.8245,
-      latitude: 20.2961 // Coordinates of UC Berkeley
+      longitude: _long,
+      latitude: lat // Coordinates of UC Berkeley
 
     }
   }); // Add the geocoder to the map
+  // map.addControl(geocoder);
 
-  map.addControl(geocoder);
   document.getElementById('geocoder').appendChild(geocoder.onAdd(map)); // After the map style has loaded on the page,
   // add a source layer and default styling for a single point
 
@@ -150,6 +168,8 @@ $(document).ready(function () {
       console.log(ev);
       lat = ev.result.center[0];
       _long = ev.result.center[1];
+      $('#lat').val(lat);
+      $('#long').val(_long);
       map.getSource('single-point').setData(ev.result.geometry);
     });
   });

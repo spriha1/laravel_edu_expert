@@ -77,6 +77,8 @@
 							<!-- <textarea name="address" id="address" style="width: 100%" value="{{ Auth::user()->address }}"></textarea> -->
 						</div>
 					</div>
+					<input type="hidden" name="lat" id="lat" value="{{ Auth::user()->latitude }}">
+					<input type="hidden" name="long" id="long" value="{{ Auth::user()->longitude }}">
 				</div>
 				<!-- /.box-body -->
 				<div class="box-footer">
