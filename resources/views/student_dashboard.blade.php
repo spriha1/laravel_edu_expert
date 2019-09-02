@@ -1,7 +1,5 @@
 @extends('layouts.master')
 
-@extends('layouts.sidenav')
-
 @section('sidenav_content')
 @include('layouts.student_sidenav')
 @endsection

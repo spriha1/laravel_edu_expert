@@ -1,9 +1,11 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
 <script src="{{ asset('js/dist/jquery.min.js') }}"></script>
 <script src="{{ asset('js/dist/bootstrap.min.js') }}"></script>
 <script src="{{ asset('js/dist/icheck.min.js') }}"></script>
 <script src="{{ asset('js/dist/jquery-ui.min.js') }}"></script>
 <script src="{{ asset('js/dist/adminlte.min.js') }}"></script>
-<script src="{{ asset('js/dist/dashboard.min.js') }}"></script>
+<!-- <script src="{{ asset('js/dist/dashboard.min.js') }}"></script> -->
 <script src="{{ asset('js/dist/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/dist/dataTables.bootstrap.min.js') }}"></script>
 <script src='https://api.mapbox.com/mapbox-gl-js/v1.2.0/mapbox-gl.js'></script>

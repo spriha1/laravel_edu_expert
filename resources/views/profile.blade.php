@@ -1,7 +1,5 @@
 @extends('layouts.master')
 
-@extends('layouts.sidenav')
-
 @section('sidenav_content')
 @if ($usertype === 'admin')
 	@include('layouts.admin_sidenav')
@@ -47,6 +45,16 @@
 							<input type="email" class="form-control" name="email" id="email" readonly value="{{ Auth::user()->email }}">
 						</div>
 					</div>
+
+					@if ($usertype === 'teacher')
+					<div class="form-group">
+						<label for="rate" class="col-sm-3 control-label">Rate per hour</label>
+						<div class="col-sm-9">
+							<input type="number" class="form-control" name="rate" id="rate" readonly value="">
+						</div>
+					</div>
+					@endif
+
 					<div class="form-group">
 						<label for="date_format" class="col-sm-3 control-label">Date Format</label>
 						<div class="col-sm-9">
