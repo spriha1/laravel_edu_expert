@@ -155,6 +155,10 @@ class AjaxController extends Controller
         	User::where('id', Auth::user()->id)->update(['longitude' => $request->input('long')]);
         	$msg->success = 1;
         }
+        if($request->filled('address')) {
+        	User::where('id', Auth::user()->id)->update(['address' => $request->input('address')]);
+        	$msg->success = 1;
+        }
         if($request->filled('email')) {
         	$result = User::where('email', $request->input('email'))->select('id')->get();
         	if ($result->count()) {

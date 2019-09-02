@@ -79,6 +79,7 @@
 					</div>
 					<input type="hidden" name="lat" id="lat" value="{{ Auth::user()->latitude }}">
 					<input type="hidden" name="long" id="long" value="{{ Auth::user()->longitude }}">
+					<input type="hidden" name="address" id="address" value="{{ Auth::user()->address }}">
 				</div>
 				<!-- /.box-body -->
 				<div class="box-footer">
@@ -100,17 +101,8 @@
 
 @section('footer')
 @include('layouts.footer')
-<!-- <script src="{{ asset('js/dist/jquery.min.js') }}"></script>
-<script src="{{ asset('js/dist/bootstrap.min.js') }}"></script>
-<script src="{{ asset('js/dist/jquery-ui.min.js') }}"></script>
-<script src="{{ asset('js/dist/adminlte.min.js') }}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/timer.jquery/0.7.0/timer.jquery.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script> -->
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script> -->
+
 <script id="footer" footer="profile_footer" src="{{ mix('/js/footer.js') }}"></script>
-<!-- <script type="text/javascript" src="https://maps.googleapis.com/maps/api
-js?key=AIzaSyCaXkuX2184-oGDsE6Y1HxBjo0l1c6zRYA&libraries=places"></script> -->
 
 <script src="{{ mix('/js/edit.js') }}"></script>
 

@@ -98,6 +98,7 @@ $(document).ready(function () {
 
   lat = $('#lat').val();
   _long = $('#long').val();
+  address = $('#address').val();
 
   if (lat == 0 && _long == 0) {
     lat = 20.2961;
@@ -150,26 +151,30 @@ $(document).ready(function () {
   }); // Add the geocoder to the map
   // map.addControl(geocoder);
 
-  document.getElementById('geocoder').appendChild(geocoder.onAdd(map)); // After the map style has loaded on the page,
+  $('.mapboxgl-ctrl-geocoder--input').appendTo('#geo');
+  document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+  $('.mapboxgl-ctrl-geocoder--input').val(address); // After the map style has loaded on the page,
   // add a source layer and default styling for a single point
 
   map.on('load', function () {
-    map.addSource('single-point', {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: []
-      }
-    }); // Listen for the `result` event from the Geocoder
+    // map.addSource('single-point', {
+    // 	type: 'geojson',
+    // 	data: {
+    // 		type: 'FeatureCollection',
+    // 		features: []
+    // 	}
+    // });
+    // Listen for the `result` event from the Geocoder
     // `result` event is triggered when a user makes a selection
     // Add a marker at the result's coordinates
-
     geocoder.on('result', function (ev) {
       console.log(ev);
-      lat = ev.result.center[0];
-      _long = ev.result.center[1];
+      _long = ev.result.center[0];
+      lat = ev.result.center[1];
+      address = ev.result.place_name;
       $('#lat').val(lat);
       $('#long').val(_long);
+      $('#address').val(address);
       map.getSource('single-point').setData(ev.result.geometry);
     });
   });
