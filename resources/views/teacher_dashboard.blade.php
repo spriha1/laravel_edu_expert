@@ -139,16 +139,16 @@
 @endsection
 
 @section('footer')
-
-    <script src="{{ asset('js/dist/jquery.min.js') }}"></script>
+	@include('layouts.footer')
+    <!-- <script src="{{ asset('js/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('js/dist/bootstrap.min.js') }}"></script>
     <script src="{{ asset('js/dist/icheck.min.js') }}"></script>
     <script src="{{ asset('js/dist/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('js/dist/adminlte.min.js') }}"></script>
-    <script src="{{ asset('js/dist/dashboard.min.js') }}"></script>
+    <script src="{{ asset('js/dist/dashboard.min.js') }}"></script> -->
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script>
+  <!--   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script> -->
     <script id="footer" footer="dashboard_footer" src="{{ mix('/js/footer.js') }}"></script>
 	<script src="{{ mix('/js/goals.js') }}"></script>
 

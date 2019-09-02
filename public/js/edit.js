@@ -176,7 +176,6 @@ $(document).ready(function () {
   $("#registration").submit(function () {
     event.preventDefault();
     $.post('/update_profile', $('#registration').serialize(), function (result) {
-      console.log($('#registration').serialize());
       var response = JSON.parse(result);
 
       if (response.email == 1) {

@@ -76,10 +76,11 @@
 @endsection
 
 @section('footer')
-    <script src="{{ asset('js/dist/jquery.min.js') }}"></script>
+    @include('layouts.footer')
+    <!-- <script src="{{ asset('js/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('js/dist/bootstrap.min.js') }}"></script>
     <script src="{{ asset('js/dist/icheck.min.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script> -->
     <script id="footer" footer="footer" src="{{ mix('/js/footer.js') }}"></script>
     <script src="{{ mix('/js/validate.js') }}"></script>
 @endsection

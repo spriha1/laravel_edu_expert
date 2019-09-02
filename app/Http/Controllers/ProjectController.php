@@ -242,6 +242,11 @@ class ProjectController extends Controller
         }
     }
 
+    public function send_password_mail()
+    {
+        
+    }
+
     public function task_management()
     {
         $classes = Clas::select('class')->distinct()->get();

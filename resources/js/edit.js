@@ -81,34 +81,32 @@ $(document).ready(function() {
 	$("#registration").submit(function() {
 		event.preventDefault();
 		$.post('/update_profile', $('#registration').serialize() , function(result) {
-			console.log($('#registration').serialize());
-				var response = JSON.parse(result);
-				if (response.email == 1) {
-					$('#alert').text("Please verify it by clicking the activation link that has been send to your email.");
-					$("#alert").css("display" , "block");
-				}
-				else if (response.success == 1) {
-					$('#alert').text("Updated successfully");
-					$("#alert").css("display" , "block");
-				}
-				else if (response.email == 0) {
-					$('#alert').text("Invalid email format");
-					$("#alert").css("display" , "block");
-				}
-				else if (response.username == 0) {
-					$('#alert').text("Invalid username format");
-					$("#alert").css("display" , "block");
-				}
-				else if (Object.keys(response).length === 0 && response.constructor === Object) {
-					$('#alert').text("You need to fill in atleast one field to update");
-					$("#alert").css("display" , "block");
-				}
-				else {
-					$('#alert').text("Error");
-					$("#alert").css("display" , "block");
-				}
+			var response = JSON.parse(result);
+			if (response.email == 1) {
+				$('#alert').text("Please verify it by clicking the activation link that has been send to your email.");
+				$("#alert").css("display" , "block");
 			}
-		)
+			else if (response.success == 1) {
+				$('#alert').text("Updated successfully");
+				$("#alert").css("display" , "block");
+			}
+			else if (response.email == 0) {
+				$('#alert').text("Invalid email format");
+				$("#alert").css("display" , "block");
+			}
+			else if (response.username == 0) {
+				$('#alert').text("Invalid username format");
+				$("#alert").css("display" , "block");
+			}
+			else if (Object.keys(response).length === 0 && response.constructor === Object) {
+				$('#alert').text("You need to fill in atleast one field to update");
+				$("#alert").css("display" , "block");
+			}
+			else {
+				$('#alert').text("Error");
+				$("#alert").css("display" , "block");
+			}
+		})
 	});
 
 	$('body').click(function() {

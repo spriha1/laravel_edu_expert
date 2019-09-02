@@ -31,6 +31,7 @@ Route::post('/login', 'ProjectController@login');
 Route::get('/logout', 'ProjectController@logout');
 Route::get('/verify_mail/{code}', 'ProjectController@verify_mail');
 Route::get('/update_mail/{hash}/{email}', 'ProjectController@update_mail');
+Route::post('/send_password_mail', 'ProjectController@send_password_mail');
 
 Route::middleware('auth')->group(function () {
     Route::get('/admin_dashboard', 'ProjectController@render_admin_dashboard');
