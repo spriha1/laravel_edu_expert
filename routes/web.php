@@ -21,7 +21,9 @@ Route::post('/login', 'ProjectController@login');
 Route::get('/logout', 'ProjectController@logout');
 Route::get('/verify_mail/{code}', 'ProjectController@verify_mail');
 Route::get('/update_mail/{hash}/{email}', 'ProjectController@update_mail');
-Route::post('/send_password_mail', 'ProjectController@send_password_mail');
+Route::get('/reset_password_form/{token}/{expiry_time}', 'ProjectController@reset_password_form');
+Route::post('/reset_password', 'ProjectController@reset_password');
+Route::post('/forgot_password', 'ProjectController@send_password_mail');
 
 Route::middleware('auth')->group(function () {
 	Route::middleware('CheckAdmin')->group(function() {

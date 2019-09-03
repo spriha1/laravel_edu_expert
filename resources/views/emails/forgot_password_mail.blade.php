@@ -6,9 +6,10 @@
 </head>
 <body>
 	<pre>
-		Please click this link to reset your password:
+		Please click this link to reset your passsword:
+					
+		http://eduexpert.local.com/reset_password_form/{{ $token }}/{{ $expiry_time }}
 		
-		http://eduexpert.local.com/update_mail/{{$hash}}/{{$email}}
 	</pre>
 </body>
 </html>

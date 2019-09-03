@@ -11,7 +11,7 @@
             <div class="login-box-body">
                 <p class="login-box-msg">Reset Password</p>
 
-                <form action="/send_password_mail" method="POST" id="login" name="login">
+                <form action="/forgot_password" method="POST" id="login" name="login">
                     @csrf
                     <div id="alert" class='alert alert-danger' style="display: none;">
                     </div>

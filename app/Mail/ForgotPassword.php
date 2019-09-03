@@ -16,9 +16,10 @@ class ForgotPassword extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($token)
     {
-        //
+        $this->token = base64_encode($token);
+        $this->expiry_time = base64_encode((time()+600));
     }
 
     /**
@@ -28,6 +29,9 @@ class ForgotPassword extends Mailable
      */
     public function build()
     {
-        return $this->view('view.name');
+        return $this->view('emails.forgot_password_mail')->with([
+                        'token' => $this->token,
+                        'expiry_time' => $this->expiry_time,
+                    ]);
     }
 }

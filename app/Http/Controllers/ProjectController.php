@@ -5,7 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 use App\{User, UserType, Subject, Clas, Task, TeacherTask, StudentTask, TeacherRate, SharedTimesheet};
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UpdateMail;
+use App\Mail\ForgotPassword;
+
 class ProjectController extends Controller
 {
 
@@ -270,9 +275,54 @@ class ProjectController extends Controller
         }
     }
 
-    public function send_password_mail()
+    public function send_password_mail(Request $request)
     {
-        
+        if($request->filled('username')) {
+            $result = User::where('username', $request->input('username'))->select('id')->get();
+            if($result->count()) {
+                $unique = uniqid();
+                User::where('username', $request->input('username'))->update(['token' => $unique]);
+                $results = User::where('username', $request->input('username'))->select('email', 'token')->get();
+                foreach($results as $result)
+                {
+                    Mail::to($result->email)->send(new ForgotPassword($result->token));
+                }
+            }
+        }
+    }
+
+    public function reset_password_form($token, $expiry_time)
+    {
+        $token = base64_decode($token);
+        session(['token' => $token]);
+        $expiry_time = base64_decode($expiry_time);
+        $current_time = time();
+        if ($current_time > $expiry_time) {
+            User::where('token', $token)->update(['token' => NULL]);
+            echo "The link has expired";
+        }
+        else {
+            return view('reset_password_form');
+        }
+    }
+
+    public function reset_password(Request $request)
+    {
+        if($request->filled('password')) {
+            $result = User::where([
+                ['token', session('token')],
+                ['user_reg_status', 1]
+            ])->select('username')->get();
+
+            if($result->count()) {
+                $password = Hash::make($request->input('password'));
+                User::where('token', session('token'))->update(['password' => $password]);
+                echo '<div>Your password has been reset, you can now <a href="/"> login</a></div>';
+            }
+            else {
+                echo '<div>Your request has not been accepted by the admin yet</div>';
+            }
+        }
     }
 
     public function task_management()
