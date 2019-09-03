@@ -169,8 +169,8 @@ class TimesheetController extends Controller
 							['teacher_id', $request->input('user_id')],
 							['teacher_tasks.task_id', '=', $task]
 						])
-                        ->whereRaw('DATE(FROM_UNIXTIME(start_date)) <= DATE(FROM_UNIXTIME('.$date.')) && DATE(FROM_UNIXTIME(end_date)) >= DATE(FROM_UNIXTIME('.$date.'))')
-                        ->select('task_id', 'class', 'name')->get();
+                        ->whereRaw('DATE(FROM_UNIXTIME(on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
+                        ->select('task_id', 'class', 'name', 'on_date', 'total_time')->get();
 						array_push($res, $result2);
 					}
 					$results[$task] = $res;

@@ -139,7 +139,8 @@ function load_display_data(date, user_id, user_type, date_format) {
     user_type: user_type,
     date_format: date_format
   }, function (result) {
-    var response = JSON.parse(result);
+    var response = JSON.parse(result); //console.log(result)
+
     var len = response['original_dates'].length;
 
     for (var i = 0; i < len; i++) {
@@ -197,15 +198,16 @@ function load_display_data(date, user_id, user_type, date_format) {
 
         for (var j = 0; j < len; j++) {
           if (response[task_id][j].length != 0) {
-            console.log(response[task_id][j][0].total_time);
             var seconds = response[task_id][j][0].total_time;
 
-            if (seconds > 0) {
+            if (seconds != 0) {
               var hours = Math.floor(seconds / 3600);
               seconds = seconds - hours * 3600;
               var minutes = Math.floor(seconds / 60);
               seconds = seconds - minutes * 60;
               var time = hours + ':' + minutes + ':' + seconds;
+            } else {
+              var time = '0:0:0';
             }
 
             var task_id = response[task_id][j][0].task_id;

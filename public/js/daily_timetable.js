@@ -183,7 +183,7 @@ function load_display_data(date, user_id, user_type, date_format) {
           _on_date = _on_date.getDate() + '/' + (_on_date.getMonth() + 1) + '/' + _on_date.getFullYear();
 
           if (_date === _on_date) {
-            $("tbody tr[task_id=" + task_id + "] .timer").val(time);
+            $("tbody tr[task_id=" + task_id + "] .timer").text(time);
           }
         }
 
