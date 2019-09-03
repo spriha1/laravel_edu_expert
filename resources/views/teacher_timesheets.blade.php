@@ -22,7 +22,7 @@
 								<th></th>
 							</tr>
 						</thead>
-						@foreach ($results as $result) {
+						@foreach ($results as $result)
 					     	<tr>
 								<td>{{ $result->firstname }}</td>
 								<td>{{ $result->username }}</td>

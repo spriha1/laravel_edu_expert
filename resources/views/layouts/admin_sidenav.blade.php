@@ -5,7 +5,7 @@
 </li>
 
 <li>
-	<a href="/profile/admin">
+	<a href="/profile">
 		<i class="fa fa-address-card"></i> <span>My Profile</span>
 	</a>
 </li>

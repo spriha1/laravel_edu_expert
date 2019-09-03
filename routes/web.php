@@ -22,41 +22,62 @@ Route::get('/update_mail/{hash}/{email}', 'ProjectController@update_mail');
 Route::post('/send_password_mail', 'ProjectController@send_password_mail');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/admin_dashboard', 'ProjectController@render_admin_dashboard');
-	Route::get('/teacher_dashboard', 'ProjectController@render_teacher_dashboard');
-	Route::get('/student_dashboard', 'ProjectController@render_student_dashboard');
+	Route::middleware('CheckAdmin')->group(function() {
+		Route::get('/admin_dashboard', 'ProjectController@render_admin_dashboard');
 
-	Route::get('/profile/{usertype}', 'ProjectController@profile');
+		Route::view('/system_management', 'system_management');
+		Route::view('/manage_subjects', 'manage_subjects');
+		Route::post('/add_subject', 'SubjectsController@add_subject');
+		Route::post('/remove_subject', 'SubjectsController@remove_subject');
+		Route::get('/display_subjects', 'SubjectsController@display_subjects');
+
+		Route::view('/holiday', 'holiday');
+		Route::post('/add_holiday', 'AjaxController@add_holiday');
+
+		Route::get('/pending_requests', 'ProjectController@pending_requests');
+		Route::post('/pending_requests', 'ProjectController@post_pending_requests');
+
+		Route::get('/regd_users', 'ProjectController@regd_users');
+		Route::post('/regd_users', 'ProjectController@post_regd_users');
+
+		Route::get('/manage_class', 'ClassController@render_view');
+		Route::get('/display_class', 'ClassController@display_class');
+		Route::post('/fetch_teachers', 'ClassController@fetch_teachers');
+		Route::post('/add_class', 'ClassController@add_class');
+		Route::post('/remove_class', 'ClassController@remove_class');
+		Route::post('/fetch_class_details', 'ClassController@fetch_class_details');
+		Route::post('/remove_class_subject', 'ClassController@remove_class_subject');
+		Route::post('/add_class_subject', 'ClassController@add_class_subject');
+		Route::post('/update_teacher', 'ClassController@update_teacher');
+
+		Route::get('/task_management', 'ProjectController@task_management');
+		Route::post('/add_timetable', 'ProjectController@add_timetable');
+
+		Route::get('/add_users/{id}', 'ProjectController@add_users');
+		Route::get('/remove_users/{id}', 'ProjectController@remove_users');
+		Route::get('/block_users/{id}', 'ProjectController@block_users');
+		Route::get('/unblock_users/{id}', 'ProjectController@unblock_users');
+
+	});
+
+	Route::middleware('CheckTeacher')->group(function() {
+		Route::get('/teacher_dashboard', 'ProjectController@render_teacher_dashboard');
+
+		Route::view('/daily_teacher_timetable', 'daily_teacher_timetable');
+		Route::view('/weekly_teacher_timetable', 'weekly_teacher_timetable');
+	});
+
+	Route::middleware('CheckStudent')->group(function() {
+		Route::get('/student_dashboard', 'ProjectController@render_student_dashboard');
+
+		Route::view('/daily_student_timetable', 'daily_student_timetable');
+		Route::view('/weekly_student_timetable', 'weekly_student_timetable');
+	});
+
+	Route::get('/profile', 'ProjectController@profile');
 	Route::post('/update_profile', 'AjaxController@update_profile');
 
-	Route::view('/system_management', 'system_management');
-	Route::view('/manage_subjects', 'manage_subjects');
-	Route::post('/add_subject', 'SubjectsController@add_subject');
-	Route::post('/remove_subject', 'SubjectsController@remove_subject');
-	Route::get('/display_subjects', 'SubjectsController@display_subjects');
-
-	Route::view('/holiday', 'holiday');
-	Route::post('/add_holiday', 'AjaxController@add_holiday');
-
-	Route::get('/manage_class', 'ClassController@render_view');
-	Route::get('/display_class', 'ClassController@display_class');
-	Route::post('/fetch_teachers', 'ClassController@fetch_teachers');
-	Route::post('/add_class', 'ClassController@add_class');
-	Route::post('/remove_class', 'ClassController@remove_class');
-	Route::post('/fetch_class_details', 'ClassController@fetch_class_details');
-	Route::post('/remove_class_subject', 'ClassController@remove_class_subject');
-	Route::post('/add_class_subject', 'ClassController@add_class_subject');
-	Route::post('/update_teacher', 'ClassController@update_teacher');
-
-	Route::get('/task_management', 'ProjectController@task_management');
-	Route::post('/add_timetable', 'ProjectController@add_timetable');
 	Route::post('/fetch_subjects', 'ProjectController@fetch_subjects');
-
-	Route::view('/daily_teacher_timetable', 'daily_teacher_timetable');
-	Route::view('/daily_student_timetable', 'daily_student_timetable');
-
-	Route::view('/weekly_teacher_timetable', 'weekly_teacher_timetable');
-	Route::view('/weekly_student_timetable', 'weekly_student_timetable');
 
 	Route::post('/add_shared_timesheets', 'TimesheetController@add_shared_timesheets');
 	Route::post('/display_daily_timetable', 'TimesheetController@display_daily_timetable');
@@ -72,16 +93,8 @@ Route::middleware('auth')->group(function () {
 	Route::post('/display_goals', 'AjaxController@display_goals');
 	Route::post('/remove_goals', 'AjaxController@remove_goals');
 
-	Route::get('/pending_requests', 'ProjectController@pending_requests');
-	Route::post('/pending_requests', 'ProjectController@post_pending_requests');
-
-	Route::get('/regd_users', 'ProjectController@regd_users');
-	Route::post('/regd_users', 'ProjectController@post_regd_users');
-
-	Route::get('/add_users/{id}', 'ProjectController@add_users');
-	Route::get('/remove_users/{id}', 'ProjectController@remove_users');
-	Route::get('/block_users/{id}', 'ProjectController@block_users');
-	Route::get('/unblock_users/{id}', 'ProjectController@unblock_users');
+	
+	
 });
 // Auth::routes(['verify' => true]);
 

@@ -35,7 +35,7 @@ $(document).ready(function() {
 
 function load_display_data(date,user_id,user_type,date_format) {
 	$.post('/display_daily_timetable', {date: date, user_id: user_id, user_type: user_type, date_format: date_format}, function(result) {
-		console.log(result);
+		// console.log(result);
 		var response = JSON.parse(result);
 		if (date_format === "yyyy/mm/dd") {
 			date = date.split('/');
@@ -115,8 +115,8 @@ function load_display_data(date,user_id,user_type,date_format) {
 					var _on_date = response[i].on_date;
 					_on_date = new Date(_on_date * 1000);
 					_on_date = _on_date.getDate() + '/' + (_on_date.getMonth()+1) + '/' + _on_date.getFullYear();
-					console.log(_date)
-					console.log(_on_date)
+					// console.log(_date)
+					// console.log(_on_date)
 					if (_date == _on_date) {
 						$("tbody tr[task_id=" + task_id + "] .timer").val(time);
 					}

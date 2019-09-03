@@ -1,11 +1,11 @@
 @extends('layouts.master')
 
 @section('sidenav_content')
-@if ($usertype === 'admin')
+@if ($usertype === 'Admin')
 	@include('layouts.admin_sidenav')
-@elseif ($usertype === 'teacher')
+@elseif ($usertype === 'Teacher')
 	@include('layouts.teacher_sidenav')
-@elseif ($usertype === 'student')
+@elseif ($usertype === 'Student')
 	@include('layouts.student_sidenav')
 @endif
 @endsection
@@ -46,7 +46,7 @@
 						</div>
 					</div>
 
-					@if ($usertype === 'teacher')
+					@if ($usertype === 'Teacher')
 					@foreach ($rates as $rate)
 					<div class="form-group">
 						<label for="rate" class="col-sm-3 control-label">Rate per hour</label>
@@ -104,7 +104,7 @@
 	<!-- <div class="col-md-6">
 		<div id="googleMap" style="width:400px;height:400px;"></div>
 	</div> -->
-	<div class="col-md-6" id ="map" style ="height: 60%"></div>
+	<div class="col-md-6" id="map" style="height:60vh"></div>
 </div>
 @endsection
 

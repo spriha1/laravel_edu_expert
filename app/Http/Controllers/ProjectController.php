@@ -58,9 +58,7 @@ class ProjectController extends Controller
 
     public function forgot_password()
     {
-        if ($this->check_login_status()) {
-            return view('forgot_password');
-        }
+        return view('forgot_password');
     }
 
     public function login(Request $request)
@@ -193,18 +191,25 @@ class ProjectController extends Controller
         return view('student_dashboard');
     }
 
-    public function profile($usertype)
+    public function profile()
     {
-        if ($usertype === 'teacher') {
-            $rates = TeacherRate::where('teacher_id', Auth::user()->id)->select('rate')->get();
+        $usertypes = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')
+        ->where('users.id', Auth::id())
+        ->select('user_type')->get();
+
+        foreach($usertypes as $usertype)
+        {
+            if ($usertype->user_type === 'Teacher') {
+                $rates = TeacherRate::where('teacher_id', Auth::id())->select('rate')->get();
+                return view('profile', [
+                    'usertype' => $usertype->user_type,
+                    'rates' => $rates
+                ]);
+            }
             return view('profile', [
-                'usertype' => $usertype,
-                'rates' => $rates
+                'usertype' => $usertype->user_type
             ]);
         }
-        return view('profile', [
-            'usertype' => $usertype
-        ]);
     }
 
     public function verify_mail($code)

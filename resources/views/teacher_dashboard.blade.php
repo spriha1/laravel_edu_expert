@@ -51,7 +51,7 @@
 				<!-- small box -->
 				<div class="small-box bg-yellow">
 					<div class="inner">
-						
+						<h3>0</h3>
 						<p>Student Timesheet</p>
 					</div>
 					<div class="icon">

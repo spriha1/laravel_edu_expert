@@ -4,7 +4,7 @@
 	</a>
 </li>
 <li>
-	<a href="/profile/teacher">
+	<a href="/profile">
 		<i class="fa fa-address-card"></i> <span>My Profile</span>
 	</a>
 </li>
