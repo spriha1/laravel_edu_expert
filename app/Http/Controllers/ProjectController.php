@@ -13,47 +13,41 @@ class ProjectController extends Controller
  //    {
  //        return view('user.profile', ['user' => User::findOrFail($id)]);
  //    }
-    public function check_login_status()
-    {
-        if (session()->has('username')) {
-            $user_type = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->select('user_types.user_type')->get();
-            foreach ($user_type as $value) {
-                if ($value->user_type === 'Admin') {
-                    return redirect('admin_dashboard');
-                }
-                else if ($value->user_type === 'Teacher') {
-                    return redirect('teacher_dashboard');
-                }
-                else if ($value->user_type === 'Student') {
-                    return redirect('student_dashboard');
-                }
-            }
-        }
-        else {
-            return true;
-        }
-    }
+    // public function check_login_status()
+    // {
+    //     if (session()->has('username')) {
+    //         $user_type = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->select('user_types.user_type')->get();
+    //         foreach ($user_type as $value) {
+    //             if ($value->user_type === 'Admin') {
+    //                 return redirect('admin_dashboard');
+    //             }
+    //             else if ($value->user_type === 'Teacher') {
+    //                 return redirect('teacher_dashboard');
+    //             }
+    //             else if ($value->user_type === 'Student') {
+    //                 return redirect('student_dashboard');
+    //             }
+    //         }
+    //     }
+    //     else {
+    //         return true;
+    //     }
+    // }
 
     public function home()
     {
-        if ($this->check_login_status())
-        {
-            return view('welcome');
-        }
+        return view('welcome');
     }
 
     public function register()
     {
-        if ($this->check_login_status())
-        {
-            $user_types = UserType::where('user_type', '!=', "Admin")->get();
-            $subjects = Subject::all();
+        $user_types = UserType::where('user_type', '!=', "Admin")->get();
+        $subjects = Subject::all();
 
-            return view('register', [
-                'user_types' => $user_types, 
-                'subjects' => $subjects
-            ]);
-        }
+        return view('register', [
+            'user_types' => $user_types, 
+            'subjects' => $subjects
+        ]);
     }
 
     public function forgot_password()

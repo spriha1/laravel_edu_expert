@@ -10,10 +10,12 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::middleware('CheckLoginStatus')->group(function() {
+	Route::get('/', 'ProjectController@home');
+	Route::get('/register', 'ProjectController@register');
+	Route::get('/forgot_password', 'ProjectController@forgot_password');
+});
 
-Route::get('/', 'ProjectController@home');
-Route::get('/register', 'ProjectController@register');
-Route::get('/forgot_password', 'ProjectController@forgot_password');
 Route::post('/register', 'AjaxController@register');
 Route::post('/login', 'ProjectController@login');
 Route::get('/logout', 'ProjectController@logout');
