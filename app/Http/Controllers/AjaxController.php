@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use App\{User, UserType, TeacherSubject, GoalPlan, Holiday, TeacherRate};
 use Carbon\Carbon;
 use App\Mail\UserVerification;
+use App\Http\Requests\Registration;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -50,24 +51,26 @@ class AjaxController extends Controller
 		GoalPlan::where('id', $request->input('goal_id'))->delete();
 	}
 
-    public function register(Request $request)
+    public function register(Request $request, Registration $req)
     { 
-    	Validator::make($request->all(), [
-            'fname' => 'required|regex:/^([a-zA-Z]+)$/',
-	        'lname' => 'required|regex:/^([a-zA-Z]+)$/',
-	        'username' => 'required|regex:/^([a-zA-Z0-9@_]+)$/',
-	        'email' => 'required|email',
-	        'password' => 'required|regex:/^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/',
-	        'user_type' => 'required',
-        ])->validate();
+    	// Validator::make($request->all(), [
+     //        'fname' => 'required|regex:/^([a-zA-Z]+)$/',
+	    //     'lname' => 'required|regex:/^([a-zA-Z]+)$/',
+	    //     'username' => 'required|regex:/^([a-zA-Z0-9@_]+)$/',
+	    //     'email' => 'required|email',
+	    //     'password' => 'required|regex:/^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/',
+	    //     'user_type' => 'required',
+     //    ])->validate();
 
-    	$firstname = $request->input('fname');
-		$lastname = $request->input('lname');
-		$email = $request->input('email');
-		$username = $request->input('username');
-		$password = $request->input('password');
+        $validated = $req->validated();
+
+    	$firstname = $validated['fname'];
+		$lastname = $validated['lname'];
+		$email = $validated['email'];
+		$username = $validated['username'];
+		$password = $validated['password'];
 		$password = Hash::make($password);
-		$usertype = $request->input('user_type');
+		$usertype = $validated['user_type'];
 		$hash = md5(uniqid());
 		$msg = "";
 		$results = User::where('email', $email)->select('id', 'block_status')->get();
