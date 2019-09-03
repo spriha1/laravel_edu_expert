@@ -105,7 +105,7 @@ $(document).ready(function () {
     _long = 85.8245;
   }
 
-  mapboxgl.accessToken = 'pk.eyJ1Ijoic3ByaWhhMSIsImEiOiJjanp4dHk1ZnIwb2Q4M2NsYWJiZXFhajNzIn0.q_cDP5GyFAGrHm20NsVnbg';
+  mapboxgl.accessToken = 'pk.eyJ1Ijoic3ByaWhhMSIsImEiOiJjanp4dTByZ28wbHp6M2RvNHdua3g0MWQ1In0.pNLPJ7GyhwFcegQMZhfXJA';
   var map = new mapboxgl.Map({
     container: 'map',
     // Container ID
@@ -150,8 +150,8 @@ $(document).ready(function () {
     }
   }); // Add the geocoder to the map
   // map.addControl(geocoder);
+  // $('.mapboxgl-ctrl-geocoder--input').appendTo('#geo')
 
-  $('.mapboxgl-ctrl-geocoder--input').appendTo('#geo');
   document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
   $('.mapboxgl-ctrl-geocoder--input').val(address); // After the map style has loaded on the page,
   // add a source layer and default styling for a single point

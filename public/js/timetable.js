@@ -106,7 +106,7 @@ $(document).ready(function () {
   var user_type = $('#user_type').val();
   var date_format = $('#date_format').val();
   load_display_data(date, user_id, user_type, date_format);
-  $('.input').change(function () {
+  $('.input').blur(function () {
     var time = $(this).val();
     time = time.split(":");
     time = parseInt(time[0], 10) * 3600 + parseInt(time[1], 10) * 60 + parseInt(time[2], 10);

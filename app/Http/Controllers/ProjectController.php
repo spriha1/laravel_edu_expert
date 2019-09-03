@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\{User, UserType, Subject, Clas, Task, TeacherTask, StudentTask};
+use App\{User, UserType, Subject, Clas, Task, TeacherTask, StudentTask, TeacherRate};
 class ProjectController extends Controller
 {
 
@@ -195,6 +195,13 @@ class ProjectController extends Controller
 
     public function profile($usertype)
     {
+        if ($usertype === 'teacher') {
+            $rates = TeacherRate::where('teacher_id', Auth::user()->id)->select('rate')->get();
+            return view('profile', [
+                'usertype' => $usertype,
+                'rates' => $rates
+            ]);
+        }
         return view('profile', [
             'usertype' => $usertype
         ]);
@@ -285,6 +292,14 @@ class ProjectController extends Controller
                 $start_date = Carbon::createFromFormat("d.m.Y" , $start_date)->timestamp;
                 $end_date = Carbon::createFromFormat("d.m.Y" , $end_date)->timestamp;
             }
+            $start_date = getdate($start_date);
+            $start_date = $start_date['year'].'-'.$start_date['mon'].'-'.$start_date['mday'];
+            $start_date = strtotime($start_date);
+
+            $end_date = getdate($end_date);
+            $end_date = $end_date['year'].'-'.$end_date['mon'].'-'.$end_date['mday'];
+            $end_date = strtotime($end_date);
+
             $length = count($request->input('subject'));
             for($i = 0; $i < $length; $i++)
             {
@@ -312,20 +327,28 @@ class ProjectController extends Controller
                         ])->select('teacher_id')->distinct()->get();
                         foreach($result as $key => $value)
                         {
-                            TeacherTask::insert([
-                                'task_id' => $task_id,
-                                'teacher_id' => $value['teacher_id']
-                            ]);
+                            for($z = $start_date; $z <= $end_date; $z = $z + 86400)
+                            {
+                                TeacherTask::insert([
+                                    'task_id' => $task_id,
+                                    'teacher_id' => $value['teacher_id'],
+                                    'on_date' => $z
+                                ]);
+                            }
                         }
                         $result = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([
                             ['user_type', 'Student'],
                             ['class', $request->class]
                         ])->select('users.id')->get();
                         foreach ($result as $key => $value) {
-                            StudentTask::insert([
-                                'task_id' => $task_id,
-                                'student_id' => $value['id']
-                            ]);
+                            for($z = $start_date; $z <= $end_date; $z = $z + 86400)
+                            {
+                                StudentTask::insert([
+                                    'task_id' => $task_id,
+                                    'student_id' => $value['id'],
+                                    'on_date' => $z
+                                ]);
+                            }
                         }
                         return("Successfully added");
                     }

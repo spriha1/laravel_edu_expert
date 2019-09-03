@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\{User, UserType, TeacherSubject, GoalPlan, Holiday};
+use App\{User, UserType, TeacherSubject, GoalPlan, Holiday, TeacherRate};
 use Carbon\Carbon;
 use App\Mail\UserVerification;
 use Illuminate\Support\Facades\Mail;
@@ -154,6 +154,19 @@ class AjaxController extends Controller
         if($request->filled('long')) {
         	User::where('id', Auth::user()->id)->update(['longitude' => $request->input('long')]);
         	$msg->success = 1;
+        }
+        if($request->filled('rate')) {
+            $rates = TeacherRate::where('teacher_id', Auth::user()->id)->select('rate')->get();
+            if ($rates->count()) {
+                TeacherRate::where('teacher_id', Auth::user()->id)->update(['rate' => $request->input('rate')]);
+                $msg->success = 1;
+            }
+            else {
+                TeacherRate::insert([
+                    'teacher_id' => Auth::user()->id,
+                    'rate' => $request->input('rate')
+                ]);
+            }
         }
         if($request->filled('address')) {
         	User::where('id', Auth::user()->id)->update(['address' => $request->input('address')]);

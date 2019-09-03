@@ -74,7 +74,7 @@ class TimesheetController extends Controller
 					$result = TeacherTask::join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
                     ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
                     ->where('teacher_id', $request->input('user_id'))
-                    ->whereRaw('DATE(FROM_UNIXTIME(start_date)) <= DATE(FROM_UNIXTIME('.$date.')) && DATE(FROM_UNIXTIME(end_date)) >= DATE(FROM_UNIXTIME('.$date.'))')
+                    ->whereRaw('DATE(FROM_UNIXTIME(on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
 					->select('task_id', 'class', 'name', 'total_time', 'on_date')->get();
 				}
 				else if ($request->input('user_type') === 'student') {
@@ -83,7 +83,7 @@ class TimesheetController extends Controller
                     ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
                     ->join('users as teacher', 'teacher.id', '=', 'teacher_tasks.teacher_id')
                     ->where('student_id', $request->input('user_id'))
-                    ->whereRaw('DATE(FROM_UNIXTIME(start_date)) <= DATE(FROM_UNIXTIME('.$date.')) && DATE(FROM_UNIXTIME(end_date)) >= DATE(FROM_UNIXTIME('.$date.'))')
+                    ->whereRaw('DATE(FROM_UNIXTIME(on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
                     ->select('teacher_tasks.task_id', 'teacher.firstname', 'name', 'student_tasks.total_time', 'student_tasks.on_date')->get();
 				}
 				return(json_encode($result));
@@ -278,26 +278,12 @@ class TimesheetController extends Controller
                 ])->select()->get();
                 foreach($results as $result) 
                 {
-                    if ($result->on_date == 0 && $result->total_time == 0) {
-                        TeacherTask::where([
-                            ['task_id', $request->input('task_id')],
-                            ['teacher_id', $request->input('user_id')]
-                        ])->update(['total_time' => $request->input('time'), 'on_date' => $date]);
-                    }
-                    else if ($result->on_date == $date) {
+                    if ($result->on_date == $date) {
                         TeacherTask::where([
                             ['task_id', $request->input('task_id')],
                             ['teacher_id', $request->input('user_id')],
                             ['on_date', $date]
                         ])->update(['total_time' => $request->input('time')]);
-                    }
-                    else {
-                        TeacherTask::insert([
-                            'task_id' => $request->input('task_id'),
-                            'teacher_id' => $request->input('user_id'),
-                            'on_date' => $date,
-                            'total_time' => $request->input('time')
-                        ]);
                     }
                 }
             }
@@ -334,15 +320,16 @@ class TimesheetController extends Controller
         }
     }
 
-    public function update_completion_time()
+    public function update_completion_time(Request $request)
     {
         if ($request->filled('time') && $request->filled('date') && $request->filled('task_id') && $request->filled('user_id') && $request->filled('user_type')) {
             if ($request->input('user_type') === 'teacher') {
                 TeacherTask::where([
-                    ['task_id', $request->input('user_type')],
-                    ['teacher_id', $request->input('user_id')],
-                    ['on_date', $request->input('date')]
-                ])->update([
+                    ['task_id', $request->input('task_id')],
+                    ['teacher_id', $request->input('user_id')]
+                ])
+                ->whereRaw('DATE(FROM_UNIXTIME(on_date)) = DATE(FROM_UNIXTIME('.$request->input('date').'))')
+                ->update([
                     'total_time' => $request->input('time')
                 ]);
             }

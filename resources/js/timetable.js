@@ -12,7 +12,7 @@ $(document).ready(function() {
 	var date_format = $('#date_format').val();
 
 	load_display_data(date,user_id,user_type,date_format);
-	$('.input').change(function() {
+	$('.input').blur(function() {
 		var time = $(this).val();
 		time = time.split(":");
 		time = parseInt(time[0], 10)*3600 + parseInt(time[1], 10)*60 + parseInt(time[2], 10);
@@ -37,7 +37,6 @@ $(document).ready(function() {
 function load_display_data(date,user_id,user_type,date_format) {
 	$.post('/display_timetable', {date: date, user_id: user_id, user_type: user_type, date_format: date_format}, function(result) {
 		var response = JSON.parse(result);
-
 		var len = response['original_dates'].length;
 		for (var i = 0; i < len; i++) {
 			var date = new Date(response['original_dates'][i] * 1000);

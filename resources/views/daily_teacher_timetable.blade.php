@@ -37,7 +37,7 @@
 						<tr class="editable" width="25%" task_id="" style="display:none;">
 							<td class="name" width="25%"></td>
 							<td class="class" width="25%"></td>
-							<td width="25%"><input class="timer" type="text" value=""></td>
+							<td width="25%"><input class="timer" type="text" readonly value=""></td>
 							<td>
 								<button class="btn btn-info start">Start</button>
 								<button class="btn btn-info stop" style="display:none" task_id="">Stop</button>

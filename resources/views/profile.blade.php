@@ -47,12 +47,14 @@
 					</div>
 
 					@if ($usertype === 'teacher')
+					@foreach ($rates as $rate)
 					<div class="form-group">
 						<label for="rate" class="col-sm-3 control-label">Rate per hour</label>
 						<div class="col-sm-9">
-							<input type="number" class="form-control" name="rate" id="rate" readonly value="">
+							<input type="number" class="form-control" name="rate" id="rate" readonly value="{{ $rate->rate }}">
 						</div>
 					</div>
+					@endforeach
 					@endif
 
 					<div class="form-group">
@@ -102,7 +104,7 @@
 	<!-- <div class="col-md-6">
 		<div id="googleMap" style="width:400px;height:400px;"></div>
 	</div> -->
-	<div class="col-md-6" id = "map" style = "height: 60%"></div>
+	<div class="col-md-6" id ="map" style ="height: 60%"></div>
 </div>
 @endsection
 

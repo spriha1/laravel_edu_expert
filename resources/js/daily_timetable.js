@@ -35,6 +35,7 @@ $(document).ready(function() {
 
 function load_display_data(date,user_id,user_type,date_format) {
 	$.post('/display_daily_timetable', {date: date, user_id: user_id, user_type: user_type, date_format: date_format}, function(result) {
+		console.log(result);
 		var response = JSON.parse(result);
 		if (date_format === "yyyy/mm/dd") {
 			date = date.split('/');
@@ -76,7 +77,14 @@ function load_display_data(date,user_id,user_type,date_format) {
 					var minutes = Math.floor(seconds / 60);
 					seconds = seconds - (minutes * 60);
 					var time = hours + ':' + minutes + ':' + seconds;
-					if (date == response[i].on_date) {
+
+					var _date = new Date(date * 1000);
+					_date = _date.getDate() + '/' + (_date.getMonth()+1) + '/' + _date.getFullYear();
+					var _on_date = response[i].on_date;
+					_on_date = new Date(_on_date * 1000);
+					_on_date = _on_date.getDate() + '/' + (_on_date.getMonth()+1) + '/' + _on_date.getFullYear();
+		
+					if (_date === _on_date) {
 						$("tbody tr[task_id=" + task_id + "] .timer").val(time);
 					}
 					
@@ -101,7 +109,15 @@ function load_display_data(date,user_id,user_type,date_format) {
 					var minutes = Math.floor(seconds / 60);
 					seconds = seconds - (minutes * 60);
 					var time = hours + ':' + minutes + ':' + seconds;
-					if (date == response[i].on_date) {
+
+					var _date = new Date(date * 1000);
+					_date = _date.getDate() + '/' + (_date.getMonth()+1) + '/' + _date.getFullYear();
+					var _on_date = response[i].on_date;
+					_on_date = new Date(_on_date * 1000);
+					_on_date = _on_date.getDate() + '/' + (_on_date.getMonth()+1) + '/' + _on_date.getFullYear();
+					console.log(_date)
+					console.log(_on_date)
+					if (_date == _on_date) {
 						$("tbody tr[task_id=" + task_id + "] .timer").val(time);
 					}
 					

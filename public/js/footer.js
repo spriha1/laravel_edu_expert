@@ -151,7 +151,7 @@ $(document).ready(function () {
       var date_format = $('#date_format').val();
       $('tbody tr[task_id=' + task_id + '] .start').css('display', 'none');
       $('tbody tr[task_id=' + task_id + '] .stop').css('display', 'none');
-      $('tbody tr[task_id=' + task_id + '] .pause').css('display', 'table-row');
+      $('tbody tr[task_id=' + task_id + '] .pause').css('display', 'none');
       var time = $(this).closest('tr').find('.timer').data('seconds');
       $('tbody tr[task_id=' + task_id + '] .timer').timer('remove');
       var task_id = $(this).attr('task_id');
