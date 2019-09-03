@@ -1,4 +1,8 @@
 $(document).ready(function() {
+	var url = window.location.pathname;
+	console.log(url)
+	$('.main-sidebar .sidebar ul li a[href="'+ url +'"]').parent().addClass('active');
+
 	var footer = document.getElementById("footer").getAttribute("footer");
 	if (footer === "footer") {
 		$(function () {

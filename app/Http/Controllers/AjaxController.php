@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use App\{User, UserType, TeacherSubject, GoalPlan, Holiday, TeacherRate};
 use Carbon\Carbon;
 use App\Mail\UserVerification;
+use App\Mail\UpdateMail;
 use App\Http\Requests\Registration;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
@@ -50,6 +51,18 @@ class AjaxController extends Controller
 	{
 		GoalPlan::where('id', $request->input('goal_id'))->delete();
 	}
+
+    public function fetch_info(Request $request)
+    {
+        $search_field = $request->input('q1');
+        $search_field_value = $request->input('q2');
+        $res = 0;
+        $results = User::where($search_field, $search_field_value)->select($search_field)->get();
+        if($results->count()) {
+            $res = 1;
+        }
+        return ($res);
+    }
 
     public function register(Request $request, Registration $req)
     { 
@@ -184,7 +197,7 @@ class AjaxController extends Controller
         		//mail
         		$hash = Auth::user()->email_verification_code;
         		User::where('id', Auth::user()->id)->update(['email_verification_status' => 0]);
-				Mail::to($email)->send(new UpdateMail($hash, $request->input('email')));
+				Mail::to($request->input('email'))->send(new UpdateMail($hash, $request->input('email')));
 				$msg->email = 1;
         	}
         }

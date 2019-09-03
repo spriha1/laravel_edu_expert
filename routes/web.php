@@ -16,6 +16,7 @@ Route::middleware('CheckLoginStatus')->group(function() {
 	Route::get('/forgot_password', 'ProjectController@forgot_password');
 });
 
+Route::get('/fetch_info', 'AjaxController@fetch_info');
 Route::post('/register', 'AjaxController@register');
 Route::post('/login', 'ProjectController@login');
 Route::get('/logout', 'ProjectController@logout');

@@ -79,7 +79,8 @@ class ProjectController extends Controller
             
         }
         else {
-            return redirect('/');
+            return redirect()->back()->withInput()->withFlashMessage('Wrong username/password combination.');
+            // return redirect('/');
         }
     }
 

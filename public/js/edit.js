@@ -187,8 +187,8 @@ $(document).ready(function () {
         $('#alert').text("Please verify it by clicking the activation link that has been send to your email.");
         $("#alert").css("display", "block");
       } else if (response.success == 1) {
-        $('#alert').text("Updated successfully");
-        $("#alert").css("display", "block");
+        $('#info').text("Updated successfully");
+        $("#info").css("display", "block");
       } else if (response.email == 0) {
         $('#alert').text("Invalid email format");
         $("#alert").css("display", "block");
@@ -207,22 +207,23 @@ $(document).ready(function () {
   $('body').click(function () {
     if (event.target.id === 'password' && event.target.closest("form").getAttribute("id") === 'registration') {
       var msg = "The password :<br> Must be a minimum of 8 characters<br>Must contain at least 1 number<br>Must contain at least one uppercase character<br>Must contain at least one lowercase character";
-      $("#info").text(msg);
-      $("#info").css("display", "block");
+      $("#info_password").html(msg);
+      $("#info_password").css("display", "block");
     }
 
     if (event.target.id === 'username' && event.target.closest("form").getAttribute("id") === 'registration') {
       var msg = "The username can contain letters, digits, @ and _";
-      $("#info").text(msg);
-      $("#info").css("display", "block");
+      $("#info_username").html(msg);
+      $("#info_username").css("display", "block");
     }
   });
   $('input').blur(function () {
     if (event.target.closest("form").getAttribute("id") === 'registration') {
       if (event.target.id === 'username') {
+        $("#info_username").css("display", "none");
         var username_pattern = /^([a-zA-Z0-9@_]+)$/;
         var username = $('#username').val();
-        $.get("fetch_info.php", {
+        $.get("/fetch_info", {
           q1: "username",
           q2: username
         }, function (data) {
@@ -243,6 +244,7 @@ $(document).ready(function () {
           $('#username').css("borderColor", "green");
         }
       } else if (event.target.id === 'password') {
+        $("#info_password").css("display", "none");
         var password_pattern = /^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/;
 
         if ($('#password').val() === "") {
@@ -256,7 +258,7 @@ $(document).ready(function () {
         }
       } else if (event.target.id === "email") {
         var email = $('#email').val();
-        $.get("fetch_info.php", {
+        $.get("/fetch_info", {
           q1: "email",
           q2: email
         }, function (data) {

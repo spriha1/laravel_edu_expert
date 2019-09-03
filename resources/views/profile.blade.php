@@ -19,6 +19,8 @@
 			<form class="form-horizontal" id="registration" name="registration" method="POST">
 				<div id="alert" class='alert alert-danger' style="display: none;">
 				</div>
+				<div id="info" class='alert alert-success' style="display: none;">
+				</div>
 				@csrf
 				<div class="box-body">
 					<div class="form-group">
@@ -33,6 +35,8 @@
 							<input type="text" class="form-control" id="lname" name="lname" readonly value="{{ Auth::user()->lastname }}">
 						</div>
 					</div>
+					<div id="info_username" class='text-info' style="display: none;">
+                	</div>
 					<div class="form-group">
 						<label for="username" class="col-sm-3 control-label">Username</label>
 						<div class="col-sm-9">
@@ -81,6 +85,8 @@
 							<input type="password" class="form-control" id="password" name="password">
 						</div>
 					</div>
+					<div id="info_password" class='text-info' style="display: none;">
+                	</div>
 					<div class="form-group">
 						<label for="address" class="col-sm-3 control-label">Address</label>
 						<div id="geocoder" class="col-sm-9">

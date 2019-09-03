@@ -6,7 +6,8 @@ $(document).ready(function() {
 			event.preventDefault();
 
 			$.post('register' , $('#registration').serialize() , function(result){
-				console.log('success');
+				$("#alert").css("display" , "block");
+				$("#alert").text(result);
 			})
 			.fail(function(result) {
 				console.log(result.responseText);
@@ -42,12 +43,22 @@ $(document).ready(function() {
 			}
 			else if (event.target.id === 'username') {
 				$("#info_username").css("display" , "none");
-				var username_pattern = /^([a-zA-Z0-9@_]+)$/;
 				var username = $('#username').val();
 				$.get("fetch_info" , {q1: "username", q2: username} , function(data) {
 					if (Number(data) === 1) {
 						$('#username').css("borderColor" , "red");
 						$("#alert").text("This username already exists");
+						$("#alert").css("display" , "block");
+					}
+				})
+			}
+			else if (event.target.id === 'email') {
+				$("#info_email").css("display" , "none");
+				var email = $('#email').val();
+				$.get("fetch_info" , {q1: "email", q2: email} , function(data) {
+					if (Number(data) === 1) {
+						$('#email').css("borderColor" , "red");
+						$("#alert").text("This email already exists");
 						$("#alert").css("display" , "block");
 					}
 				})
