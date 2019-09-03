@@ -22,12 +22,12 @@
 				<!-- small box -->
 				<div class="small-box bg-aqua">
 					<div class="inner">
-						<h3>0</h3>
+						<!-- <h3>0</h3> -->
 						<p>Daily Time Table</p>
 					</div>
-					<div class="icon">
+					<!-- <div class="icon">
 						<i class="ion ion-person"></i>
-					</div>
+					</div> -->
 					<a href="/daily_student_timetable" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
 				</div>
 			</div>
@@ -36,12 +36,12 @@
 				<!-- small box -->
 				<div class="small-box bg-green">
 					<div class="inner">
-						<h3>0</h3>
+						<!-- <h3>0</h3> -->
 						<p>Weekly Time Table</p>
 					</div>
-					<div class="icon">
+					<!-- <div class="icon">
 						<i class="ion ion-person"></i>
-					</div>
+					</div> -->
 					<a href="/weekly_student_timetable" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
 				</div>
 			</div>

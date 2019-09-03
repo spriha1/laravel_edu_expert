@@ -22,7 +22,7 @@
 				<!-- small box -->
 				<div class="small-box bg-aqua">
 					<div class="inner">
-						<h3>0</h3>
+						<h3>{{ $pending_user_count }}</h3>
 						<p>New Requests</p>
 					</div>
 					<div class="icon">
@@ -36,7 +36,7 @@
 				<!-- small box -->
 				<div class="small-box bg-green">
 					<div class="inner">
-						<h3>0</h3>
+						<h3>{{ $regd_user_count }}</h3>
 						<p>Registered Users</p>
 					</div>
 					<div class="icon">
@@ -50,7 +50,7 @@
 				<!-- small box -->
 				<div class="small-box bg-yellow">
 					<div class="inner">
-						<h3>0</h3>
+						<h3>{{ $shared_timesheet_count }}</h3>
 						<p>Teacher Timesheets</p>
 					</div>
 					<div class="icon">

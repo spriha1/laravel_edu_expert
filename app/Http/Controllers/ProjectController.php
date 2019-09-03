@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\{User, UserType, Subject, Clas, Task, TeacherTask, StudentTask, TeacherRate};
+use App\{User, UserType, Subject, Clas, Task, TeacherTask, StudentTask, TeacherRate, SharedTimesheet};
 class ProjectController extends Controller
 {
 
@@ -178,7 +178,29 @@ class ProjectController extends Controller
 
     public function render_admin_dashboard()
     {
-        return view('admin_dashboard');
+        $regd_users = User::where('user_reg_status', 1)->selectRaw('count(*) as total')->get();
+        foreach($regd_users as $regd_user)
+        {
+            $regd_user_count = $regd_user->total;
+        }
+
+        $pending_users = User::where('user_reg_status', 0)->selectRaw('count(*) as total')->get();
+        foreach($pending_users as $pending_user)
+        {
+            $pending_user_count = $pending_user->total;
+        }
+
+        $shared_timesheets = SharedTimesheet::where('to_id', Auth::id())->selectRaw('count(*) as total')->get();
+        foreach($shared_timesheets as $shared_timesheet)
+        {
+            $shared_timesheet_count = $shared_timesheet->total;
+        }
+
+        return view('admin_dashboard', [
+            'regd_user_count' => $regd_user_count,
+            'pending_user_count' => $pending_user_count,
+            'shared_timesheet_count' => $shared_timesheet_count
+        ]);
     }
 
     public function render_teacher_dashboard()
