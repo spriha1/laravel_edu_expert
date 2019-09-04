@@ -118,7 +118,7 @@ function load_display_data(date,user_id,user_type,date_format) {
 					// console.log(_date)
 					// console.log(_on_date)
 					if (_date == _on_date) {
-						$("tbody tr[task_id=" + task_id + "] .timer").val(time);
+						$("tbody tr[task_id=" + task_id + "] .timer").text(time);
 					}
 					
 				}

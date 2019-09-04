@@ -249,6 +249,8 @@ function load_display_data(date, user_id, user_type, date_format) {
               var minutes = Math.floor(seconds / 60);
               seconds = seconds - minutes * 60;
               var time = hours + ':' + minutes + ':' + seconds;
+            } else {
+              var time = '0:0:0';
             }
 
             var task_id = response[task_id][j][0].task_id;

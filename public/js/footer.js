@@ -95,8 +95,10 @@
 
 $(document).ready(function () {
   var url = window.location.pathname;
-  console.log(url);
-  $('.main-sidebar .sidebar ul li a[href="' + url + '"]').parent().addClass('active');
+  $('.main-sidebar .sidebar ul li a[href="' + url + '"]').parent().addClass('active'); // $(".chosen").select2({
+  // 	matcher: matchCustom
+  // });
+
   var footer = document.getElementById("footer").getAttribute("footer");
 
   if (footer === "footer") {

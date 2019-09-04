@@ -4,34 +4,35 @@ $(document).ready(function() {
 	        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 	    }
 	});
+	var user_id;
 	var date = new Date();
 	$('.datepicker').datepicker('setDate', date);
 	var date = $('#date').val(); 
-	var user_id = $('#user_id').val();
+	// var user_id = $('#user_id').val();
 	var user_type = $('#user_type').val();
 	var date_format = $('#date_format').val();
 
-	load_display_data(date,user_id,user_type,date_format);
+	
 
-	$('form').submit(function() {
-		var search = $('#search').val();
-		
+	$('#search').change(function() {
+		user_id = $('#search').val();
+		load_display_data(date,user_id,user_type,date_format);
 	});
 
-	$('.input').blur(function() {
-		var time = $(this).val();
-		time = time.split(":");
-		time = parseInt(time[0], 10)*3600 + parseInt(time[1], 10)*60 + parseInt(time[2], 10);
-		var date = $(this).closest('td').attr('date');
-		var user_id = $('#user_id').val();
-		var task_id = $(this).closest('tr').attr('task_id');
-		var user_type = $('#user_type').val();
-		$.post('/update_completion_time', {time: time, date: date, user_id: user_id, task_id: task_id, user_type: user_type});
-	})
+	// $('.input').blur(function() {
+	// 	var time = $(this).val();
+	// 	time = time.split(":");
+	// 	time = parseInt(time[0], 10)*3600 + parseInt(time[1], 10)*60 + parseInt(time[2], 10);
+	// 	var date = $(this).closest('td').attr('date');
+	// 	var user_id = $('#user_id').val();
+	// 	var task_id = $(this).closest('tr').attr('task_id');
+	// 	var user_type = $('#user_type').val();
+	// 	$.post('/update_completion_time', {time: time, date: date, user_id: user_id, task_id: task_id, user_type: user_type});
+	// })
 
 	$('.datepicker').datepicker().on('changeDate', function(e) {
 		var date = e.format();
-		var user_id = $('#user_id').val();
+		// var user_id = $('#user_id').val();
 		var user_type = $('#user_type').val();
 		var date_format = $('#date_format').val();
 

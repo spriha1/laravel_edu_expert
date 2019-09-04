@@ -19,14 +19,12 @@
 							<div class="col-sm-5">
 							</div>
 							<div class="col-sm-4">
-								<form class="form-inline">
-									<div class="form-group mx-auto">
-										<input type="text" placeholder="Enter username" name="search" id="search" class="form-control mb-2 mr-sm-2">
-									</div>
-									<div class="form-group mx-auto">
-							      		<button class="btn btn-block btn-success form-control mr-sm-2 mb-2" type="submit">Search</button>
-							      	</div>
-								</form>
+								<select name="search" id="search">
+									<option>Select User</option>
+									@foreach($users as $user)
+										<option value="{{$user->id}}">{{$user->firstname}} ({{ $user->email }})</option>
+									@endforeach
+								</select>
 							</div>
 						</div>
 					</div>
@@ -116,5 +114,10 @@
 	@include('layouts.footer')
     <script id="footer" footer="profile_footer" src="{{ mix('/js/footer.js') }}"></script>
 	<script src="{{ mix('/js/admin_timetable.js') }}"></script>
+	<script>
+		$(document).ready(function() {
+			$('#search').select2();
+		});
+	</script>
 
 @endsection

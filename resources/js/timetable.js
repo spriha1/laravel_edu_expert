@@ -150,6 +150,9 @@ function load_display_data(date,user_id,user_type,date_format) {
 							var time = hours + ':' + minutes + ':' + seconds;
 
 						}
+						else {
+							var time = '0:0:0';
+						}
 						var task_id = response[task_id][j][0].task_id;
 						$("tbody tr[task_id=" + task_id + "] td[date=" + response[task_id][j][0].on_date + "] input").val(time);
 						$("tbody tr[task_id=" + task_id + "] td[dow=" + j + "] input").css('display', 'table-row');

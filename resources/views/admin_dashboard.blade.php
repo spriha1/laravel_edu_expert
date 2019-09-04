@@ -56,7 +56,7 @@
 					<div class="icon">
 						<i class="ion ion-person"></i>
 					</div>
-					<a href="teacher_timesheets.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+					<a href="/teacher_timesheets" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
 				</div>
 			</div>
 			<!-- ./col -->
