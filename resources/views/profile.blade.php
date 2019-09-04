@@ -35,8 +35,14 @@
 							<input type="text" class="form-control" id="lname" name="lname" readonly value="{{ Auth::user()->lastname }}">
 						</div>
 					</div>
-					<div id="info_username" class='text-info' style="display: none;">
-                	</div>
+					<div class="form-group">
+						<div class="col-sm-3"></div>
+						<div class="col-sm-9">
+							<div id="info_username" class='text-info' style="display: none;">
+                			</div>
+						</div>
+					</div>
+					
 					<div class="form-group">
 						<label for="username" class="col-sm-3 control-label">Username</label>
 						<div class="col-sm-9">
@@ -83,6 +89,12 @@
 						<label for="password" class="col-sm-3 control-label">Password</label>
 						<div class="col-sm-9">
 							<input type="password" class="form-control" id="password" name="password">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-3"></div>
+						<div class="col-sm-9">
+							<div id="info_password" class='text-info' style="display: none;"></div>
 						</div>
 					</div>
 					<div id="info_password" class='text-info' style="display: none;">

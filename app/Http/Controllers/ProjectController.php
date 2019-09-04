@@ -81,7 +81,8 @@ class ProjectController extends Controller
         else {
             // return redirect()->back()->withInput()->withFlashMessage('Wrong username/password combination.');
             // return redirect('/');
-            $errors = new MessageBag(['password' => ['Email and/or password invalid.']]);
+            $errors = new MessageBag(['password' => ['Username and/or password invalid.']]);
+            // Auth::attempt()->save();
             return redirect()->back()->withErrors($errors)->withInput(Input::except('password'));
         }
     }
@@ -292,6 +293,7 @@ class ProjectController extends Controller
                 foreach($results as $result)
                 {
                     Mail::to($result->email)->send(new ForgotPassword($result->token));
+                    echo "Please reset your password by clicking the link that has been sent to your email.";
                 }
             }
         }

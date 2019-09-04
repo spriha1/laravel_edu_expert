@@ -20,7 +20,7 @@
                 <div id="alert" class='alert alert-danger' style="display: none;">
                 </div>
                 <div class="form-group has-feedback">
-                    <input type="text" class="form-control" placeholder="Username" id="username" name="username">
+                    <input type="text" class="form-control" placeholder="Username" id="username" name="username" value="{{ old('username') }}">
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
                 </div>
                 <div class="form-group has-feedback">
