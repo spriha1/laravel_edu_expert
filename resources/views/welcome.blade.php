@@ -12,7 +12,11 @@
             <p class="login-box-msg">Sign in to start</p>
             <form action="login" method="POST" id="login" name="login">
                 @csrf
-                @include('flash-message')
+                @if ($error = $errors->first('password'))
+                    <div class="alert alert-danger">
+                        {{ $error }}
+                    </div>
+                @endif
                 <div id="alert" class='alert alert-danger' style="display: none;">
                 </div>
                 <div class="form-group has-feedback">

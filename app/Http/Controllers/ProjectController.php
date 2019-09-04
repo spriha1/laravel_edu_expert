@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -76,11 +77,12 @@ class ProjectController extends Controller
                     return redirect('student_dashboard');
                 }
             }
-            
         }
         else {
-            return redirect()->back()->withInput()->withFlashMessage('Wrong username/password combination.');
+            // return redirect()->back()->withInput()->withFlashMessage('Wrong username/password combination.');
             // return redirect('/');
+            $errors = new MessageBag(['password' => ['Email and/or password invalid.']]);
+            return redirect()->back()->withErrors($errors)->withInput(Input::except('password'));
         }
     }
 
