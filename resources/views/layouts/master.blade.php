@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link rel="shortcut icon" href="http://eduexpert.local.com/images/favicon.ico" />
-        <title>@yield('title', 'Welcome')</title>
+        <title>@yield('title', 'Edu Expert')</title>
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="stylesheet" href="{{ asset('css/dist/bootstrap.min.css') }}">

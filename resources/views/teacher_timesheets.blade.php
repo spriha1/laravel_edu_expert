@@ -86,7 +86,7 @@
 @section('footer')
 
 	@include('layouts.footer')
-  
+  	<script id="footer" footer="" src="{{ mix('/js/footer.js') }}"></script>
 	<script src="{{ mix('/js/timesheet.js') }}"></script>
    
 @endsection

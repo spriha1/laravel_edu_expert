@@ -92,6 +92,7 @@ Route::middleware('auth')->group(function () {
 	Route::post('/fetch_timesheet', 'TimesheetController@fetch_timesheet');
 	Route::post('/add_completion_time', 'TimesheetController@add_completion_time');
 	Route::post('/update_completion_time', 'TimesheetController@update_completion_time');
+	Route::get('/timesheets', 'TimesheetController@timesheets');
 
 	Route::post('/add_goals', 'AjaxController@add_goals');
 	Route::post('/update_goals', 'AjaxController@update_goals');

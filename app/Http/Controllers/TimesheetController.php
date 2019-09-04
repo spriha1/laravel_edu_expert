@@ -244,6 +244,11 @@ class TimesheetController extends Controller
         ]);
     }
 
+    public function timesheets()
+    {
+        
+    }
+
     public function fetch_timesheet(Request $request)
     {
         if ($request->filled('from_id') && $request->filled('of_date') && $request->filled('user_type')) {

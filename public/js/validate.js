@@ -129,8 +129,8 @@ $(document).ready(function () {
         }).fail(function (result) {
           console.log(result.responseText);
           var res = JSON.parse(result.responseText);
-          var errors = res.errors;
-          $('#alert').html(errors.fname + '<br>' + errors.lname + '<br>' + errors.username + '<br>' + errors.email + '<br>' + errors.password);
+          var errors = res.errors; // $('#alert').html(errors.fname + '<br>' + errors.lname + '<br>' + errors.username + '<br>' + errors.email + '<br>' + errors.password);
+
           $("#alert").css("display", "block");
         });
       }

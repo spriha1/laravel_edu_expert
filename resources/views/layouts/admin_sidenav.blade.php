@@ -26,6 +26,12 @@
 </li>
 
 <li>
+	<a href="/timesheets">
+		<i class="fa fa-th"></i> <span>Timesheets</span>
+	</a>
+</li>
+
+<li>
 	<a href="/task_management">
 		<i class="fa fa-th"></i> <span>Task Management</span>
 	</a>

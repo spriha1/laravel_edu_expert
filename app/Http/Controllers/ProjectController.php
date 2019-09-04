@@ -89,7 +89,7 @@ class ProjectController extends Controller
     public function pending_requests()
     {
         $user_types = UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
-        $results = User::whereRaw("user_reg_status = 0 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
+        $results = User::whereRaw("user_reg_status = 0 AND email_verification_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
         return view('pending_requests', [
             'user_types' => $user_types,
             'results' => $results,
@@ -186,7 +186,10 @@ class ProjectController extends Controller
             $regd_user_count = $regd_user->total;
         }
 
-        $pending_users = User::where('user_reg_status', 0)->selectRaw('count(*) as total')->get();
+        $pending_users = User::where([
+            ['user_reg_status', 0],
+            ['email_verification_status', 1]
+        ])->selectRaw('count(*) as total')->get();
         foreach($pending_users as $pending_user)
         {
             $pending_user_count = $pending_user->total;

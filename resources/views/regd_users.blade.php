@@ -45,7 +45,7 @@
 									<th>Email</th>
 									<th></th>
 									<th></th>
-									<th>Assign Class</th>
+									<!-- <th>Assign Class</th> -->
 								</tr>
 							</thead>
 						    @foreach ($results as $result)
@@ -60,9 +60,9 @@
 									@elseif ($result->block_status==1)
 											<td><a href="unblock_users/{{ $result->id }}"><button class="btn btn-success">Unblock</button></a></td>
 									@endif
-									<td>
-									    <!-- assign class -->
-									</td>
+									<!-- <td>
+									    assign class
+									</td> -->
 								</tr>
 							@endforeach	
 					    </table>
@@ -90,6 +90,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script> -->
+    <script id="footer" footer="" src="{{ mix('/js/footer.js') }}"></script>
 	<script src="{{ mix('/js/users_list.js') }}"></script>
 
 @endsection

@@ -92,6 +92,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script> -->
+    <script id="footer" footer="" src="{{ mix('/js/footer.js') }}"></script>
 	<script src="{{ mix('/js/users_list.js') }}"></script>
 
 @endsection
