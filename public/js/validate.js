@@ -168,7 +168,7 @@ $(document).ready(function () {
         $("#info_username").css("display", "none");
         var username_pattern = /^([a-zA-Z0-9@_]+)$/;
         var username = $('#username').val();
-        $.get("fetch_info", {
+        $.get("/fetch_info", {
           q1: "username",
           q2: username
         }, function (data) {
@@ -191,7 +191,7 @@ $(document).ready(function () {
       } else if (event.target.id === 'email') {
         $("#info_email").css("display", "none");
         var email = $('#email').val();
-        $.get("fetch_info", {
+        $.get("/fetch_info", {
           q1: "email",
           q2: email
         }, function (data) {

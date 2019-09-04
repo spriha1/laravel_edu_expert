@@ -194,6 +194,33 @@ $(document).ready(function () {
     });
   } else if (footer === "timesheet_footer") {
     $.widget.bridge('uibutton', $.ui.button);
+  } else if (footer === "forgot_password_footer") {
+    $(document).ready(function () {
+      $('button').click(function () {
+        event.preventDefault();
+
+        if ($('#username').val().trim() === "") {
+          $('#username').css("borderColor", "red");
+          $("#alert").text("Please enter a username");
+          $("#alert").css("display", "block");
+        } else {
+          // console.log('hi');
+          var username = $('#username').val();
+          $.get("/fetch_info", {
+            q1: "username",
+            q2: username
+          }, function (data) {
+            if (Number(data) === 0) {
+              $('#username').css("borderColor", "red");
+              $("#alert").text("This username does not exist");
+              $("#alert").css("display", "block");
+            } else {
+              $('#login').submit();
+            }
+          });
+        }
+      });
+    });
   }
 });
 

@@ -3,7 +3,6 @@
 		<i class="fa fa-address-card"></i> <span>Dashboard</span>
 	</a>
 </li>
-
 <li>
 	<a href="/profile">
 		<i class="fa fa-address-card"></i> <span>My Profile</span>
@@ -24,13 +23,11 @@
 		<i class="fa fa-th"></i> <span>Teacher Timesheet</span>
 	</a>
 </li>
-
 <li>
 	<a href="/timesheets">
 		<i class="fa fa-th"></i> <span>Timesheets</span>
 	</a>
 </li>
-
 <li>
 	<a href="/task_management">
 		<i class="fa fa-th"></i> <span>Task Management</span>
