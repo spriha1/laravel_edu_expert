@@ -20,7 +20,7 @@
 		<div class="row">
 			<div class="col-lg-4 col-xs-6">
 				<!-- small box -->
-				<div class="small-box bg-aqua">
+				<div class="small-box bg-red">
 					<div class="inner">
 						<h3>{{ $pending_user_count }}</h3>
 						<p>New Requests</p>
@@ -48,7 +48,7 @@
 			<!-- ./col -->
 			<div class="col-lg-4 col-xs-6">
 				<!-- small box -->
-				<div class="small-box bg-yellow">
+				<div class="small-box bg-aqua">
 					<div class="inner">
 						<h3>{{ $shared_timesheet_count }}</h3>
 						<p>Teacher Timesheets</p>
