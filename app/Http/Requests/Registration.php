@@ -24,8 +24,8 @@ class Registration extends FormRequest
     public function rules()
     {
         return [
-            'fname' => 'required|regex:/^([a-zA-Z]+)$/',
-            'lname' => 'required|regex:/^([a-zA-Z]+)$/',
+            'fname' => 'required|alpha',
+            'lname' => 'required|alpha',
             'username' => 'required|regex:/^([a-zA-Z0-9@_]+)$/',
             'email' => 'required|email',
             'password' => 'required|regex:/^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/',
@@ -42,10 +42,11 @@ class Registration extends FormRequest
             'email.required'  => 'Email ID is required',
             'password.required'  => 'Password is required',
             'user_type.required'  => 'Choose a user type',
-            'fname.regex'  => 'Invalid Firstname',
-            'lname.regex'  => 'Invalid Lastname',
+            'fname.alpha'  => 'Invalid Firstname',
+            'lname.alpha'  => 'Invalid Lastname',
             'username.regex'  => 'Invalid Username',
             'password.regex'  => 'Invalid Password',
+            'email.email'  => 'Invalid Email',
         ];
     }
 }

@@ -3,6 +3,11 @@
 @section('title', 'Edu Expert')
 
 @section('content')
+<style>
+    .my-error {
+        display: none;
+    }
+</style>
     <body class="hold-transition register-page">
     <div class="register-box">
         <div class="register-logo">
@@ -19,24 +24,29 @@
                 <div class="form-group has-feedback">
                     <input type="text" class="form-control" placeholder="First name" id="fname" name="fname">
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    <label id="fname-error" class="error my-error" for="fname"></label>
                 </div>
                 <div class="form-group has-feedback">
                     <input type="text" class="form-control" placeholder="Last name" id="lname" name="lname">
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    <label id="lname-error" class="error my-error" for="lname"></label>
                 </div>
                 <div class="form-group has-feedback">
                     <input type="email" class="form-control" placeholder="Email" id="email" name="email">
                     <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                    <label id="email-error" class="error my-error" for="email"></label>
                 </div>
                 <div id="info_username" class='text-info' style="display: none;">
                 </div>
                 <div class="form-group has-feedback">
                     <input type="text" class="form-control" placeholder="Username" id="username" name="username">
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    <label id="username-error" class="error my-error" for="username"></label>
                 </div>
                 <div class="form-group has-feedback">
                     <input type="password" class="form-control" placeholder="Password" id="password" name="password">
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    <label id="password-error" class="error my-error" for="password"></label>
                 </div>
                 <div id="info_password" class='text-info' style="display: none;">
                 </div>
@@ -48,6 +58,7 @@
                         @endforeach
                     </select>
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    <label id="user_type-error" class="error my-error" for="user_type"></label>
                 </div>
                 <div class="form-group has-feedback" style="display:none;">
                     <select class="form-control subject" id="subject" name="subject[]" multiple="multiple" style="width:100%">
@@ -76,7 +87,9 @@
 @endsection
 
 @section('footer')
+
     @include('layouts.footer')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.js"></script>
     <!-- <script src="{{ asset('js/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('js/dist/bootstrap.min.js') }}"></script>
     <script src="{{ asset('js/dist/icheck.min.js') }}"></script>
