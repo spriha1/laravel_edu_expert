@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Repositories\Subject\Repository as SubjectRepository;
+use App\Repositories\Subject\Eloquent as SubjectEloquent;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $this->app->singleton(SubjectRepository::class,SubjectEloquent::class);
     }
 }

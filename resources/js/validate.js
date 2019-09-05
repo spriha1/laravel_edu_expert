@@ -49,7 +49,7 @@ $(document).ready(function() {
 			$.post('register' , $('#registration').serialize() , function(result){
 				$("#alert").css("display" , "block");
 				$("#alert").text(result);
-			})
+			});
 		}
 
 		// if (event.target.id === 'registration') {

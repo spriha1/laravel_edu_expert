@@ -53,7 +53,7 @@
     @include('layouts.footer')
     <script id="footer" footer="footer" src="{{ mix('/js/footer.js') }}"></script>
     
-    <script src="{{ mix('/js/validate.js') }}"></script>
+    <!-- <script src="{{ mix('/js/validate.js') }}"></script> -->
 
    <!--  <script src="{{ asset('js/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('js/dist/bootstrap.min.js') }}"></script>

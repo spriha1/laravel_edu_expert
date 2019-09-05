@@ -12,7 +12,8 @@ use App\Http\Requests\Registration;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-
+Use Illuminate\Support\Facades\Log;
+use Exception;
 use Illuminate\Support\Facades\Hash;
 class AjaxController extends Controller
 {
@@ -32,36 +33,56 @@ class AjaxController extends Controller
 	{
 		$goal_plan = new GoalPlan;
 		$from_time = time();
-		$id = $goal_plan->insertGetId(
-			['user_id' => $request->input('user_id'), 'goal' => $request->input('goal'), 'on_date' => $request->input('on_date'), 'from_time' => $from_time]
-		);
-		$goal_plan = $this->goal_plan->where([
-			['user_id', $request->input('user_id')],
-			['id', $id]
-		])->get();
-		return(json_encode($goal_plan));
+        try {
+            $id = $goal_plan->insertGetId(
+                ['user_id' => $request->input('user_id'), 'goal' => $request->input('goal'), 'on_date' => $request->input('on_date'), 'from_time' => $from_time]
+            );
+            $goal_plan = $this->goal_plan->where([
+                ['user_id', $request->input('user_id')],
+                ['id', $id]
+            ])->get();
+            return(json_encode($goal_plan));
+        }
+		catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 	}
 
 	public function update_goals(Request $request)
 	{
 		$to_time = time();
-		$this->goal_plan->where('id', $request->input('goal_id'))->update(['to_time' => $to_time, 'check_status' => 1]);
-		$goal_plan = $this->goal_plan->where('id', $request->input('goal_id'))->select('total_time')->get();
-		return(json_encode($goal_plan));
+        try {
+            $this->goal_plan->where('id', $request->input('goal_id'))->update(['to_time' => $to_time, 'check_status' => 1]);
+            $goal_plan = $this->goal_plan->where('id', $request->input('goal_id'))->select('total_time')->get();
+            return(json_encode($goal_plan));
+        }
+		catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 	}
 
 	public function display_goals(Request $request)
 	{
-		$goal_plan = $this->goal_plan->where([
-			['user_id', $request->input('user_id')],
-			['on_date', $request->input('date')]
-		])->get();
-		return(json_encode($goal_plan));
+        try {
+            $goal_plan = $this->goal_plan->where([
+                ['user_id', $request->input('user_id')],
+                ['on_date', $request->input('date')]
+            ])->get();
+            return(json_encode($goal_plan));
+        }
+		catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 	}
 
 	public function remove_goals(Request $request)
 	{
-		$this->goal_plan->where('id', $request->input('goal_id'))->delete();
+        try {
+            $this->goal_plan->where('id', $request->input('goal_id'))->delete();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 	}
 
     public function fetch_info(Request $request)
@@ -69,11 +90,16 @@ class AjaxController extends Controller
         $search_field = $request->input('q1');
         $search_field_value = $request->input('q2');
         $res = 0;
-        $results = $this->user->where($search_field, $search_field_value)->select($search_field)->get();
-        if($results->count()) {
-            $res = 1;
+        try {
+            $results = $this->user->where($search_field, $search_field_value)->select($search_field)->get();
+            if($results->count()) {
+                $res = 1;
+            }
+            return ($res);
         }
-        return ($res);
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
     }
 
     public function register(Request $request, Registration $req)
@@ -98,6 +124,9 @@ class AjaxController extends Controller
 		$usertype = $validated['user_type'];
 		$hash = md5(uniqid());
 		$msg = "";
+        try {
+
+        }
 		$results = $this->user->where('email', $email)->select('id', 'block_status')->get();
 		if (!$results->count()) {
 
@@ -231,7 +260,12 @@ class AjaxController extends Controller
     	if ($request->filled('day')) {
     		$length = count($request->input('day'));
     		for ($i = 0; $i < $length; $i++) {
-    			$this->holiday->insert(['dow' => $request->input('day')[$i]]);
+                try {
+                    $this->holiday->insert(['dow' => $request->input('day')[$i]]);
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
     		}
     	}
     	else if ($request->filled('start_date') && $request->filled('end_date')) {
@@ -262,7 +296,12 @@ class AjaxController extends Controller
         		$start_date = Carbon::createFromFormat("d.m.Y" , $start_date)->timestamp;
         		$end_date = Carbon::createFromFormat("d.m.Y" , $end_date)->timestamp;
         	}
-        	$this->holiday->insert(['start_date' => $start_date, 'end_date' => $end_date]);
+            try {
+                $this->holiday->insert(['start_date' => $start_date, 'end_date' => $end_date]);
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
     	}
 		return("Added successfully");
     }
