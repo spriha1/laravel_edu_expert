@@ -123,8 +123,7 @@ class AjaxController extends Controller
 
 					$subject = $request->subject;
 					$length = count($subject);
-					for($i = 0; $i < $length; $i++)
-					{
+					for ($i = 0; $i < $length; $i++) {
 						
 						$teacher_subject = new TeacherSubject;
 						foreach ($results as $result) {
@@ -231,8 +230,7 @@ class AjaxController extends Controller
     {
     	if ($request->filled('day')) {
     		$length = count($request->input('day'));
-    		for($i = 0; $i < $length; $i++)
-    		{
+    		for ($i = 0; $i < $length; $i++) {
     			$this->holiday->insert(['dow' => $request->input('day')[$i]]);
     		}
     	}

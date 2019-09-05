@@ -78,25 +78,18 @@
 						<tr class="editable" width="25%" task_id="" style="display:none;">
 							<td class="task"></td>
 							<td width="10%" dow="0" date="">
-								<input class="input" type="text" size="4" style="display:none;">
 							</td>
 							<td width="10%" dow="1" date="">
-								<input class="input" type="text" size="4" style="display:none;">
 							</td>
 							<td width="10%" dow="2" date="">
-								<input class="input" type="text" size="4" style="display:none;">
 							</td>
 							<td width="10%" dow="3" date="">
-								<input class="input" type="text" size="4" style="display:none;">
 							</td>
 							<td width="10%" dow="4" date="">
-								<input class="input" type="text" size="4" style="display:none;">
 							</td>
 							<td width="10%" dow="5" date="">
-								<input class="input" type="text" size="4" style="display:none;">
 							</td>
 							<td width="10%" dow="6" date="">
-								<input class="input" type="text" size="4" style="display:none;">
 							</td>
 						</tr>
 					</table>

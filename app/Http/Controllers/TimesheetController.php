@@ -27,26 +27,22 @@ class TimesheetController extends Controller
         	$date = date_to_timestamp($date_format, $date);
 
         	$results = $this->user_type->join('users', 'users.user_type_id', '=', 'user_types.id')->where('users.id', $request->input('user_id'))->select('user_type')->get();
-        	foreach($results as $result)
-        	{
+        	foreach ($results as $result) {
         		if ($result->user_type === 'Teacher') {
         			$users = $this->user_type->join('users', 'users.user_type_id', '=', 'user_types.id')->where('user_types.user_type', 'Admin')->select('users.id')->get();
-        			foreach ($users as $user)
-        			{
+        			foreach ($users as $user) {
         				$to_id = $user->id;
         			}
         		}
         		else if ($result->user_type === 'Student') {
                     $classes = $this->user->where('id', $request->input('user_id'))->select('class')->get();
-                    foreach($classes as $class)
-                    {
+                    foreach ($classes as $class) {
                         $results = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
                         ->where([
                             ['user_types.user_type', 'Teacher'],
                             ['users.class', $class->class]
                         ])->select('users.id')->get();
-                        foreach($results as $result)
-                        {
+                        foreach ($results as $result) {
                             $to_id = $result->id;
                         }
                     }
@@ -70,8 +66,7 @@ class TimesheetController extends Controller
 			$counter = 0;
 
 			$holidays = $this->holiday->select()->get();
-			foreach($holidays as $holiday)
-			{
+			foreach ($holidays as $holiday) {
 				if (!is_null($holiday->dow) && $dow == $holiday->dow) {
 					$counter++;
 				}
@@ -120,7 +115,7 @@ class TimesheetController extends Controller
 			$ts = $ts - $offset*86400;
 			$week_dates = array();
 			// loop from Monday till Sunday 
-			for ($i = 0; $i < 7; $i++, $ts += 86400){
+			for ($i = 0; $i < 7; $i++, $ts += 86400) {
 				array_push($week_dates, $ts);
 
 			}
@@ -134,11 +129,9 @@ class TimesheetController extends Controller
 
 			$holidays = $this->holiday->select()->get();
 			$length = count($week_dates);
-			for($i = 0; $i < $length; $i++) 
-			{
+			for ($i = 0; $i < $length; $i++) {
 				$dow = date('w', $week_dates[$i]);
-				foreach ($holidays as $holiday)
-				{
+				foreach ($holidays as $holiday) {
 					if (!is_null($holiday->dow) && $dow == $holiday->dow) {
 						$week_dates[$i] = 0;
 					}
@@ -282,7 +275,7 @@ class TimesheetController extends Controller
             $ts = $ts - $offset*86400;
             $week_dates = array();
             // loop from Monday till Sunday 
-            for ($i = 0; $i < 7; $i++, $ts += 86400){
+            for ($i = 0; $i < 7; $i++, $ts += 86400) {
                 array_push($week_dates, $ts);
 
             }
@@ -296,11 +289,9 @@ class TimesheetController extends Controller
 
             $holidays = $this->holiday->select()->get();
             $length = count($week_dates);
-            for($i = 0; $i < $length; $i++) 
-            {
+            for ($i = 0; $i < $length; $i++) {
                 $dow = date('w', $week_dates[$i]);
-                foreach ($holidays as $holiday)
-                {
+                foreach ($holidays as $holiday) {
                     if (!is_null($holiday->dow) && $dow == $holiday->dow) {
                         $week_dates[$i] = 0;
                     }
@@ -428,8 +419,7 @@ class TimesheetController extends Controller
                     ['task_id', $request->input('task_id')],
                     ['teacher_id', $request->input('user_id')]
                 ])->select()->get();
-                foreach($results as $result) 
-                {
+                foreach ($results as $result) {
                     if ($result->on_date == $date) {
                         $this->teacher_task->where([
                             ['task_id', $request->input('task_id')],
@@ -444,8 +434,7 @@ class TimesheetController extends Controller
                     ['task_id', $request->input('task_id')],
                     ['student_id', $request->input('user_id')]
                 ])->select()->get();
-                foreach($results as $result) 
-                {
+                foreach ($results as $result) {
                     if ($result->on_date == 0 && $result->total_time == 0) {
                         $this->student_task->where([
                             ['task_id', $request->input('task_id')],

@@ -171,8 +171,7 @@ class ProjectController extends Controller
     public function render_admin_dashboard()
     {
         $regd_users = $this->user->where('user_reg_status', 1)->selectRaw('count(*) as total')->get();
-        foreach($regd_users as $regd_user)
-        {
+        foreach ($regd_users as $regd_user) {
             $regd_user_count = $regd_user->total;
         }
 
@@ -180,14 +179,12 @@ class ProjectController extends Controller
             ['user_reg_status', 0],
             ['email_verification_status', 1]
         ])->selectRaw('count(*) as total')->get();
-        foreach($pending_users as $pending_user)
-        {
+        foreach ($pending_users as $pending_user) {
             $pending_user_count = $pending_user->total;
         }
 
         $shared_timesheets = $this->shared_timesheet->where('to_id', Auth::id())->selectRaw('count(*) as total')->get();
-        foreach($shared_timesheets as $shared_timesheet)
-        {
+        foreach ($shared_timesheets as $shared_timesheet) {
             $shared_timesheet_count = $shared_timesheet->total;
         }
 
@@ -214,8 +211,7 @@ class ProjectController extends Controller
         ->where('users.id', Auth::id())
         ->select('user_type')->get();
 
-        foreach($usertypes as $usertype)
-        {
+        foreach ($usertypes as $usertype) {
             if ($usertype->user_type === 'Teacher') {
                 $rates = $this->teacher_rate->where('teacher_id', Auth::id())->select('rate')->get();
                 return view('profile', [
@@ -257,8 +253,7 @@ class ProjectController extends Controller
             ['email_verification_status', 0]
         ])->select('id')->get();
         if($result->count()) {
-            foreach($result as $res)
-            {
+            foreach ($result as $res) {
                 $this->user->where([
                     ['id', $res->id],
                     ['email_verification_status', 0]
@@ -279,8 +274,7 @@ class ProjectController extends Controller
                 $unique = uniqid();
                 $this->user->where('username', $request->input('username'))->update(['token' => $unique]);
                 $results = $this->user->where('username', $request->input('username'))->select('email', 'token')->get();
-                foreach($results as $result)
-                {
+                foreach ($results as $result) {
                     Mail::to($result->email)->send(new ForgotPassword($result->token));
                     echo "Please reset your password by clicking the link that has been sent to your email.";
                 }
@@ -367,12 +361,10 @@ class ProjectController extends Controller
             $end_date = getdate($end_date);
             $end_date = $end_date['year'].'-'.$end_date['mon'].'-'.$end_date['mday'];
             $end_date = strtotime($end_date);
-
             $length = count($request->input('subject'));
-            for($i = 0; $i < $length; $i++)
-            {
+            for ($i = 0; $i < $length; $i++) {
                 $subject_id = $request->input('subject')[$i];
-                for($a = $start_date; $a < $end_date; $a = $a + 86400) {
+                for($a = $start_date; $a <= $end_date; $a = $a + 86400) {
                     $result = $this->task->where([
                         ['subject_id', $subject_id],
                         ['class', $request->input('class')],
@@ -393,10 +385,9 @@ class ProjectController extends Controller
                             ['class', $request->input('class')],
                             ['subject_id', $subject_id]
                         ])->select('teacher_id')->distinct()->get();
-                        foreach($result as $key => $value)
-                        {
-                            for($z = $start_date; $z <= $end_date; $z = $z + 86400)
-                            {
+
+                        foreach ($result as $key => $value) {
+                            for ($z = $start_date; $z <= $end_date; $z = $z + 86400) {
                                 $this->teacher_task->insert([
                                     'task_id' => $task_id,
                                     'teacher_id' => $value['teacher_id'],
@@ -409,8 +400,7 @@ class ProjectController extends Controller
                             ['class', $request->class]
                         ])->select('users.id')->get();
                         foreach ($result as $key => $value) {
-                            for($z = $start_date; $z <= $end_date; $z = $z + 86400)
-                            {
+                            for ($z = $start_date; $z <= $end_date; $z = $z + 86400) {
                                 $this->student_task->insert([
                                     'task_id' => $task_id,
                                     'student_id' => $value['id'],

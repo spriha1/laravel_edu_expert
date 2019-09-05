@@ -42,8 +42,7 @@ class ClassController extends Controller
     {
     	if ($request->filled('class') && $request->filled('subjects')) {
     		$length = count($request->input('subjects'));
-    		for($i = 0; $i < $length; $i++)
-    		{
+    		for ($i = 0; $i < $length; $i++) {
     			$id = $this->clas->insertGetId([
     				'class' => $request->input('class'),
     				'subject_id' => $request->input('subjects')[$i],
@@ -86,8 +85,7 @@ class ClassController extends Controller
     {
     	if ($request->filled('class') && $request->filled('subjects')) {
     		$length = count($request->input('subjects'));
-    		for($i = 0; $i < $length; $i++)
-    		{
+    		for ($i = 0; $i < $length; $i++) {
     			$id = $this->clas->insertGetId([
     				'class' => $request->input('class'),
     				'subject_id' => $request->input('subjects')[$i],
