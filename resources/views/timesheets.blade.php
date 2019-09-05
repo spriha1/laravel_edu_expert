@@ -22,7 +22,7 @@
 								<select name="search" id="search">
 									<option>Select User</option>
 									@foreach($users as $user)
-										<option value="{{$user->id}}">{{$user->firstname}} ({{ $user->email }})</option>
+										<option value="{{$user->id}}" usertype="{{$user->user_type}}">{{$user->firstname}} ({{ $user->email }})</option>
 									@endforeach
 								</select>
 							</div>
@@ -32,7 +32,7 @@
 					<input type="hidden" name="date_format" id="date_format" value="{{ Auth::user()->date_format }}">
 					<div class="box-body">
 						<input type="hidden" id="user_id" value="{{ Auth::id() }}">
-						<input type="hidden" id="user_type" value="teacher">
+						<!-- <input type="hidden" id="user_type" value="teacher"> -->
 
 						<table id="timetable" class="table table-bordered table-striped responsive">
 							<thead>
@@ -114,10 +114,5 @@
 	@include('layouts.footer')
     <script id="footer" footer="profile_footer" src="{{ mix('/js/footer.js') }}"></script>
 	<script src="{{ mix('/js/admin_timetable.js') }}"></script>
-	<script>
-		$(document).ready(function() {
-			$('#search').select2();
-		});
-	</script>
 
 @endsection

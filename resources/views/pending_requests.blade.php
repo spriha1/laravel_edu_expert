@@ -9,26 +9,22 @@
 
 <div class="content-wrapper">
 	<br><br>
-	<nav class="navbar navbar-transparent justify-content-center">
-		<form class="form-inline" method="POST" action="/pending_requests">
-		  	@csrf
-			<div class="form-group mx-auto">
-		    <select class="form-control mb-2 mr-sm-2" id="user_type" name="user_type">
-		        <option value="0">Select User Type</option>
-		       	@foreach($user_types as $user_type)
-					<option value={{ $user_type->user_type }} {{ ($user_type->user_type === $search)?"selected":"" }}>{{ $user_type->user_type }}
-					</option>
-				@endforeach
-	      	</select>
-	      	</div>
-	      	
-	      	<div class="form-group mx-auto">
-	      		<button class="btn btn-success form-control mr-sm-2 mb-2" type="submit">Go</button>
-	      	</div>
-	  </form>
-	</nav>
-
-	<br><br>
+	<form class="form-inline" method="POST" action="/pending_requests">
+	  	@csrf
+		<div class="form-group mx-auto">
+	    <select class="form-control mb-2 mr-sm-2" id="user_type" name="user_type">
+	        <option value="0">Select User Type</option>
+	       	@foreach($user_types as $user_type)
+				<option value={{ $user_type->user_type }} {{ ($user_type->user_type === $search)?"selected":"" }}>{{ $user_type->user_type }}
+				</option>
+			@endforeach
+      	</select>
+      	</div>
+      	
+      	<div class="form-group mx-auto">
+      		<button class="btn btn-success form-control mr-sm-2 mb-2" type="submit">Go</button>
+      	</div>
+  	</form>
 
 	<section class="content">
 		<div class="row">

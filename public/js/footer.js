@@ -194,6 +194,7 @@ $(document).ready(function () {
     $('.day').select2({
       width: 'resolve'
     });
+    $('#search').select2();
   } else if (footer === "timesheet_footer") {
     $.widget.bridge('uibutton', $.ui.button);
   } else if (footer === "forgot_password_footer") {

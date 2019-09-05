@@ -104,6 +104,7 @@ $(document).ready(function() {
 		$('.day').select2({
 			width: 'resolve'
 		});
+		$('#search').select2();
 	}
 
 	else if (footer === "timesheet_footer") {

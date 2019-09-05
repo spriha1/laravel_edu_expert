@@ -4,19 +4,22 @@ $(document).ready(function() {
 	        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 	    }
 	});
-	var user_id;
+	var user_id, user_type;
 	var date = new Date();
 	$('.datepicker').datepicker('setDate', date);
 	var date = $('#date').val(); 
 	// var user_id = $('#user_id').val();
-	var user_type = $('#user_type').val();
+	// var user_type = $('#user_type').val();
 	var date_format = $('#date_format').val();
 
 	
 
 	$('#search').change(function() {
 		user_id = $('#search').val();
-		load_display_data(date,user_id,user_type,date_format);
+		user_type = $('option:selected').attr('usertype');
+		date = $('#date').val(); 
+		date_format = $('#date_format').val();
+		load_display_data(date,user_id,date_format,user_type);
 	});
 
 	// $('.input').blur(function() {
@@ -33,17 +36,23 @@ $(document).ready(function() {
 	$('.datepicker').datepicker().on('changeDate', function(e) {
 		var date = e.format();
 		// var user_id = $('#user_id').val();
-		var user_type = $('#user_type').val();
+		// var user_type = $('#user_type').val();
 		var date_format = $('#date_format').val();
 
 		$('.timetable').html("");
-		load_display_data(date,user_id,user_type,date_format);
+		load_display_data(date,user_id,date_format,user_type);
 	})
 })
 
-function load_display_data(date,user_id,user_type,date_format) {
-	$.post('/display_timetable', {date: date, user_id: user_id, user_type: user_type, date_format: date_format}, function(result) {
+function load_display_data(date,user_id,date_format,user_type) {
+	// console.log(date);
+	// console.log(user_id);
+	// console.log(date_format);
+	// console.log(user_type);
+
+	$.post('/post_timesheets', {date: date, user_id: user_id, date_format: date_format, user_type: user_type}, function(result) {
 		var response = JSON.parse(result);
+		$('.timetable').html("");
 		var len = response['original_dates'].length;
 		for (var i = 0; i < len; i++) {
 			var date = new Date(response['original_dates'][i] * 1000);
@@ -79,7 +88,6 @@ function load_display_data(date,user_id,user_type,date_format) {
 
 		var tasks = response[0];
 		var length = tasks.length;
-		if (user_type === 'teacher') {
 			for (var i = 0; i < length; i++) {
 				let element = $(".editable").clone(true).css('display', 'table-row').removeClass('editable');
 				element.attr('task_id', tasks[i][0].task_id);
@@ -120,46 +128,46 @@ function load_display_data(date,user_id,user_type,date_format) {
 					}
 				}
 			}
-		}
+		// }
 
-		else if (user_type === 'student') {
-			for (var i = 0; i < length; i++) {
-				let element = $(".editable").clone(true).css('display', 'table-row').removeClass('editable');
-				element.attr('task_id', tasks[i][0].task_id);
-				element.appendTo('.timetable');
-				var task_id = tasks[i][0].task_id;
+		// else if (user_type === 'Student') {
+		// 	for (var i = 0; i < length; i++) {
+		// 		let element = $(".editable").clone(true).css('display', 'table-row').removeClass('editable');
+		// 		element.attr('task_id', tasks[i][0].task_id);
+		// 		element.appendTo('.timetable');
+		// 		var task_id = tasks[i][0].task_id;
 
-				var len = response['dates'].length;
-				for(var k = 0; k < len; k++)
-				{
-					if(response['dates'][k] != 0) {
-						$("tbody tr[task_id=" + task_id + "] td[dow=" + k + "]").attr('date', response['dates'][k]);
-					}
+		// 		var len = response['dates'].length;
+		// 		for(var k = 0; k < len; k++)
+		// 		{
+		// 			if(response['dates'][k] != 0) {
+		// 				$("tbody tr[task_id=" + task_id + "] td[dow=" + k + "]").attr('date', response['dates'][k]);
+		// 			}
 					
-				}
-				var task = tasks[i][0].name + ' / ' + tasks[i][0].firstname;
-				$("tbody tr[task_id=" + task_id + "] .task").text(task);
-				var len = response[task_id].length;
-				for(var j = 0; j < len; j++)
-				{
-					if(response[task_id][j].length != 0) 
-					{
-						var seconds = response[task_id][j][0].total_time;
-						if (seconds > 0) {
-							var hours = Math.floor(seconds / 3600);
-							seconds = seconds - (hours * 3600);
-							var minutes = Math.floor(seconds / 60);
-							seconds = seconds - (minutes * 60);
-							var time = hours + ':' + minutes + ':' + seconds;
+		// 		}
+		// 		var task = tasks[i][0].name + ' / ' + tasks[i][0].firstname;
+		// 		$("tbody tr[task_id=" + task_id + "] .task").text(task);
+		// 		var len = response[task_id].length;
+		// 		for(var j = 0; j < len; j++)
+		// 		{
+		// 			if(response[task_id][j].length != 0) 
+		// 			{
+		// 				var seconds = response[task_id][j][0].total_time;
+		// 				if (seconds > 0) {
+		// 					var hours = Math.floor(seconds / 3600);
+		// 					seconds = seconds - (hours * 3600);
+		// 					var minutes = Math.floor(seconds / 60);
+		// 					seconds = seconds - (minutes * 60);
+		// 					var time = hours + ':' + minutes + ':' + seconds;
 
-						}
-						var task_id = response[task_id][j][0].task_id;
-						$("tbody tr[task_id=" + task_id + "] td[date=" + response[task_id][j][0].on_date + "] input").val(time);
-						$("tbody tr[task_id=" + task_id + "] td[dow=" + j + "] input").css('display', 'table-row');
+		// 				}
+		// 				var task_id = response[task_id][j][0].task_id;
+		// 				$("tbody tr[task_id=" + task_id + "] td[date=" + response[task_id][j][0].on_date + "] input").val(time);
+		// 				$("tbody tr[task_id=" + task_id + "] td[dow=" + j + "] input").css('display', 'table-row');
 
-					}
-				}
-			}
-		}
+		// 			}
+		// 		}
+		// 	}
+		// }
 	});
 }
