@@ -157,11 +157,11 @@ class ClassController extends Controller
                 $results = $this->task->where([
                     ['subject_id', $request->input('subject_id')],
                     ['class', $request->input('class_id')]
-                ])->select('task_id')->get();
-                foreach ($results as $result) {
-                    $task_id = $result->task_id;
+                ])->select('id')->get();
+                foreach ($results as $res) {
+                    $task_id = $res->id;
+                    $this->teacher_task->where('task_id', $task_id)->update(['teacher_id' => $request->input('teacher_id')]);
                 }
-                $this->teacher_task->where('task_id', $task_id)->update(['teacher_id' => $request->input('teacher_id')]);
             }
     		catch (Exception $e) {
                 Log::error($e->getMessage());
