@@ -21,13 +21,22 @@
 	            </div>
 				<div class="box-body">
 					<div class="form-group">
+						<label for="teacher" class="col-sm-3 control-label">Teacher</label>
+						<div class="col-sm-9">
+							<select class="form-control mb-2 mr-sm-2 teacher" name="teacher" id="teacher">
+						    	@foreach ($teachers as $teacher)
+						        <option value={{ $teacher->id }}>{{ $teacher->firstname }}</option>
+						        @endforeach
+					      	</select>
+						</div>
+					</div>
+					<div class="form-group">
 						<label for="class" class="col-sm-3 control-label">Class</label>
 						<div class="col-sm-9">
 							<select class="form-control mb-2 mr-sm-2 class" name="class" id="class">
-						    	@foreach ($classes as $class)
-						        <option value={{ $class->class }}>{{ $class->class }}</option>
-						        @endforeach
+						    	
 					      	</select>
+					      	<option class="clone_" value=""></option>
 						</div>
 					</div>
 					<div class="form-group">

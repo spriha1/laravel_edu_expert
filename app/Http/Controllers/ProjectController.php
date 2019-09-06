@@ -318,9 +318,11 @@ class ProjectController extends Controller
 
     public function task_management()
     {
+        $teachers = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')->where('user_type', 'Teacher')->select('firstname', 'users.id')->get();
         $classes = $this->clas->select('class')->distinct()->get();
         return view('task_management', [
-            'classes' => $classes
+            'classes' => $classes,
+            'teachers' => $teachers
         ]);
     }
 

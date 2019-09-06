@@ -57,6 +57,8 @@ Route::middleware('auth')->group(function () {
 
 		Route::get('/task_management', 'ProjectController@task_management');
 		Route::post('/add_timetable', 'ProjectController@add_timetable');
+		Route::post('/fetch_teacher_class', 'AjaxController@fetch_teacher_class');
+		Route::post('/fetch_teacher_class_subjects', 'AjaxController@fetch_teacher_class_subjects');
 
 		Route::get('/add_users/{id}', 'ProjectController@add_users');
 		Route::get('/remove_users/{id}', 'ProjectController@remove_users');

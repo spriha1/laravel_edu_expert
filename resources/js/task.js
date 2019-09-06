@@ -19,13 +19,37 @@ $(document).ready(function() {
 		});
 	})
 
+	$('#teacher').change(function() {
+		var teacher_id = $(this).val();
+		$('.class').val('');
+		$('.class').html('');
+		// $('.class').select2('destroy').select2();
+
+		$.post('/fetch_teacher_class', {teacher_id: teacher_id}, function(result) {
+			var response = JSON.parse(result);
+			var length = response.length;
+			// console.log(response);
+
+			for(var i = 0; i < length; i++)
+			{
+				var element = $('.clone_').clone(true).removeClass('clone_');
+
+				element.attr('value', response[i].class);
+				element.text(response[i].class);
+				element.appendTo('.class');
+			}
+		});
+	})
+
 	$('#class').change(function() {
 		var class_id = $(this).val();
+		var teacher_id = $('#teacher').val();
+
 		$('.subject').val('');
 		$('.subject').html('');
 		$('.subject').select2('destroy').select2();
 
-		$.post('/fetch_subjects', {class_id: class_id}, function(result) {
+		$.post('/fetch_teacher_class_subjects', {class_id: class_id, teacher_id: teacher_id}, function(result) {
 			var response = JSON.parse(result);
 			var length = response.length;
 			// console.log(response);

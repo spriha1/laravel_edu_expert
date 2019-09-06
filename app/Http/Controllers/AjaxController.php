@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\{User, UserType, TeacherSubject, GoalPlan, Holiday, TeacherRate};
+use App\{User, UserType, TeacherSubject, GoalPlan, Holiday, TeacherRate, Clas, Subject};
 use Carbon\Carbon;
 use App\Mail\UserVerification;
 use App\Mail\UpdateMail;
@@ -15,9 +15,10 @@ use Illuminate\Support\Facades\Auth;
 Use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+
 class AjaxController extends Controller
 {
-    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate;
+    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate, $clas, $subject;
 
     public function __construct()
     {
@@ -27,6 +28,8 @@ class AjaxController extends Controller
         $this->goal_plan = new GoalPlan;
         $this->holiday = new Holiday;
         $this->teacher_rate = new TeacherRate;
+        $this->clas = new Clas;
+        $this->subject = new Subject;
     }
 
 	public function add_goals(Request $request)
@@ -124,9 +127,6 @@ class AjaxController extends Controller
 		$usertype = $validated['user_type'];
 		$hash = md5(uniqid());
 		$msg = "";
-        try {
-
-        }
 		$results = $this->user->where('email', $email)->select('id', 'block_status')->get();
 		if (!$results->count()) {
 
@@ -304,6 +304,22 @@ class AjaxController extends Controller
             }
     	}
 		return("Added successfully");
+    }
+
+    public function fetch_teacher_class(Request $request)
+    {
+        $results = $this->clas->where('teacher_id', $request->input('teacher_id'))->select('class')->get();
+        return(json_encode($results));
+    }
+
+    public function fetch_teacher_class_subjects(Request $request)
+    {
+        $results = $this->clas->join('subjects', 'subjects.id', '=', 'class.subject_id')
+        ->where([
+            ['class', $request->input('class_id')],
+            ['teacher_id', $request->input('teacher_id')]
+        ])->select('subjects.id', 'name')->get();
+        return(json_encode($results));
     }
 
 }
