@@ -16,6 +16,9 @@ Route::middleware('CheckLoginStatus')->group(function() {
 	Route::get('/forgot_password', 'ProjectController@forgot_password');
 });
 
+Route::get('/login/google', 'Auth\LoginController@redirectToProvider');
+Route::get('/login/google/callback', 'Auth\LoginController@handleProviderCallback');
+
 Route::get('/fetch_info', 'AjaxController@fetch_info');
 Route::post('/register', 'AjaxController@register');
 Route::post('/login', 'ProjectController@login');

@@ -42,8 +42,9 @@
             </div>
             </form>
 
-       
         <a href="register" class="text-center">Register Here</a>
+        <br>
+        <a href="/login/google" class="text-center">Login using Google</a>
 
       </div>
     </div>
