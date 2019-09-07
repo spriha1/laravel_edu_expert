@@ -38,8 +38,9 @@ $(document).ready(function() {
 				element.text(response[i].class);
 				element.appendTo('.class');
 			}
+			$('#class').trigger('change');
 		});
-	})
+	}).trigger('change')
 
 	$('#class').change(function() {
 		var class_id = $(this).val();

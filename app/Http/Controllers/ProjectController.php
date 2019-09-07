@@ -374,7 +374,7 @@ class ProjectController extends Controller
                         ['end_date', '>=', $a]
                     ])->select()->get();
                     if ($result->count()) {
-                        return("The task has already been added");
+                        return("The task has already been added fro these dates");
                     }
                     else {
                         $task_id = $this->task->insertGetId([

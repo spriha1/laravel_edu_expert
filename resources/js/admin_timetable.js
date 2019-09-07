@@ -11,30 +11,147 @@ $(document).ready(function() {
 
 	var date_format = $('#date_format').val();
 
-	
-
 	$('#search').change(function() {
 		user_id = $('#search').val();
 		user_type = $('option:selected').attr('usertype');
-		date = $('#date').val(); 
+		date = $('#date').val();
 		date_format = $('#date_format').val();
+		var d = format_date(date, date_format);
+		var week = getNumberOfWeek(d);
+		$.get('/fetch_request_status', {user_id: user_id, week: week}, function(result) {
+			var response = JSON.parse(result);
+			if (response[0]) {
+				var status = response[0].name;
+				if (status == 'Pending') {
+					$('#accept').css('display', 'inline');
+					$('#reject').css('display', 'inline');
+				}
+				else if (status == 'Approved') {
+					$('#accept').css('display', 'none');
+					$('#reject').css('display', 'inline');
+					$('.badge').text('Approved');
+				}
+				else if (status == 'Rejected') {
+					$('.badge').text('Rejected');
+					$('#accept').css('display', 'inline');
+					$('#reject').css('display', 'none');
+				}
+			}
+			else {
+				$('.badge').text('');
+				$('#accept').css('display', 'none');
+				$('#reject').css('display', 'none');
+			}
+		})
 		load_display_data(date,user_id,date_format,user_type);
 	});
 
+	$('#accept').click(function() {
+		user_id = $('#search').val();
+		date = $('#date').val();
+		date_format = $('#date_format').val();
+		var d = format_date(date, date_format);
+		var week = getNumberOfWeek(d);
+		$.post('/update_request_status', {user_id: user_id, week: week, status: "Approved"}, function(result) {
+			if(result) {
+				$('#accept').css('display', 'none');
+				$('#reject').css('display', 'inline');
+				$('.badge').text('Approved');
+			}
+		})
+	})
+
+	$('#reject').click(function() {
+		user_id = $('#search').val();
+		date = $('#date').val();
+		date_format = $('#date_format').val();
+		var d = format_date(date, date_format);
+		var week = getNumberOfWeek(d);
+		$.post('/update_request_status', {user_id: user_id, week: week, status: "Rejected"}, function(result) {
+			if(result) {
+				$('.badge').text('Rejected');
+				$('#accept').css('display', 'inline');
+				$('#reject').css('display', 'none');
+			}
+		})
+	})
+
 	$('.datepicker').datepicker().on('changeDate', function(e) {
 		var date = e.format();
-		
+		user_id = $('#search').val();
 		var date_format = $('#date_format').val();
-
+		var d = format_date(date, date_format);
+		var week = getNumberOfWeek(d);
+		$.get('/fetch_request_status', {user_id: user_id, week: week}, function(result) {
+			var response = JSON.parse(result);
+			if (response[0]) {
+				var status = response[0].name;
+				if (status == 'Pending') {
+					$('#accept').css('display', 'inline');
+					$('#reject').css('display', 'inline');
+				}
+				else if (status == 'Approved') {
+					$('#accept').css('display', 'none');
+					$('#reject').css('display', 'inline');
+					$('.badge').text('Approved');
+				}
+				else if (status == 'Rejected') {
+					$('.badge').text('Rejected');
+					$('#accept').css('display', 'inline');
+					$('#reject').css('display', 'none');
+				}
+			}
+			else {
+				$('.badge').text('');
+				$('#accept').css('display', 'none');
+				$('#reject').css('display', 'none');
+			}
+		})
 		$('.timetable').html("");
 		load_display_data(date,user_id,date_format,user_type);
 	})
 })
 
+function format_date(date, date_format) {
+	if (date_format === "yyyy/mm/dd") {
+		date = date.split('/');
+		date = new Date(date[0], date[1]-1, date[2]);
+	}
+	else if (date_format === "yyyy.mm.dd") {
+		date = date.split('.');
+		date = new Date(date[0], date[1]-1, date[2]);
+	}
+	else if (date_format === "yyyy-mm-dd") {
+		date = date.split('-');
+		date = new Date(date[0], date[1]-1, date[2]);
+	}
+	else if (date_format === "dd/mm/yyyy") {
+		date = date.split('/');
+		date = new Date(date[2], date[1]-1, date[0]);
+	}
+	else if (date_format === "dd-mm-yyyy") {
+		date = date.split('-');
+		date = new Date(date[2], date[1]-1, date[0]);
+	}
+	else if (date_format === "dd.mm.yyyy") {
+		date = date.split('.');
+		date = new Date(date[2], date[1]-1, date[0]);
+	}
+	return date;
+}
+
+function getNumberOfWeek(date) {
+    var today = new Date(date);
+    var firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+    var pastDaysOfYear = (today - firstDayOfYear) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+}
+
 function load_display_data(date,user_id,date_format,user_type) {
 
 	$.post('/post_timesheets', {date: date, user_id: user_id, date_format: date_format, user_type: user_type}, function(result) {
 		var response = JSON.parse(result);
+		console.log(response)
 		$('.timetable').html("");
 		var len = response['original_dates'].length;
 		for (var i = 0; i < len; i++) {

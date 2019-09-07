@@ -11,6 +11,22 @@ $(document).ready(function() {
 	var user_type = $('#user_type').val();
 	var date_format = $('#date_format').val();
 
+	var d = format_date(date, date_format);
+	var week = getNumberOfWeek(d);
+	$.get('/fetch_request_status', {user_id: user_id, week: week}, function(result) {
+		var response = JSON.parse(result);
+		if (response[0]) {
+			var status = response[0].name;
+			$('.badge').text(status);
+			if ((status == 'Pending') || (status == 'Approved')) {
+				$('button').css('display', 'none');
+			}
+		}
+		else {
+			$('.badge').text('');
+		}
+	})
+
 	load_display_data(date,user_id,user_type,date_format);
 	$('.input').blur(function() {
 		var time = $(this).val();
@@ -29,10 +45,74 @@ $(document).ready(function() {
 		var user_type = $('#user_type').val();
 		var date_format = $('#date_format').val();
 
+		var d = format_date(date, date_format);
+		var week = getNumberOfWeek(d);
+		$.get('/fetch_request_status', {user_id: user_id, week: week}, function(result) {
+			var response = JSON.parse(result);
+			if (response[0]) {
+				var status = response[0].name;
+				$('.badge').text(status);
+			}
+			else {
+				$('.badge').text('');
+			}
+		})
+
 		$('.timetable').html("");
 		load_display_data(date,user_id,user_type,date_format);
-	})
+
+	});
+
+	$('button').click(function() {
+		var user_id = $('#user_id').val();
+		var date_format = $('#date_format').val();
+		var date = $('#date').val(); 
+		var date = format_date(date, date_format);
+		var week = getNumberOfWeek(date);
+		$.post('/update_request_status', {user_id: user_id, week: week, status: "Pending"}, function(result) {
+			if (result == 'Pending') {
+				// $('.badge').addClass('badge-warning');
+				$('button').css('display', 'none');
+				$('.badge').text('Pending');
+			}
+		})
+	});
 })
+
+function format_date(date, date_format) {
+	if (date_format === "yyyy/mm/dd") {
+		date = date.split('/');
+		date = new Date(date[0], date[1]-1, date[2]);
+	}
+	else if (date_format === "yyyy.mm.dd") {
+		date = date.split('.');
+		date = new Date(date[0], date[1]-1, date[2]);
+	}
+	else if (date_format === "yyyy-mm-dd") {
+		date = date.split('-');
+		date = new Date(date[0], date[1]-1, date[2]);
+	}
+	else if (date_format === "dd/mm/yyyy") {
+		date = date.split('/');
+		date = new Date(date[2], date[1]-1, date[0]);
+	}
+	else if (date_format === "dd-mm-yyyy") {
+		date = date.split('-');
+		date = new Date(date[2], date[1]-1, date[0]);
+	}
+	else if (date_format === "dd.mm.yyyy") {
+		date = date.split('.');
+		date = new Date(date[2], date[1]-1, date[0]);
+	}
+	return date;
+}
+
+function getNumberOfWeek(date) {
+    var today = new Date(date);
+    var firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+    var pastDaysOfYear = (today - firstDayOfYear) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+}
 
 function load_display_data(date,user_id,user_type,date_format) {
 	$.post('/display_timetable', {date: date, user_id: user_id, user_type: user_type, date_format: date_format}, function(result) {

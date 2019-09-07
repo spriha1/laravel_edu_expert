@@ -3,6 +3,8 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="google" content="notranslate">
+        
         <!-- <link rel="icon" href="http://eduexpert.local.com/images/favicon.ico" type="image/x-icon" />
         <link rel="shortcut icon" href="http://eduexpert.local.com/images/favicon.ico" type="image/x-icon" /> -->
         <link rel="shortcut icon" href="http://eduexpert.local.com/images/favicon.ico" />

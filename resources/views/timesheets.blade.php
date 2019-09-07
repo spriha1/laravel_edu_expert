@@ -13,18 +13,25 @@
 					<div class="box-header">
 						<!-- <input class="date" id="date" type="date"> -->
 						<div class="row">
-							<div class="col-sm-3">
-								<input id="date" class="datepicker">
+							<div class="col-sm-6">
+								<div class="row">
+									<input id="date" class="datepicker">
+									<button class="btn btn-success" style="display:none" id="accept">Accept</button>
+									<button class="btn btn-danger" style="display:none" id="reject">Reject</button>
+								</div>
 							</div>
-							<div class="col-sm-5">
+							<div class="col-sm-2">
 							</div>
 							<div class="col-sm-4">
-								<select name="search" id="search">
-									<option>Select User</option>
-									@foreach($users as $user)
-										<option value="{{$user->id}}" usertype="{{$user->user_type}}">{{$user->firstname}} ({{ $user->email }})</option>
-									@endforeach
-								</select>
+								<div class="row">
+									<span class="badge"></span>
+									<select name="search" id="search">
+										<option>Select User</option>
+										@foreach($users as $user)
+											<option value="{{$user->id}}" usertype="{{$user->user_type}}">{{$user->firstname}} ({{ $user->email }})</option>
+										@endforeach
+									</select>
+								</div>
 							</div>
 						</div>
 					</div>

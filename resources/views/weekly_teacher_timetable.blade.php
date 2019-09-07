@@ -14,6 +14,7 @@
 						<!-- <input class="date" id="date" type="date"> -->
 						<input id="date" class="datepicker">
 						<button type="submit" class="btn btn-success pull-right">Submit</button>
+						<span class="badge"></span>
 					</div>
 
 					<input type="hidden" name="date_format" id="date_format" value="{{ Auth::user()->date_format }}">

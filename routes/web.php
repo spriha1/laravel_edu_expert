@@ -101,9 +101,11 @@ Route::middleware('auth')->group(function () {
 	Route::post('/update_goals', 'AjaxController@update_goals');
 	Route::post('/display_goals', 'AjaxController@display_goals');
 	Route::post('/remove_goals', 'AjaxController@remove_goals');
+	Route::post('/update_request_status', 'AjaxController@update_request_status');
+	Route::get('/fetch_request_status', 'AjaxController@fetch_request_status');
+	Route::post('/accept_request_status', 'AjaxController@accept_request_status');
+	Route::post('/reject_request_status', 'AjaxController@reject_request_status');
 
-	
-	
 });
 // Auth::routes(['verify' => true]);
 

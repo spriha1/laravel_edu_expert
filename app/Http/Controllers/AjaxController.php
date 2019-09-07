@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\{User, UserType, TeacherSubject, GoalPlan, Holiday, TeacherRate, Clas, Subject};
+use App\{User, UserType, TeacherSubject, GoalPlan, Holiday, TeacherRate, Clas, Subject, RequestStatus, Status};
 use Carbon\Carbon;
 use App\Mail\UserVerification;
 use App\Mail\UpdateMail;
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AjaxController extends Controller
 {
-    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate, $clas, $subject;
+    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate, $clas, $request_status, $status, $subject;
 
     public function __construct()
     {
@@ -30,6 +30,8 @@ class AjaxController extends Controller
         $this->teacher_rate = new TeacherRate;
         $this->clas = new Clas;
         $this->subject = new Subject;
+        $this->request_status = new RequestStatus;
+        $this->status = new Status;
     }
 
 	public function add_goals(Request $request)
@@ -319,6 +321,44 @@ class AjaxController extends Controller
             ['class', $request->input('class_id')],
             ['teacher_id', $request->input('teacher_id')]
         ])->select('subjects.id', 'name')->get();
+        return(json_encode($results));
+    }
+
+    public function update_request_status(Request $request)
+    {
+        
+        $statuses = $this->status->where('name', $request->input('status'))->select('id')->get();
+        foreach ($statuses as $status) {
+            $status_code = $status->id;
+        }
+
+        $results = $this->request_status->where([
+            ['user_id', $request->input('user_id')],
+            ['week_number', $request->input('week')]
+        ])->select()->get();
+
+        if ($results->count()) {
+            $this->request_status->where([
+                ['user_id', $request->input('user_id')],
+                ['week_number', $request->input('week')]
+            ])->update(['status_code' => $status_code]);
+        }
+        else {
+            $this->request_status->insert([
+                'user_id' => $request->input('user_id'),
+                'week_number' => $request->input('week'),
+                'status_code' => $status_code
+            ]);
+        }
+        return $request->input('status');
+    }
+
+    public function fetch_request_status(Request $request)
+    {
+        $results = $this->request_status->join('statuses', 'statuses.id', '=', 'request_status.status_code')->where([
+                ['user_id', $request->input('user_id')],
+                ['week_number', $request->input('week')]
+            ])->select('statuses.name')->get();
         return(json_encode($results));
     }
 
