@@ -34,19 +34,24 @@
                             <label>
                                 <a href="forgot_password">Forgot Password?</a>
                             </label>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
                     </div>
                 </div>
-                <div class="col-xs-4">
-                    <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
-                </div>
-            </div>
             </form>
 
-        <a href="register" class="text-center">Register Here</a>
-        <br>
-        <a href="/login/google" class="text-center">Login using Google</a>
-
-      </div>
+            <a href="register" class="text-center">Register Here</a>
+            <br>
+            <button class="btn btn-light btn-block btn-flat">
+                <a href="/login/google" class="text-center">
+                    <img src="/images/google.png">
+                    Sign In with Google
+                </a>
+            </button>
+        </div>
+    
     </div>
 @endsection
 
