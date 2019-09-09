@@ -45,9 +45,9 @@ class LoginController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function redirectToProvider()
+    public function redirectToProvider($service)
     {
-        return Socialite::driver('google')->redirect();
+        return Socialite::driver($service)->redirect();
     }
 
     /**
@@ -55,14 +55,14 @@ class LoginController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function handleProviderCallback()
+    public function handleProviderCallback($service)
     {
-        $user = Socialite::driver('google')->user();
+        $user = Socialite::driver($service)->user();
 
         $token = $user->token;
         // $secret = $user->tokenSecret;
 
-        $user = Socialite::driver('google')->userFromToken($token);
+        $user = Socialite::driver($service)->userFromToken($token);
 
         $user = User::where([
             ['email', $user->getEmail()],
