@@ -99,17 +99,20 @@ $(document).ready(function () {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
   });
+  var user = $('#user_id').val();
   var date = new Date();
   $('.datepicker').datepicker('setDate', date);
   var date = $('#date').val();
   var user_id = $('#user_id').val();
   var user_type = $('#user_type').val();
   var date_format = $('#date_format').val();
+  var year = parseInt(get_year(date, date_format));
   var d = format_date(date, date_format);
   var week = getNumberOfWeek(d);
   $.get('/fetch_request_status', {
     user_id: user_id,
-    week: week
+    week: week,
+    year: year
   }, function (result) {
     var response = JSON.parse(result);
 
@@ -146,11 +149,13 @@ $(document).ready(function () {
     var user_id = $('#user_id').val();
     var user_type = $('#user_type').val();
     var date_format = $('#date_format').val();
+    var year = parseInt(get_year(date, date_format));
     var d = format_date(date, date_format);
     var week = getNumberOfWeek(d);
     $.get('/fetch_request_status', {
       user_id: user_id,
-      week: week
+      week: week,
+      year: year
     }, function (result) {
       var response = JSON.parse(result);
 
@@ -168,12 +173,15 @@ $(document).ready(function () {
     var user_id = $('#user_id').val();
     var date_format = $('#date_format').val();
     var date = $('#date').val();
+    var year = parseInt(get_year(date, date_format));
     var date = format_date(date, date_format);
     var week = getNumberOfWeek(date);
     $.post('/update_request_status', {
       user_id: user_id,
       week: week,
-      status: "Pending"
+      status: "Pending",
+      year: year,
+      user: user
     }, function (result) {
       if (result == 'Pending') {
         // $('.badge').addClass('badge-warning');
@@ -206,6 +214,30 @@ function format_date(date, date_format) {
   }
 
   return date;
+}
+
+function get_year(date, date_format) {
+  if (date_format === "yyyy/mm/dd") {
+    date = date.split('/');
+    var year = date[0]; // date = new Date(date[0], date[1]-1, date[2]);
+  } else if (date_format === "yyyy.mm.dd") {
+    date = date.split('.');
+    var year = date[0]; // date = new Date(date[0], date[1]-1, date[2]);
+  } else if (date_format === "yyyy-mm-dd") {
+    date = date.split('-');
+    var year = date[0]; // date = new Date(date[0], date[1]-1, date[2]);
+  } else if (date_format === "dd/mm/yyyy") {
+    date = date.split('/');
+    var year = date[2]; // date = new Date(date[2], date[1]-1, date[0]);
+  } else if (date_format === "dd-mm-yyyy") {
+    date = date.split('-');
+    var year = date[2]; // date = new Date(date[2], date[1]-1, date[0]);
+  } else if (date_format === "dd.mm.yyyy") {
+    date = date.split('.');
+    var year = date[2]; // date = new Date(date[2], date[1]-1, date[0]);
+  }
+
+  return year;
 }
 
 function getNumberOfWeek(date) {

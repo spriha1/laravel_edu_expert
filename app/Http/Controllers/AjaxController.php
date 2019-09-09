@@ -326,38 +326,64 @@ class AjaxController extends Controller
 
     public function update_request_status(Request $request)
     {
-        
-        $statuses = $this->status->where('name', $request->input('status'))->select('id')->get();
-        foreach ($statuses as $status) {
-            $status_code = $status->id;
+        $check  = 0;
+        if ($request->input('status') === 'Approved' || $request->input('status') === 'Rejected') {
+            $result = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')->where('users.id', $request->input('user'))->select('user_type')->first();
+            if ($result['user_type'] === 'Admin') {
+                $check = 1;
+            }
         }
 
-        $results = $this->request_status->where([
-            ['user_id', $request->input('user_id')],
-            ['week_number', $request->input('week')]
-        ])->select()->get();
-
-        if ($results->count()) {
-            $this->request_status->where([
+        if ($request->input('status') === 'Pending') {
+            $result = $this->request_status
+            ->join('statuses', 'status_code', '=', 'statuses.id')
+            ->where([
                 ['user_id', $request->input('user_id')],
-                ['week_number', $request->input('week')]
-            ])->update(['status_code' => $status_code]);
+                ['week_number', $request->input('week')],
+                ['year', $request->input('year')]
+            ])->select('name')->first();
+            if ($result['name'] !== 'Approved') {
+                $check = 1;
+            }
         }
-        else {
-            $this->request_status->insert([
-                'user_id' => $request->input('user_id'),
-                'week_number' => $request->input('week'),
-                'status_code' => $status_code
-            ]);
+
+        if ($check === 1) {
+            $statuses = $this->status->where('name', $request->input('status'))->select('id')->get();
+            foreach ($statuses as $status) {
+                $status_code = $status->id;
+            }
+
+            $results = $this->request_status->where([
+                ['user_id', $request->input('user_id')],
+                ['week_number', $request->input('week')],
+                ['year', $request->input('year')]
+            ])->select()->get();
+
+            if ($results->count()) {
+                $this->request_status->where([
+                    ['user_id', $request->input('user_id')],
+                    ['week_number', $request->input('week')],
+                    ['year', $request->input('year')]
+                ])->update(['status_code' => $status_code]);
+            }
+            else {
+                $this->request_status->insert([
+                    'user_id' => $request->input('user_id'),
+                    'week_number' => $request->input('week'),
+                    'status_code' => $status_code,
+                    'year' => $request->input('year')
+                ]);
+            }
+            return $request->input('status');
         }
-        return $request->input('status');
     }
 
     public function fetch_request_status(Request $request)
     {
         $results = $this->request_status->join('statuses', 'statuses.id', '=', 'request_status.status_code')->where([
                 ['user_id', $request->input('user_id')],
-                ['week_number', $request->input('week')]
+                ['week_number', $request->input('week')],
+                ['year', $request->input('year')]
             ])->select('statuses.name')->get();
         return(json_encode($results));
     }

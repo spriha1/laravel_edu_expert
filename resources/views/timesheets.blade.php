@@ -20,9 +20,9 @@
 									<button class="btn btn-danger" style="display:none" id="reject">Reject</button>
 								</div>
 							</div>
-							<div class="col-sm-2">
+							<div class="col-sm-1">
 							</div>
-							<div class="col-sm-4">
+							<div class="col-sm-5">
 								<div class="row">
 									<span class="badge"></span>
 									<select name="search" id="search">

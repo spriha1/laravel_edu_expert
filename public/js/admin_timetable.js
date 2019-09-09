@@ -99,6 +99,7 @@ $(document).ready(function () {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
   });
+  var user = $('#user_id').val();
   var user_id, user_type;
   var date = new Date();
   $('.datepicker').datepicker('setDate', date);
@@ -109,11 +110,13 @@ $(document).ready(function () {
     user_type = $('option:selected').attr('usertype');
     date = $('#date').val();
     date_format = $('#date_format').val();
+    var year = parseInt(get_year(date, date_format));
     var d = format_date(date, date_format);
     var week = getNumberOfWeek(d);
     $.get('/fetch_request_status', {
       user_id: user_id,
-      week: week
+      week: week,
+      year: year
     }, function (result) {
       var response = JSON.parse(result);
 
@@ -144,12 +147,15 @@ $(document).ready(function () {
     user_id = $('#search').val();
     date = $('#date').val();
     date_format = $('#date_format').val();
+    var year = parseInt(get_year(date, date_format));
     var d = format_date(date, date_format);
     var week = getNumberOfWeek(d);
     $.post('/update_request_status', {
       user_id: user_id,
       week: week,
-      status: "Approved"
+      status: "Approved",
+      year: year,
+      user: user
     }, function (result) {
       if (result) {
         $('#accept').css('display', 'none');
@@ -162,12 +168,15 @@ $(document).ready(function () {
     user_id = $('#search').val();
     date = $('#date').val();
     date_format = $('#date_format').val();
+    var year = parseInt(get_year(date, date_format));
     var d = format_date(date, date_format);
     var week = getNumberOfWeek(d);
     $.post('/update_request_status', {
       user_id: user_id,
       week: week,
-      status: "Rejected"
+      status: "Rejected",
+      year: year,
+      user: user
     }, function (result) {
       if (result) {
         $('.badge').text('Rejected');
@@ -180,11 +189,13 @@ $(document).ready(function () {
     var date = e.format();
     user_id = $('#search').val();
     var date_format = $('#date_format').val();
+    var year = parseInt(get_year(date, date_format));
     var d = format_date(date, date_format);
     var week = getNumberOfWeek(d);
     $.get('/fetch_request_status', {
       user_id: user_id,
-      week: week
+      week: week,
+      year: year
     }, function (result) {
       var response = JSON.parse(result);
 
@@ -236,6 +247,30 @@ function format_date(date, date_format) {
   }
 
   return date;
+}
+
+function get_year(date, date_format) {
+  if (date_format === "yyyy/mm/dd") {
+    date = date.split('/');
+    var year = date[0]; // date = new Date(date[0], date[1]-1, date[2]);
+  } else if (date_format === "yyyy.mm.dd") {
+    date = date.split('.');
+    var year = date[0]; // date = new Date(date[0], date[1]-1, date[2]);
+  } else if (date_format === "yyyy-mm-dd") {
+    date = date.split('-');
+    var year = date[0]; // date = new Date(date[0], date[1]-1, date[2]);
+  } else if (date_format === "dd/mm/yyyy") {
+    date = date.split('/');
+    var year = date[2]; // date = new Date(date[2], date[1]-1, date[0]);
+  } else if (date_format === "dd-mm-yyyy") {
+    date = date.split('-');
+    var year = date[2]; // date = new Date(date[2], date[1]-1, date[0]);
+  } else if (date_format === "dd.mm.yyyy") {
+    date = date.split('.');
+    var year = date[2]; // date = new Date(date[2], date[1]-1, date[0]);
+  }
+
+  return year;
 }
 
 function getNumberOfWeek(date) {
@@ -307,10 +342,12 @@ function load_display_data(date, user_id, date_format, user_type) {
       var task = tasks[i][0].name + ' / ' + tasks[i][0]["class"];
       $("tbody tr[task_id=" + task_id + "] .task").text(task);
       var len = response[task_id].length;
+      var sum = 0;
 
       for (var j = 0; j < len; j++) {
         if (response[task_id][j].length != 0) {
           var seconds = response[task_id][j][0].total_time;
+          sum = sum + seconds;
 
           if (seconds != 0) {
             var hours = Math.floor(seconds / 3600);
@@ -319,7 +356,7 @@ function load_display_data(date, user_id, date_format, user_type) {
             seconds = seconds - minutes * 60;
             var time = hours + ':' + minutes + ':' + seconds;
           } else {
-            var time = '0:0:0';
+            var time = '00:00:00';
           }
 
           var task_id = response[task_id][j][0].task_id;
