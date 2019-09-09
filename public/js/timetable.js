@@ -193,48 +193,72 @@ $(document).ready(function () {
 });
 
 function format_date(date, date_format) {
-  if (date_format === "yyyy/mm/dd") {
-    date = date.split('/');
-    date = new Date(date[0], date[1] - 1, date[2]);
-  } else if (date_format === "yyyy.mm.dd") {
-    date = date.split('.');
-    date = new Date(date[0], date[1] - 1, date[2]);
-  } else if (date_format === "yyyy-mm-dd") {
-    date = date.split('-');
-    date = new Date(date[0], date[1] - 1, date[2]);
-  } else if (date_format === "dd/mm/yyyy") {
-    date = date.split('/');
-    date = new Date(date[2], date[1] - 1, date[0]);
-  } else if (date_format === "dd-mm-yyyy") {
-    date = date.split('-');
-    date = new Date(date[2], date[1] - 1, date[0]);
-  } else if (date_format === "dd.mm.yyyy") {
-    date = date.split('.');
-    date = new Date(date[2], date[1] - 1, date[0]);
+  switch (date_format) {
+    case "yyyy/mm/dd":
+      date = date.split('/');
+      date = new Date(date[0], date[1] - 1, date[2]);
+      break;
+
+    case "yyyy.mm.dd":
+      date = date.split('.');
+      date = new Date(date[0], date[1] - 1, date[2]);
+      break;
+
+    case "yyyy-mm-dd":
+      date = date.split('-');
+      date = new Date(date[0], date[1] - 1, date[2]);
+      break;
+
+    case "dd/mm/yyyy":
+      date = date.split('/');
+      date = new Date(date[2], date[1] - 1, date[0]);
+      break;
+
+    case "dd-mm-yyyy":
+      date = date.split('-');
+      date = new Date(date[2], date[1] - 1, date[0]);
+      break;
+
+    case "dd.mm.yyyy":
+      date = date.split('.');
+      date = new Date(date[2], date[1] - 1, date[0]);
+      break;
   }
 
   return date;
 }
 
 function get_year(date, date_format) {
-  if (date_format === "yyyy/mm/dd") {
-    date = date.split('/');
-    var year = date[0]; // date = new Date(date[0], date[1]-1, date[2]);
-  } else if (date_format === "yyyy.mm.dd") {
-    date = date.split('.');
-    var year = date[0]; // date = new Date(date[0], date[1]-1, date[2]);
-  } else if (date_format === "yyyy-mm-dd") {
-    date = date.split('-');
-    var year = date[0]; // date = new Date(date[0], date[1]-1, date[2]);
-  } else if (date_format === "dd/mm/yyyy") {
-    date = date.split('/');
-    var year = date[2]; // date = new Date(date[2], date[1]-1, date[0]);
-  } else if (date_format === "dd-mm-yyyy") {
-    date = date.split('-');
-    var year = date[2]; // date = new Date(date[2], date[1]-1, date[0]);
-  } else if (date_format === "dd.mm.yyyy") {
-    date = date.split('.');
-    var year = date[2]; // date = new Date(date[2], date[1]-1, date[0]);
+  switch (date_format) {
+    case "yyyy/mm/dd":
+      date = date.split('/');
+      var year = date[0];
+      break;
+
+    case "yyyy.mm.dd":
+      date = date.split('.');
+      var year = date[0];
+      break;
+
+    case "yyyy-mm-dd":
+      date = date.split('-');
+      var year = date[0];
+      break;
+
+    case "dd/mm/yyyy":
+      date = date.split('/');
+      var year = date[2];
+      break;
+
+    case "dd-mm-yyyy":
+      date = date.split('-');
+      var year = date[2];
+      break;
+
+    case "dd.mm.yyyy":
+      date = date.split('.');
+      var year = date[2];
+      break;
   }
 
   return year;
@@ -272,18 +296,30 @@ function load_display_data(date, user_id, user_type, date_format) {
         month = '0' + month;
       }
 
-      if (date_format === "yyyy/mm/dd") {
-        date = year + '/' + month + '/' + day;
-      } else if (date_format === "yyyy.mm.dd") {
-        date = year + '.' + month + '.' + day;
-      } else if (date_format === "yyyy-mm-dd") {
-        date = year + '-' + month + '-' + day;
-      } else if (date_format === "dd/mm/yyyy") {
-        date = day + '/' + month + '/' + year;
-      } else if (date_format === "dd-mm-yyyy") {
-        date = day + '-' + month + '-' + year;
-      } else if (date_format === "dd.mm.yyyy") {
-        date = day + '.' + month + '.' + year;
+      switch (date_format) {
+        case "yyyy/mm/dd":
+          date = year + '/' + month + '/' + day;
+          break;
+
+        case "yyyy.mm.dd":
+          date = year + '.' + month + '.' + day;
+          break;
+
+        case "yyyy-mm-dd":
+          date = year + '-' + month + '-' + day;
+          break;
+
+        case "dd/mm/yyyy":
+          date = day + '/' + month + '/' + year;
+          break;
+
+        case "dd-mm-yyyy":
+          date = day + '-' + month + '-' + year;
+          break;
+
+        case "dd.mm.yyyy":
+          date = day + '.' + month + '.' + year;
+          break;
       }
 
       $('table thead #' + i).text(date);

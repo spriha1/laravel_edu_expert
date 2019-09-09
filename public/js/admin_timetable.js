@@ -226,48 +226,72 @@ $(document).ready(function () {
 });
 
 function format_date(date, date_format) {
-  if (date_format === "yyyy/mm/dd") {
-    date = date.split('/');
-    date = new Date(date[0], date[1] - 1, date[2]);
-  } else if (date_format === "yyyy.mm.dd") {
-    date = date.split('.');
-    date = new Date(date[0], date[1] - 1, date[2]);
-  } else if (date_format === "yyyy-mm-dd") {
-    date = date.split('-');
-    date = new Date(date[0], date[1] - 1, date[2]);
-  } else if (date_format === "dd/mm/yyyy") {
-    date = date.split('/');
-    date = new Date(date[2], date[1] - 1, date[0]);
-  } else if (date_format === "dd-mm-yyyy") {
-    date = date.split('-');
-    date = new Date(date[2], date[1] - 1, date[0]);
-  } else if (date_format === "dd.mm.yyyy") {
-    date = date.split('.');
-    date = new Date(date[2], date[1] - 1, date[0]);
+  switch (date_format) {
+    case "yyyy/mm/dd":
+      date = date.split('/');
+      date = new Date(date[0], date[1] - 1, date[2]);
+      break;
+
+    case "yyyy.mm.dd":
+      date = date.split('.');
+      date = new Date(date[0], date[1] - 1, date[2]);
+      break;
+
+    case "yyyy-mm-dd":
+      date = date.split('-');
+      date = new Date(date[0], date[1] - 1, date[2]);
+      break;
+
+    case "dd/mm/yyyy":
+      date = date.split('/');
+      date = new Date(date[2], date[1] - 1, date[0]);
+      break;
+
+    case "dd-mm-yyyy":
+      date = date.split('-');
+      date = new Date(date[2], date[1] - 1, date[0]);
+      break;
+
+    case "dd.mm.yyyy":
+      date = date.split('.');
+      date = new Date(date[2], date[1] - 1, date[0]);
+      break;
   }
 
   return date;
 }
 
 function get_year(date, date_format) {
-  if (date_format === "yyyy/mm/dd") {
-    date = date.split('/');
-    var year = date[0]; // date = new Date(date[0], date[1]-1, date[2]);
-  } else if (date_format === "yyyy.mm.dd") {
-    date = date.split('.');
-    var year = date[0]; // date = new Date(date[0], date[1]-1, date[2]);
-  } else if (date_format === "yyyy-mm-dd") {
-    date = date.split('-');
-    var year = date[0]; // date = new Date(date[0], date[1]-1, date[2]);
-  } else if (date_format === "dd/mm/yyyy") {
-    date = date.split('/');
-    var year = date[2]; // date = new Date(date[2], date[1]-1, date[0]);
-  } else if (date_format === "dd-mm-yyyy") {
-    date = date.split('-');
-    var year = date[2]; // date = new Date(date[2], date[1]-1, date[0]);
-  } else if (date_format === "dd.mm.yyyy") {
-    date = date.split('.');
-    var year = date[2]; // date = new Date(date[2], date[1]-1, date[0]);
+  switch (date_format) {
+    case "yyyy/mm/dd":
+      date = date.split('/');
+      var year = date[0];
+      break;
+
+    case "yyyy.mm.dd":
+      date = date.split('.');
+      var year = date[0];
+      break;
+
+    case "yyyy-mm-dd":
+      date = date.split('-');
+      var year = date[0];
+      break;
+
+    case "dd/mm/yyyy":
+      date = date.split('/');
+      var year = date[2];
+      break;
+
+    case "dd-mm-yyyy":
+      date = date.split('-');
+      var year = date[2];
+      break;
+
+    case "dd.mm.yyyy":
+      date = date.split('.');
+      var year = date[2];
+      break;
   }
 
   return year;
@@ -306,18 +330,30 @@ function load_display_data(date, user_id, date_format, user_type) {
         month = '0' + month;
       }
 
-      if (date_format === "yyyy/mm/dd") {
-        date = year + '/' + month + '/' + day;
-      } else if (date_format === "yyyy.mm.dd") {
-        date = year + '.' + month + '.' + day;
-      } else if (date_format === "yyyy-mm-dd") {
-        date = year + '-' + month + '-' + day;
-      } else if (date_format === "dd/mm/yyyy") {
-        date = day + '/' + month + '/' + year;
-      } else if (date_format === "dd-mm-yyyy") {
-        date = day + '-' + month + '-' + year;
-      } else if (date_format === "dd.mm.yyyy") {
-        date = day + '.' + month + '.' + year;
+      switch (date_format) {
+        case "yyyy/mm/dd":
+          date = year + '/' + month + '/' + day;
+          break;
+
+        case "yyyy.mm.dd":
+          date = year + '.' + month + '.' + day;
+          break;
+
+        case "yyyy-mm-dd":
+          date = year + '-' + month + '-' + day;
+          break;
+
+        case "dd/mm/yyyy":
+          date = day + '/' + month + '/' + year;
+          break;
+
+        case "dd-mm-yyyy":
+          date = day + '-' + month + '-' + year;
+          break;
+
+        case "dd.mm.yyyy":
+          date = day + '.' + month + '.' + year;
+          break;
       }
 
       $('table thead #' + i).text(date);
@@ -325,6 +361,7 @@ function load_display_data(date, user_id, date_format, user_type) {
 
     var tasks = response[0];
     var length = tasks.length;
+    var sum = 0;
 
     for (var i = 0; i < length; i++) {
       var element = $(".editable").clone(true).css('display', 'table-row').removeClass('editable');
@@ -341,8 +378,7 @@ function load_display_data(date, user_id, date_format, user_type) {
 
       var task = tasks[i][0].name + ' / ' + tasks[i][0]["class"];
       $("tbody tr[task_id=" + task_id + "] .task").text(task);
-      var len = response[task_id].length;
-      var sum = 0;
+      var len = response[task_id].length; // var sum = 0;
 
       for (var j = 0; j < len; j++) {
         if (response[task_id][j].length != 0) {
@@ -364,6 +400,8 @@ function load_display_data(date, user_id, date_format, user_type) {
         }
       }
     }
+
+    console.log(sum);
   });
 }
 

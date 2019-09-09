@@ -274,30 +274,56 @@ class AjaxController extends Controller
     		$date_format = $request->input('date_format');
     		$start_date = $request->input('start_date');
     		$end_date = $request->input('end_date');
-    		if ($date_format === "yyyy/mm/dd") {
-        		$start_date = Carbon::createFromFormat("Y/m/d" , $start_date)->timestamp;
-        		$end_date = Carbon::createFromFormat("Y/m/d" , $end_date)->timestamp;
-        	}
-        	else if ($date_format === "yyyy.mm.dd") {
-        		$start_date = Carbon::createFromFormat("Y.m.d" , $start_date)->timestamp;
-        		$end_date = Carbon::createFromFormat("Y.m.d" , $end_date)->timestamp;
-        	}
-        	else if ($date_format === "yyyy-mm-dd") {
-        		$start_date = Carbon::createFromFormat("Y-m-d" , $start_date)->timestamp;
-        		$end_date = Carbon::createFromFormat("Y-m-d" , $end_date)->timestamp;
-        	}
-        	else if ($date_format === "dd/mm/yyyy") {
-        		$start_date = Carbon::createFromFormat("d/m/Y" , $start_date)->timestamp;
-        		$end_date = Carbon::createFromFormat("d/m/Y" , $end_date)->timestamp;
-        	}
-        	else if ($date_format === "dd-mm-yyyy") {
-        		$start_date = Carbon::createFromFormat("d-m-Y" , $start_date)->timestamp;
-        		$end_date = Carbon::createFromFormat("d-m-Y" , $end_date)->timestamp;
-        	}
-        	else if ($date_format === "dd.mm.yyyy") {
-        		$start_date = Carbon::createFromFormat("d.m.Y" , $start_date)->timestamp;
-        		$end_date = Carbon::createFromFormat("d.m.Y" , $end_date)->timestamp;
-        	}
+            switch ($date_format) {
+                case "yyyy/mm/dd":
+                    $start_date = Carbon::createFromFormat("Y/m/d" , $start_date)->timestamp;
+                    $end_date = Carbon::createFromFormat("Y/m/d" , $end_date)->timestamp;
+                    break;
+                case "yyyy.mm.dd":
+                    $start_date = Carbon::createFromFormat("Y.m.d" , $start_date)->timestamp;
+                    $end_date = Carbon::createFromFormat("Y.m.d" , $end_date)->timestamp;
+                    break;
+                case "yyyy-mm-dd":
+                    $start_date = Carbon::createFromFormat("Y-m-d" , $start_date)->timestamp;
+                    $end_date = Carbon::createFromFormat("Y-m-d" , $end_date)->timestamp;
+                    break;
+                case "dd/mm/yyyy":
+                    $start_date = Carbon::createFromFormat("d/m/Y" , $start_date)->timestamp;
+                    $end_date = Carbon::createFromFormat("d/m/Y" , $end_date)->timestamp;
+                    break;
+                case "dd-mm-yyyy":
+                    $start_date = Carbon::createFromFormat("d-m-Y" , $start_date)->timestamp;
+                    $end_date = Carbon::createFromFormat("d-m-Y" , $end_date)->timestamp;
+                    break;
+                case "dd.mm.yyyy":
+                    $start_date = Carbon::createFromFormat("d.m.Y" , $start_date)->timestamp;
+                    $end_date = Carbon::createFromFormat("d.m.Y" , $end_date)->timestamp;
+                    break;
+            }
+    		// if ($date_format === "yyyy/mm/dd") {
+      //   		$start_date = Carbon::createFromFormat("Y/m/d" , $start_date)->timestamp;
+      //   		$end_date = Carbon::createFromFormat("Y/m/d" , $end_date)->timestamp;
+      //   	}
+      //   	else if ($date_format === "yyyy.mm.dd") {
+      //   		$start_date = Carbon::createFromFormat("Y.m.d" , $start_date)->timestamp;
+      //   		$end_date = Carbon::createFromFormat("Y.m.d" , $end_date)->timestamp;
+      //   	}
+      //   	else if ($date_format === "yyyy-mm-dd") {
+      //   		$start_date = Carbon::createFromFormat("Y-m-d" , $start_date)->timestamp;
+      //   		$end_date = Carbon::createFromFormat("Y-m-d" , $end_date)->timestamp;
+      //   	}
+      //   	else if ($date_format === "dd/mm/yyyy") {
+      //   		$start_date = Carbon::createFromFormat("d/m/Y" , $start_date)->timestamp;
+      //   		$end_date = Carbon::createFromFormat("d/m/Y" , $end_date)->timestamp;
+      //   	}
+      //   	else if ($date_format === "dd-mm-yyyy") {
+      //   		$start_date = Carbon::createFromFormat("d-m-Y" , $start_date)->timestamp;
+      //   		$end_date = Carbon::createFromFormat("d-m-Y" , $end_date)->timestamp;
+      //   	}
+      //   	else if ($date_format === "dd.mm.yyyy") {
+      //   		$start_date = Carbon::createFromFormat("d.m.Y" , $start_date)->timestamp;
+      //   		$end_date = Carbon::createFromFormat("d.m.Y" , $end_date)->timestamp;
+      //   	}
             try {
                 $this->holiday->insert(['start_date' => $start_date, 'end_date' => $end_date]);
             }

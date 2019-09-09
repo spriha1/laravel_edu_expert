@@ -37,30 +37,33 @@ function load_display_data(date,user_id,user_type,date_format) {
 	$.post('/display_daily_timetable', {date: date, user_id: user_id, user_type: user_type, date_format: date_format}, function(result) {
 		// console.log(result);
 		var response = JSON.parse(result);
-		if (date_format === "yyyy/mm/dd") {
-			date = date.split('/');
-			date = new Date(date[0], date[1]-1, date[2]).getTime();
-    	}
-    	else if (date_format === "yyyy.mm.dd") {
-    		date = date.split('.');
-			date = new Date(date[0], date[1]-1, date[2]).getTime();
-    	}
-    	else if (date_format === "yyyy-mm-dd") {
-    		date = date.split('-');
-			date = new Date(date[0], date[1]-1, date[2]).getTime();
-    	}
-    	else if (date_format === "dd/mm/yyyy") {
-    		date = date.split('/');
-			date = new Date(date[2], date[1]-1, date[0]).getTime();
-    	}
-    	else if (date_format === "dd-mm-yyyy") {
-    		date = date.split('-');
-			date = new Date(date[2], date[1]-1, date[0]).getTime();
-    	}
-    	else if (date_format === "dd.mm.yyyy") {
-    		date = date.split('.');
-			date = new Date(date[2], date[1]-1, date[0]).getTime();
-    	}
+		switch (date_format) {
+			case "yyyy/mm/dd":
+				date = date.split('/');
+				date = new Date(date[0], date[1]-1, date[2]).getTime();
+				break;
+			case "yyyy.mm.dd":
+				date = date.split('.');
+				date = new Date(date[0], date[1]-1, date[2]).getTime();
+				break;
+			case "yyyy-mm-dd":
+				date = date.split('-');
+				date = new Date(date[0], date[1]-1, date[2]).getTime();
+				break;
+			case "dd/mm/yyyy":
+				date = date.split('/');
+				date = new Date(date[2], date[1]-1, date[0]).getTime();
+				break;
+			case "dd-mm-yyyy":
+				date = date.split('-');
+				date = new Date(date[2], date[1]-1, date[0]).getTime();
+				break;
+			case "dd.mm.yyyy":
+				date = date.split('.');
+				date = new Date(date[2], date[1]-1, date[0]).getTime();
+				break;
+		}
+		
     	date = date/1000;
 		var length = response.length;
 		if (user_type === 'teacher') {
