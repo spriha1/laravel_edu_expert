@@ -252,7 +252,7 @@ class TimesheetController extends Controller
     public function timesheets()
     {
         // $users = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')->where('user_type', 'Teacher')->select('firstname', 'email')->get();
-        $users = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')->where('user_type', '!=', 'Admin')->select('firstname', 'email', 'users.id', 'user_type')->get();
+        $users = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')->where('user_type', '=', 'Teacher')->select('firstname', 'email', 'users.id', 'user_type', 'rate')->get();
         return view('timesheets', [
             'users' => $users
         ]);

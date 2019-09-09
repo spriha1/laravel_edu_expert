@@ -213,7 +213,7 @@ class ProjectController extends Controller
 
         foreach ($usertypes as $usertype) {
             if ($usertype->user_type === 'Teacher') {
-                $rates = $this->teacher_rate->where('teacher_id', Auth::id())->select('rate')->get();
+                $rates = $this->user->where('id', Auth::id())->select('rate')->get();
                 return view('profile', [
                     'usertype' => $usertype->user_type,
                     'rates' => $rates

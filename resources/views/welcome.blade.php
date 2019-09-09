@@ -50,7 +50,6 @@
                     Sign In with Google
                 </a>
             </button>
-            <br>
             <button class="btn btn-light btn-block btn-flat">
                 <a href="/login/facebook" class="text-center">
                     <img src="/images/facebook.png">

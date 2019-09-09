@@ -214,17 +214,8 @@ class AjaxController extends Controller
         	$msg->success = 1;
         }
         if($request->filled('rate')) {
-            $rates = $this->teacher_rate->where('teacher_id', Auth::user()->id)->select('rate')->get();
-            if ($rates->count()) {
-                $this->teacher_rate->where('teacher_id', Auth::user()->id)->update(['rate' => $request->input('rate')]);
-                $msg->success = 1;
-            }
-            else {
-                $this->teacher_rate->insert([
-                    'teacher_id' => Auth::user()->id,
-                    'rate' => $request->input('rate')
-                ]);
-            }
+            $rates = $this->user->where('id', Auth::user()->id)->update(['rate' => $request->input('rate')]);
+            $msg->success = 1;
         }
         if($request->filled('address')) {
         	$this->user->where('id', Auth::user()->id)->update(['address' => $request->input('address')]);

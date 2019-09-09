@@ -100,13 +100,14 @@ $(document).ready(function () {
     }
   });
   var user = $('#user_id').val();
-  var user_id, user_type;
+  var user_id, user_type, rate;
   var date = new Date();
   $('.datepicker').datepicker('setDate', date);
   var date = $('#date').val();
   var date_format = $('#date_format').val();
   $('#search').change(function () {
     user_id = $('#search').val();
+    rate = $('option:selected').attr('rate');
     user_type = $('option:selected').attr('usertype');
     date = $('#date').val();
     date_format = $('#date_format').val();
@@ -141,7 +142,7 @@ $(document).ready(function () {
         $('#reject').css('display', 'none');
       }
     });
-    load_display_data(date, user_id, date_format, user_type);
+    load_display_data(date, user_id, date_format, user_type, rate);
   });
   $('#accept').click(function () {
     user_id = $('#search').val();
@@ -187,6 +188,7 @@ $(document).ready(function () {
   });
   $('.datepicker').datepicker().on('changeDate', function (e) {
     var date = e.format();
+    rate = $('option:selected').attr('rate');
     user_id = $('#search').val();
     var date_format = $('#date_format').val();
     var year = parseInt(get_year(date, date_format));
@@ -221,7 +223,7 @@ $(document).ready(function () {
       }
     });
     $('.timetable').html("");
-    load_display_data(date, user_id, date_format, user_type);
+    load_display_data(date, user_id, date_format, user_type, rate);
   });
 });
 
@@ -304,7 +306,7 @@ function getNumberOfWeek(date) {
   return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
 
-function load_display_data(date, user_id, date_format, user_type) {
+function load_display_data(date, user_id, date_format, user_type, rate) {
   $.post('/post_timesheets', {
     date: date,
     user_id: user_id,
@@ -401,7 +403,24 @@ function load_display_data(date, user_id, date_format, user_type) {
       }
     }
 
+    console.log(rate);
     console.log(sum);
+    var amount = 0;
+
+    if (sum != 0) {
+      var hours = Math.floor(sum / 3600);
+      sum = sum - hours * 3600;
+      var minutes = Math.floor(sum / 60);
+      sum = sum - minutes * 60;
+      var time = hours + ':' + minutes + ':' + sum;
+      amount = hours * rate;
+    } else {
+      var time = '00:00:00';
+    }
+
+    $('#time').text(time);
+    $('#rate').text(rate);
+    $('#amount').text(amount);
   });
 }
 

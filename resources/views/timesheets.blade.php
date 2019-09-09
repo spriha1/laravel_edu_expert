@@ -28,7 +28,7 @@
 									<select name="search" id="search">
 										<option>Select User</option>
 										@foreach($users as $user)
-											<option value="{{$user->id}}" usertype="{{$user->user_type}}">{{$user->firstname}} ({{ $user->email }})</option>
+											<option value="{{$user->id}}" usertype="{{$user->user_type}}" rate="{{$user->rate}}">{{$user->firstname}} ({{ $user->email }})</option>
 										@endforeach
 									</select>
 								</div>
@@ -82,30 +82,70 @@
 							
 						</table>
 						<table style="display:none">
-						<tr class="editable" width="25%" task_id="" style="display:none;">
-							<td class="task"></td>
-							<td width="10%" dow="0" date="">
-							</td>
-							<td width="10%" dow="1" date="">
-							</td>
-							<td width="10%" dow="2" date="">
-							</td>
-							<td width="10%" dow="3" date="">
-							</td>
-							<td width="10%" dow="4" date="">
-							</td>
-							<td width="10%" dow="5" date="">
-							</td>
-							<td width="10%" dow="6" date="">
-							</td>
-						</tr>
-					</table>
+							<tr class="editable" width="25%" task_id="" style="display:none;">
+								<td class="task"></td>
+								<td width="10%" dow="0" date="">
+								</td>
+								<td width="10%" dow="1" date="">
+								</td>
+								<td width="10%" dow="2" date="">
+								</td>
+								<td width="10%" dow="3" date="">
+								</td>
+								<td width="10%" dow="4" date="">
+								</td>
+								<td width="10%" dow="5" date="">
+								</td>
+								<td width="10%" dow="6" date="">
+								</td>
+							</tr>
+						</table>
 					</div>
 				</div>
+				<button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#details">View</button>
 			</div>
 		</div>
 	</section>
 </div>
+<div class="modal" id="details">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+			<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Details</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<table class="table table-bordered table-striped">
+						
+						<thead>
+							<tr>
+								<th>Total time</th>
+								<th>Rate</th>
+								<th>Total amount</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td id="time"></td>
+								<td id="rate"></td>
+								<td id="amount"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
 @endsection
 
 
