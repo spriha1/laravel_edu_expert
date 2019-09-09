@@ -13,7 +13,7 @@
 			<form class="form-horizontal" id="task" name="task" method="POST">
 				<div id="alert" class='alert alert-success' style="display: none;">
 				</div>
-				<img src="load.gif" id="spinner" style="display:none; width:20%; height:20%">
+				<img src="/images/load.gif" id="spinner" style="display:none; width:20%; height:20%">
 				<input type="hidden" name="date_format" id="date_format" value="{{ Auth::user()->date_format }}">
 				
 				<div class="box-header with-border">

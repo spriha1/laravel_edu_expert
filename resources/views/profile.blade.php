@@ -21,6 +21,7 @@
 				</div>
 				<div id="info" class='alert alert-success' style="display: none;">
 				</div>
+				<img src="/images/load.gif" id="spinner" style="display:none; width:20%; height:20%">
 				@csrf
 				<div class="box-body">
 					<div class="form-group">

@@ -21,6 +21,7 @@
                 @csrf
                 <div id="alert" class='alert alert-danger' style="display: none;">
                 </div>
+                <img src="/images/load.gif" id="spinner" style="display:none; width:20%; height:20%">
                 <div class="form-group has-feedback">
                     <input type="text" class="form-control" placeholder="First name" id="fname" name="fname">
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>

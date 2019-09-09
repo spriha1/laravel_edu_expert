@@ -87,7 +87,9 @@ $(document).ready(function() {
 
 	$("#registration").submit(function() {
 		event.preventDefault();
+		$("#spinner").css('display','block');
 		$.post('/update_profile', $('#registration').serialize() , function(result) {
+			$('#spinner').css('display', 'none');
 			var response = JSON.parse(result);
 			if (response.email == 1) {
 				$('#alert').text("Please verify it by clicking the activation link that has been send to your email.");

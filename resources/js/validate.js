@@ -46,7 +46,9 @@ $(document).ready(function() {
 		event.preventDefault();
 		validation();
 		if ($('#registration').valid()) {
-			$.post('register' , $('#registration').serialize() , function(result){
+			$("#spinner").css('display','block');
+			$.post('/register' , $('#registration').serialize() , function(result){
+				$('#spinner').css('display', 'none');
 				$("#alert").css("display" , "block");
 				$("#alert").text(result);
 			});
