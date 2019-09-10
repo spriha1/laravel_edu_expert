@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\{User, UserType, TeacherSubject, GoalPlan, Holiday, TeacherRate, Clas, Subject, RequestStatus, Status};
+use App\{User, UserType, TeacherSubject, GoalPlan, Holiday, TeacherRate, Clas, Subject, RequestStatus, Status, Tax};
 use Carbon\Carbon;
 use App\Mail\UserVerification;
 use App\Mail\UpdateMail;
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AjaxController extends Controller
 {
-    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate, $clas, $request_status, $status, $subject;
+    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate, $clas, $request_status, $status, $subject, $tax;
 
     public function __construct()
     {
@@ -32,6 +32,7 @@ class AjaxController extends Controller
         $this->subject = new Subject;
         $this->request_status = new RequestStatus;
         $this->status = new Status;
+        $this->tax = new Tax;
     }
 
 	public function add_goals(Request $request)
@@ -57,7 +58,9 @@ class AjaxController extends Controller
 	{
 		$to_time = time();
         try {
-            $this->goal_plan->where('id', $request->input('goal_id'))->update(['to_time' => $to_time, 'check_status' => 1]);
+            $this->goal_plan
+            ->where('id', $request->input('goal_id'))
+            ->update(['to_time' => $to_time, 'check_status' => 1]);
             $goal_plan = $this->goal_plan->where('id', $request->input('goal_id'))->select('total_time')->get();
             return(json_encode($goal_plan));
         }
@@ -221,6 +224,10 @@ class AjaxController extends Controller
         	$this->user->where('id', Auth::user()->id)->update(['address' => $request->input('address')]);
         	$msg->success = 1;
         }
+        if($request->filled('tax')) {
+            $this->tax->where('name', 'GST')->update(['percentage' => $request->input('tax')]);
+            $msg->success = 1;
+        }
         if($request->filled('email')) {
         	$result = $this->user->where('email', $request->input('email'))->select('id')->get();
         	if ($result->count()) {
@@ -352,15 +359,18 @@ class AjaxController extends Controller
         }
 
         if ($request->input('status') === 'Pending') {
-            $result = $this->request_status
-            ->join('statuses', 'status_code', '=', 'statuses.id')
-            ->where([
-                ['user_id', $request->input('user_id')],
-                ['week_number', $request->input('week')],
-                ['year', $request->input('year')]
-            ])->select('name')->first();
-            if ($result['name'] !== 'Approved') {
-                $check = 1;
+            $result = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')->where('users.id', $request->input('user'))->select('user_type')->first();
+            if ($result['user_type'] === 'Teacher') {
+                $result = $this->request_status
+                ->join('statuses', 'status_code', '=', 'statuses.id')
+                ->where([
+                    ['user_id', $request->input('user_id')],
+                    ['week_number', $request->input('week')],
+                    ['year', $request->input('year')]
+                ])->select('name')->first();
+                if ($result['name'] !== 'Approved') {
+                    $check = 1;
+                }
             }
         }
 

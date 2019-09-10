@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\{UserType, SharedTimesheet, Holiday, TeacherTask, User, StudentTask};
+use App\{UserType, SharedTimesheet, Holiday, TeacherTask, User, StudentTask, Tax};
 class TimesheetController extends Controller
 {
-    protected $user_type, $shared_timesheet, $holiday, $teacher_task, $user, $student_task;
+    protected $user_type, $shared_timesheet, $holiday, $teacher_task, $user, $student_task, $tax;
 
     public function __construct()
     {
@@ -17,6 +17,7 @@ class TimesheetController extends Controller
         $this->teacher_task = new TeacherTask;
         $this->user = new User;
         $this->student_task = new StudentTask;
+        $this->tax = new Tax;
     }
 
     public function add_shared_timesheets(Request $request)
@@ -253,8 +254,12 @@ class TimesheetController extends Controller
     {
         // $users = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')->where('user_type', 'Teacher')->select('firstname', 'email')->get();
         $users = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')->where('user_type', '=', 'Teacher')->select('firstname', 'email', 'users.id', 'user_type', 'rate')->get();
+
+        $tax = $this->tax->where('name', 'GST')->select('percentage')->first();
+
         return view('timesheets', [
-            'users' => $users
+            'users' => $users,
+            'tax' => $tax['percentage']
         ]);
     }
 

@@ -7,14 +7,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
-use App\{User, UserType, Subject, Clas, Task, TeacherTask, StudentTask, TeacherRate, SharedTimesheet};
+use App\{User, UserType, Subject, Clas, Task, TeacherTask, StudentTask, TeacherRate, SharedTimesheet, Tax};
 use Illuminate\Support\Facades\Mail;
 use App\Mail\UpdateMail;
 use App\Mail\ForgotPassword;
+use DB;
 
 class ProjectController extends Controller
 {
-    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate;
+    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate, $tax;
 
     public function __construct()
     {
@@ -27,6 +28,7 @@ class ProjectController extends Controller
         $this->student_task = new StudentTask;
         $this->shared_timesheet = new SharedTimesheet;
         $this->teacher_rate = new TeacherRate;
+        $this->tax = new Tax;
     }
 
     public function home()
@@ -219,9 +221,18 @@ class ProjectController extends Controller
                     'rates' => $rates
                 ]);
             }
-            return view('profile', [
-                'usertype' => $usertype->user_type
-            ]);
+            else if ($usertype->user_type === 'Admin') {
+                $tax = $this->tax->where('name', 'GST')->select('percentage')->first();
+                return view('profile', [
+                    'usertype' => $usertype->user_type,
+                    'tax' => $tax['percentage']
+                ]);
+            }
+            else {
+                return view('profile', [
+                    'usertype' => $usertype->user_type
+                ]);
+            }
         }
     }
 
@@ -359,30 +370,6 @@ class ProjectController extends Controller
                     break;
             }
             
-            // if ($date_format === "yyyy/mm/dd") {
-            //     $start_date = Carbon::createFromFormat("Y/m/d" , $start_date)->timestamp;
-            //     $end_date = Carbon::createFromFormat("Y/m/d" , $end_date)->timestamp;
-            // }
-            // else if ($date_format === "yyyy.mm.dd") {
-            //     $start_date = Carbon::createFromFormat("Y.m.d" , $start_date)->timestamp;
-            //     $end_date = Carbon::createFromFormat("Y.m.d" , $end_date)->timestamp;
-            // }
-            // else if ($date_format === "yyyy-mm-dd") {
-            //     $start_date = Carbon::createFromFormat("Y-m-d" , $start_date)->timestamp;
-            //     $end_date = Carbon::createFromFormat("Y-m-d" , $end_date)->timestamp;
-            // }
-            // else if ($date_format === "dd/mm/yyyy") {
-            //     $start_date = Carbon::createFromFormat("d/m/Y" , $start_date)->timestamp;
-            //     $end_date = Carbon::createFromFormat("d/m/Y" , $end_date)->timestamp;
-            // }
-            // else if ($date_format === "dd-mm-yyyy") {
-            //     $start_date = Carbon::createFromFormat("d-m-Y" , $start_date)->timestamp;
-            //     $end_date = Carbon::createFromFormat("d-m-Y" , $end_date)->timestamp;
-            // }
-            // else if ($date_format === "dd.mm.yyyy") {
-            //     $start_date = Carbon::createFromFormat("d.m.Y" , $start_date)->timestamp;
-            //     $end_date = Carbon::createFromFormat("d.m.Y" , $end_date)->timestamp;
-            // }
             $start_date = getdate($start_date);
             $start_date = $start_date['year'].'-'.$start_date['mon'].'-'.$start_date['mday'];
             $start_date = strtotime($start_date);
@@ -391,55 +378,65 @@ class ProjectController extends Controller
             $end_date = $end_date['year'].'-'.$end_date['mon'].'-'.$end_date['mday'];
             $end_date = strtotime($end_date);
             $length = count($request->input('subject'));
-            for ($i = 0; $i < $length; $i++) {
-                $subject_id = $request->input('subject')[$i];
-                for($a = $start_date; $a <= $end_date; $a = $a + 86400) {
-                    $result = $this->task->where([
-                        ['subject_id', $subject_id],
-                        ['class', $request->input('class')],
-                        ['start_date', '<=', $a],
-                        ['end_date', '>=', $a]
-                    ])->select()->get();
-                    if ($result->count()) {
-                        return("The task has already been added fro these dates");
-                    }
-                    else {
-                        $task_id = $this->task->insertGetId([
-                            'subject_id' => $subject_id,
-                            'class' => $request->input('class'),
-                            'start_date' => $start_date,
-                            'end_date' => $end_date
-                        ]);
-                        $result = $this->clas->where([
-                            ['class', $request->input('class')],
-                            ['subject_id', $subject_id]
-                        ])->select('teacher_id')->distinct()->get();
 
-                        foreach ($result as $key => $value) {
-                            for ($z = $start_date; $z <= $end_date; $z = $z + 86400) {
-                                $this->teacher_task->insert([
-                                    'task_id' => $task_id,
-                                    'teacher_id' => $value['teacher_id'],
-                                    'on_date' => $z
-                                ]);
-                            }
+            try {
+                for ($i = 0; $i < $length; $i++) {
+                    $subject_id = $request->input('subject')[$i];
+                    for($a = $start_date; $a <= $end_date; $a = $a + 86400) {
+                        $result = $this->task->where([
+                            ['subject_id', $subject_id],
+                            ['class', $request->input('class')],
+                            ['start_date', '<=', $a],
+                            ['end_date', '>=', $a]
+                        ])->select()->get();
+                        if ($result->count()) {
+                            return("The task has already been added fro these dates");
                         }
-                        $result = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([
-                            ['user_type', 'Student'],
-                            ['class', $request->class]
-                        ])->select('users.id')->get();
-                        foreach ($result as $key => $value) {
-                            for ($z = $start_date; $z <= $end_date; $z = $z + 86400) {
-                                $this->student_task->insert([
-                                    'task_id' => $task_id,
-                                    'student_id' => $value['id'],
-                                    'on_date' => $z
-                                ]);
+                        else {
+                            DB::beginTransaction();
+                            $task_id = $this->task->insertGetId([
+                                'subject_id' => $subject_id,
+                                'class' => $request->input('class'),
+                                'start_date' => $start_date,
+                                'end_date' => $end_date
+                            ]);
+                            $result = $this->clas->where([
+                                ['class', $request->input('class')],
+                                ['subject_id', $subject_id]
+                            ])->select('teacher_id')->distinct()->get();
+
+                            foreach ($result as $key => $value) {
+                                for ($z = $start_date; $z <= $end_date; $z = $z + 86400) {
+                                    $this->teacher_task->insert([
+                                        'task_id' => $task_id,
+                                        'teacher_id' => $value['teacher_id'],
+                                        'on_date' => $z
+                                    ]);
+                                }
                             }
+                            $result = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([
+                                ['user_type', 'Student'],
+                                ['class', $request->class]
+                            ])->select('users.id')->get();
+                            foreach ($result as $key => $value) {
+                                for ($z = $start_date; $z <= $end_date; $z = $z + 86400) {
+                                    $this->student_task->insert([
+                                        'task_id' => $task_id,
+                                        'student_id' => $value['id'],
+                                        'on_date' => $z
+                                    ]);
+                                }
+                            }
+                            return("Successfully added");
+                            DB::commit();
                         }
-                        return("Successfully added");
+                        
                     }
                 }
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+                DB::rollBack();
             }
         }
     }

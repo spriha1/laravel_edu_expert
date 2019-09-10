@@ -68,6 +68,10 @@ Route::middleware('auth')->group(function () {
 		Route::get('/block_users/{id}', 'ProjectController@block_users');
 		Route::get('/unblock_users/{id}', 'ProjectController@unblock_users');
 
+		Route::get('/payment', 'StripePaymentController@stripe');
+		Route::post('/payment', 'StripePaymentController@post_stripe');
+
+
 	});
 
 	Route::middleware('CheckTeacher')->group(function() {

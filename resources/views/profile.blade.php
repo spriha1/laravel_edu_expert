@@ -69,14 +69,21 @@
 					@endif
 
 					@if ($usertype === 'Admin')
-					@foreach ($rates as $rate)
-					<div class="form-group">
+					<!-- <div class="form-group">
 						<label for="currency" class="col-sm-3 control-label">Currency</label>
 						<div class="col-sm-9">
-							<input type="text" class="form-control" name="currency" id="currency" readonly value="{{ $rate->rate }}">
+							<select name="currency" id="currency" class="form-control">
+								<option value=""></option>
+							</select>
+						</div>
+					</div> -->
+
+					<div class="form-group">
+						<label for="tax" class="col-sm-3 control-label">GST</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control" name="tax" id="tax" readonly value="{{ $tax }}">
 						</div>
 					</div>
-					@endforeach
 					@endif
 
 					<div class="form-group">

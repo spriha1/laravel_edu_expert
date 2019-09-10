@@ -35,7 +35,7 @@
 							</div>
 						</div>
 					</div>
-
+					<input type="hidden" name="tax" id="tax" value="{{ $tax }}">
 					<input type="hidden" name="date_format" id="date_format" value="{{ Auth::user()->date_format }}">
 					<div class="box-body">
 						<input type="hidden" id="user_id" value="{{ Auth::id() }}">
@@ -102,7 +102,7 @@
 						</table>
 					</div>
 				</div>
-				<button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#details">View</button>
+				<button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#details" style="display:none" id="invoice">Invoice</button>
 			</div>
 		</div>
 	</section>
@@ -127,14 +127,18 @@
 								<th>Rate</th>
 								<th>GST</th>
 								<th>Total amount</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr>
 								<td id="time"></td>
 								<td id="rate"></td>
-								<td id="gst"></td>
+								<td id="gst">{{ $tax }}</td>
 								<td id="amount"></td>
+								<td>
+									<button type="button" class="btn btn-success" id="pay">Pay</button>
+								</td>
 							</tr>
 						</tbody>
 					</table>

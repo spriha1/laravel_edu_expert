@@ -61,7 +61,6 @@ $(document).ready(function() {
 
 		$('.timetable').html("");
 		load_display_data(date,user_id,user_type,date_format);
-
 	});
 
 	$('button').click(function() {

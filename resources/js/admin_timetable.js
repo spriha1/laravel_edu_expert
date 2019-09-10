@@ -5,7 +5,7 @@ $(document).ready(function() {
 	    }
 	});
 	var user = $('#user_id').val();
-	var user_id, user_type, rate;
+	var user_id, user_type, rate, tax;
 	var date = new Date();
 	$('.datepicker').datepicker('setDate', date);
 	var date = $('#date').val(); 
@@ -13,6 +13,8 @@ $(document).ready(function() {
 	var date_format = $('#date_format').val();
 
 	$('#search').change(function() {
+		tax = $('#tax').val();
+		$('#invoice').css('display', 'inline');
 		user_id = $('#search').val();
 		rate = $('option:selected').attr('rate');
 		user_type = $('option:selected').attr('usertype');
@@ -46,7 +48,7 @@ $(document).ready(function() {
 				$('#reject').css('display', 'none');
 			}
 		})
-		load_display_data(date,user_id,date_format,user_type,rate);
+		load_display_data(date,user_id,date_format,user_type,rate,tax);
 	});
 
 	$('#accept').click(function() {
@@ -75,7 +77,7 @@ $(document).ready(function() {
 		$.post('/update_request_status', {user_id: user_id, week: week, status: "Rejected", year: year, user: user}, function(result) {
 			if(result) {
 				$('.badge').text('Rejected');
-				// $('#accept').css('display', 'inline');
+				$('#accept').css('display', 'none');
 				$('#reject').css('display', 'none');
 			}
 		})
@@ -84,6 +86,7 @@ $(document).ready(function() {
 	$('.datepicker').datepicker().on('changeDate', function(e) {
 		var date = e.format();
 		rate = $('option:selected').attr('rate');
+		tax = $('#tax').val();
 		user_id = $('#search').val();
 		var date_format = $('#date_format').val();
 		var year = parseInt(get_year(date, date_format));
@@ -104,7 +107,7 @@ $(document).ready(function() {
 				}
 				else if (status == 'Rejected') {
 					$('.badge').text('Rejected');
-					$('#accept').css('display', 'inline');
+					$('#accept').css('display', 'none');
 					$('#reject').css('display', 'none');
 				}
 			}
@@ -115,7 +118,7 @@ $(document).ready(function() {
 			}
 		})
 		$('.timetable').html("");
-		load_display_data(date,user_id,date_format,user_type,rate);
+		load_display_data(date,user_id,date_format,user_type,rate,tax);
 	})
 })
 
@@ -186,7 +189,7 @@ function getNumberOfWeek(date) {
     return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
 
-function load_display_data(date,user_id,date_format,user_type,rate) {
+function load_display_data(date,user_id,date_format,user_type,rate,tax) {
 
 	$.post('/post_timesheets', {date: date, user_id: user_id, date_format: date_format, user_type: user_type}, function(result) {
 		var response = JSON.parse(result);
@@ -269,15 +272,19 @@ function load_display_data(date,user_id,date_format,user_type,rate) {
 			}
 		}
 		console.log(rate);
-		console.log(sum)
+		console.log(sum);
+
 		var amount = 0;
+		// var tax = 2;
 		if (sum != 0) {
+			rate_per_second = rate / 3600;
+			amount = parseFloat((sum * rate_per_second).toFixed(2));
+			amount = parseFloat((amount - ((tax / 100) * amount)).toFixed(2));
 			var hours = Math.floor(sum / 3600);
 			sum = sum - (hours * 3600);
 			var minutes = Math.floor(sum / 60);
 			sum = sum - (minutes * 60);
 			var time = hours + ':' + minutes + ':' + sum;
-			amount = hours * rate;
 		}
 		else {
 			var time = '00:00:00';
