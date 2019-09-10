@@ -1,4 +1,10 @@
 $(document).ready(function() {
+
+	$.ajaxSetup({
+	    headers: {
+	        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+	    }
+	});
 	
 	var lat, long;
 
@@ -115,6 +121,14 @@ $(document).ready(function() {
 				$('#alert').text("Error");
 				$("#alert").css("display" , "block");
 			}
+		})
+	});
+
+	$('#currency').change(function() {
+		var currency = $(this).val();
+		$.post('/update_currency', {currency: currency}, function (result) {
+			$('#info').text("Currency Updated successfully");
+			$("#info").css("display" , "block");
 		})
 	});
 

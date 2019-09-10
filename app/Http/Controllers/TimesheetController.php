@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\{UserType, SharedTimesheet, Holiday, TeacherTask, User, StudentTask, Tax};
+use App\{UserType, SharedTimesheet, Holiday, TeacherTask, User, StudentTask, Tax, Currency};
 class TimesheetController extends Controller
 {
-    protected $user_type, $shared_timesheet, $holiday, $teacher_task, $user, $student_task, $tax;
+    protected $user_type, $shared_timesheet, $holiday, $teacher_task, $user, $student_task, $tax, $currency;
 
     public function __construct()
     {
@@ -18,6 +18,7 @@ class TimesheetController extends Controller
         $this->user = new User;
         $this->student_task = new StudentTask;
         $this->tax = new Tax;
+        $this->currency = new Currency;
     }
 
     public function add_shared_timesheets(Request $request)
@@ -257,9 +258,12 @@ class TimesheetController extends Controller
 
         $tax = $this->tax->where('name', 'GST')->select('percentage')->first();
 
+        $currency = $this->currency->where('select_status', 1)->select('name')->first();
+
         return view('timesheets', [
             'users' => $users,
-            'tax' => $tax['percentage']
+            'tax' => $tax['percentage'],
+            'currency' => $currency['name']
         ]);
     }
 

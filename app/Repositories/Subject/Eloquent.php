@@ -3,7 +3,7 @@
 namespace App\Repositories\Subject;
 
 use App\Subject;
-Use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Log;
 use Exception;
 
 class Eloquent implements Repository

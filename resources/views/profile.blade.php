@@ -69,15 +69,16 @@
 					@endif
 
 					@if ($usertype === 'Admin')
-					<!-- <div class="form-group">
+					<div class="form-group">
 						<label for="currency" class="col-sm-3 control-label">Currency</label>
 						<div class="col-sm-9">
 							<select name="currency" id="currency" class="form-control">
-								<option value=""></option>
+								@foreach ($currencies as $currency)
+								<option value="{{ $currency->code }}" {{ $currency->select_status === 1 ? 'selected="selected"' : '' }}>{{ $currency->name }}</option>
+								@endforeach
 							</select>
 						</div>
-					</div> -->
-
+					</div>
 					<div class="form-group">
 						<label for="tax" class="col-sm-3 control-label">GST</label>
 						<div class="col-sm-9">

@@ -126,7 +126,7 @@
 								<th>Total time</th>
 								<th>Rate</th>
 								<th>GST</th>
-								<th>Total amount</th>
+								<th>Total amount ( In {{ $currency }} )</th>
 								<th></th>
 							</tr>
 						</thead>

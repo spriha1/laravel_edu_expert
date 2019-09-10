@@ -424,8 +424,23 @@ function load_display_data(date, user_id, date_format, user_type, rate, tax) {
     }
 
     $('#time').text(time);
-    $('#rate').text(rate);
-    $('#amount').text(amount);
+    $('#rate').text(rate); // $('#amount').text(amount);
+
+    $.get('/fetch_currency', function (result) {
+      var response = JSON.parse(result);
+      var old_cur = response['old'] || 'INR';
+      var new_cur = response['new']; // console.log(old_cur);
+      // console.log(new_cur);
+
+      $.post('/convert_currency', {
+        old_cur: old_cur,
+        new_cur: new_cur,
+        amount: amount
+      }, function (result) {
+        // console.log(result);
+        $('#amount').text(result);
+      });
+    });
   });
 }
 

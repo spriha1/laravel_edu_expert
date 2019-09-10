@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
-use App\{User, UserType, Subject, Clas, Task, TeacherTask, StudentTask, TeacherRate, SharedTimesheet, Tax};
+use App\{User, UserType, Subject, Clas, Task, TeacherTask, StudentTask, TeacherRate, SharedTimesheet, Tax, Currency};
 use Illuminate\Support\Facades\Mail;
 use App\Mail\UpdateMail;
 use App\Mail\ForgotPassword;
@@ -15,7 +15,7 @@ use DB;
 
 class ProjectController extends Controller
 {
-    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate, $tax;
+    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate, $tax, $currency;
 
     public function __construct()
     {
@@ -29,6 +29,7 @@ class ProjectController extends Controller
         $this->shared_timesheet = new SharedTimesheet;
         $this->teacher_rate = new TeacherRate;
         $this->tax = new Tax;
+        $this->currency = new Currency;
     }
 
     public function home()
@@ -223,9 +224,11 @@ class ProjectController extends Controller
             }
             else if ($usertype->user_type === 'Admin') {
                 $tax = $this->tax->where('name', 'GST')->select('percentage')->first();
+                $currencies = $this->currency->get();
                 return view('profile', [
                     'usertype' => $usertype->user_type,
-                    'tax' => $tax['percentage']
+                    'tax' => $tax['percentage'],
+                    'currencies' => $currencies
                 ]);
             }
             else {
