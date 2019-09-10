@@ -68,6 +68,17 @@
 					@endforeach
 					@endif
 
+					@if ($usertype === 'Admin')
+					@foreach ($rates as $rate)
+					<div class="form-group">
+						<label for="currency" class="col-sm-3 control-label">Currency</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control" name="currency" id="currency" readonly value="{{ $rate->rate }}">
+						</div>
+					</div>
+					@endforeach
+					@endif
+
 					<div class="form-group">
 						<label for="date_format" class="col-sm-3 control-label">Date Format</label>
 						<div class="col-sm-9">

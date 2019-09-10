@@ -36,7 +36,7 @@ $(document).ready(function() {
 				}
 				else if (status == 'Rejected') {
 					$('.badge').text('Rejected');
-					$('#accept').css('display', 'inline');
+					// $('#accept').css('display', 'inline');
 					$('#reject').css('display', 'none');
 				}
 			}
@@ -75,7 +75,7 @@ $(document).ready(function() {
 		$.post('/update_request_status', {user_id: user_id, week: week, status: "Rejected", year: year, user: user}, function(result) {
 			if(result) {
 				$('.badge').text('Rejected');
-				$('#accept').css('display', 'inline');
+				// $('#accept').css('display', 'inline');
 				$('#reject').css('display', 'none');
 			}
 		})

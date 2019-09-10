@@ -15,7 +15,7 @@
 						<div class="row">
 							<div class="col-sm-6">
 								<div class="row">
-									<input id="date" class="datepicker">
+									<input id="date" class="datepicker" style="margin-left: 16px">
 									<button class="btn btn-success" style="display:none" id="accept">Accept</button>
 									<button class="btn btn-danger" style="display:none" id="reject">Reject</button>
 								</div>
@@ -125,6 +125,7 @@
 							<tr>
 								<th>Total time</th>
 								<th>Rate</th>
+								<th>GST</th>
 								<th>Total amount</th>
 							</tr>
 						</thead>
@@ -132,6 +133,7 @@
 							<tr>
 								<td id="time"></td>
 								<td id="rate"></td>
+								<td id="gst"></td>
 								<td id="amount"></td>
 							</tr>
 						</tbody>

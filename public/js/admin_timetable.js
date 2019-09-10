@@ -132,8 +132,8 @@ $(document).ready(function () {
           $('#reject').css('display', 'inline');
           $('.badge').text('Approved');
         } else if (status == 'Rejected') {
-          $('.badge').text('Rejected');
-          $('#accept').css('display', 'inline');
+          $('.badge').text('Rejected'); // $('#accept').css('display', 'inline');
+
           $('#reject').css('display', 'none');
         }
       } else {
@@ -180,8 +180,8 @@ $(document).ready(function () {
       user: user
     }, function (result) {
       if (result) {
-        $('.badge').text('Rejected');
-        $('#accept').css('display', 'inline');
+        $('.badge').text('Rejected'); // $('#accept').css('display', 'inline');
+
         $('#reject').css('display', 'none');
       }
     });
