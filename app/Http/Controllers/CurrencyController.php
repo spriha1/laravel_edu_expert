@@ -20,9 +20,9 @@ class CurrencyController extends Controller
     {
     	$new = $request->input('currency');
 
-    	$this->currency->where('select_status', -1)->update(['select_status' => 0]);
+    	$this->currency->where('select_status', 1)->update(['select_status' => 0]);
 
-    	$this->currency->where('select_status', 1)->update(['select_status' => -1]);
+    	// $this->currency->where('select_status', 1)->update(['select_status' => -1]);
 
     	$this->currency->where('code', $new)->update(['select_status' => 1]);
     }
@@ -59,12 +59,14 @@ class CurrencyController extends Controller
 
     public function fetch_currency()
     {
-    	$old = $this->currency->where('select_status', -1)->first();
+    	// $old = $this->currency->where('select_status', -1)->first();
 
     	$new = $this->currency->where('select_status', 1)->first();
 
-    	$response = array("old"=>$old['code'],"new"=>$new['code']);
-    	
+    	// $response = array("old"=>$old['code'],"new"=>$new['code']);
+
+    	$response = array("new"=>$new['code']);
+
     	return(json_encode($response));
     }
 }

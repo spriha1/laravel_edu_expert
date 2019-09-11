@@ -75,6 +75,8 @@ Route::middleware('auth')->group(function () {
 		Route::get('/payment', 'StripePaymentController@stripe');
 		Route::post('/payment', 'StripePaymentController@post_stripe');
 
+		// Route::post('/update_amount', )
+
 
 	});
 

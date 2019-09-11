@@ -20,6 +20,7 @@ $(document).ready(function() {
 		user_type = $('option:selected').attr('usertype');
 		date = $('#date').val();
 		date_format = $('#date_format').val();
+		console.log(date_format);
 		var year = parseInt(get_year(date, date_format));
 		var d = format_date(date, date_format);
 		var week = getNumberOfWeek(d);
@@ -48,6 +49,9 @@ $(document).ready(function() {
 				$('#reject').css('display', 'none');
 			}
 		})
+
+		console.log('date format');
+		console.log(date_format);
 		load_display_data(date,user_id,date_format,user_type,rate,tax);
 	});
 
@@ -189,11 +193,21 @@ function getNumberOfWeek(date) {
     return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
 
-function load_display_data(date,user_id,date_format,user_type,rate,tax) {
+function load_display_data(date, user_id, dateFormatTemplate, user_type, rate, tax) {
+	// var dateF = date_format;
+	console.log(date_format)
+	$.post('/post_timesheets', {
+		date: date, 
+		user_id: user_id, 
+		date_format: dateFormatTemplate, 
+		user_type: user_type
+	}, 
+	function(result) {
 
-	$.post('/post_timesheets', {date: date, user_id: user_id, date_format: date_format, user_type: user_type}, function(result) {
+		console.log("inside the call");
+		console.log(dateFormatTemplate);
 		var response = JSON.parse(result);
-		console.log(response)
+		console.log(dateFormatTemplate)
 		$('.timetable').html("");
 		var len = response['original_dates'].length;
 		for (var i = 0; i < len; i++) {
@@ -207,7 +221,7 @@ function load_display_data(date,user_id,date_format,user_type,rate,tax) {
 			if (month < 10) {
 				month = '0' + month;
 			}
-			switch (date_format) {
+			switch (dateFormatTemplate) {
 				case "yyyy/mm/dd":
 					date = year + '/' + month + '/' + day;
 					break;
@@ -290,13 +304,27 @@ function load_display_data(date,user_id,date_format,user_type,rate,tax) {
 			var time = '00:00:00';
 		}
 
+
+
 		$('#time').text(time);
 		$('#rate').text(rate);
 		// $('#amount').text(amount);
 
+		var user_id = $('#search').val();
+		var date = $('#date').val();
+		var date_format = $('#date_format').val();
+		var year = parseInt(get_year(date, date_format));
+		var d = format_date(date, date_format);
+		var week = getNumberOfWeek(d);
+
+		// $.post('/update_amount', {user_id: user_id, week: week, year: year, amount:amount}, function(result) {
+
+		// });
+
 		$.get('/fetch_currency', function(result) {
 			var response = JSON.parse(result);
-			var old_cur = response['old'] || 'INR';
+			// var old_cur = response['old'] || 'INR';
+			var old_cur = 'USD';
 			var new_cur = response['new'];
 			// console.log(old_cur);
 			// console.log(new_cur);
