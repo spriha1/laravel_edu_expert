@@ -72,8 +72,8 @@ Route::middleware('auth')->group(function () {
 		Route::post('/convert_currency', 'CurrencyController@convert_currency');
 		Route::get('/fetch_currency', 'CurrencyController@fetch_currency');
 
-		Route::get('/payment', 'StripePaymentController@stripe');
-		Route::post('/payment', 'StripePaymentController@post_stripe');
+		Route::get('/stripe_payment', 'StripePaymentController@stripe');
+		Route::post('/post_stripe_payment', 'StripePaymentController@post_stripe');
 
 	});
 

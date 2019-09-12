@@ -137,7 +137,8 @@
 								<td id="gst">{{ $tax }}</td>
 								<td id="amount"></td>
 								<td>
-									<button type="button" class="btn btn-success" id="pay">Pay</button>
+									<!-- <input formaction="/stripe_payment" type="submit" class="btn btn-success" id="pay" value="Pay"> -->
+									<a class="btn btn-success" href="/stripe_payment">Pay</a>
 								</td>
 							</tr>
 						</tbody>

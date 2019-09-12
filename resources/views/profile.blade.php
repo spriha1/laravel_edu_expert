@@ -68,7 +68,7 @@
 					@endforeach
 					@endif
 
-					@if ($usertype === 'Admin')
+					@if ($usertype === 'Admin' || $usertype === 'Teacher')
 					<div class="form-group">
 						<label for="currency" class="col-sm-3 control-label">Currency</label>
 						<div class="col-sm-9">
@@ -79,6 +79,9 @@
 							</select>
 						</div>
 					</div>
+					@endif
+
+					@if ($usertype === 'Admin')
 					<div class="form-group">
 						<label for="tax" class="col-sm-3 control-label">GST</label>
 						<div class="col-sm-9">

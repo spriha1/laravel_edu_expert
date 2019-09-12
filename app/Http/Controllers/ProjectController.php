@@ -410,9 +410,12 @@ class ProjectController extends Controller
                             ->select('rate')
                             ->get();
 
+                $currencies = $this->currency->get();
+
                 return view('profile', [
                     'usertype' => $usertype->user_type,
-                    'rates' => $rates
+                    'rates' => $rates,
+                    'currencies' => $currencies
                 ]);
             }
 
