@@ -31,13 +31,40 @@ class SubjectsController extends Controller
     {
         $this->subject = new Subject;
     }
+
+
+    /**
+    * 
+    * @method add_subject() 
+    * 
+    * @param Request object
+    * @return json 
+    * Desc : This method adds a subject to the database and returns the same to display it in the view
+    */
     
     public function add_subject(Request $request)
     {
-        $id = $this->subject->insertGetId(['name' => $request->input('subject')]);
-        $result = $this->subject->where('id', $id)->select()->get();
+        try {
+            $id = $this->subject->insertGetId(['name' => $request->input('subject')]);
+
+            $result = $this->subject->where('id', $id)
+                    ->select()
+                    ->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
+        
         return(json_encode($result));
     }
+
+    /**
+    * 
+    * @method remove_subject() 
+    * 
+    * @param Request object
+    * Desc : This method deletes a subject from the database
+    */
 
     public function remove_subject(Request $request)
     {
@@ -48,6 +75,15 @@ class SubjectsController extends Controller
             Log::error($e->getMessage());
         }
     }
+
+    /**
+    * 
+    * @method display_subjects() 
+    * 
+    * @param void
+    * @return json 
+    * Desc : This method fetches and returns various subjects added to the database to display it in the view
+    */
 
     public function display_subjects()
     {

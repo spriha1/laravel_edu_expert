@@ -285,9 +285,7 @@ function load_display_data(date, user_id, dateFormatTemplate, user_type, rate, t
 				}
 			}
 		}
-		console.log(rate);
-		console.log(sum);
-
+		
 		var amount = 0;
 		// var tax = 2;
 		if (sum != 0) {
@@ -317,22 +315,58 @@ function load_display_data(date, user_id, dateFormatTemplate, user_type, rate, t
 		var d = format_date(date, date_format);
 		var week = getNumberOfWeek(d);
 
-		// $.post('/update_amount', {user_id: user_id, week: week, year: year, amount:amount}, function(result) {
-
-		// });
+		
 
 		$.get('/fetch_currency', function(result) {
 			var response = JSON.parse(result);
-			// var old_cur = response['old'] || 'INR';
 			var old_cur = 'USD';
 			var new_cur = response['new'];
-			// console.log(old_cur);
-			// console.log(new_cur);
 			$.post('/convert_currency', {old_cur: old_cur, new_cur: new_cur, amount: amount}, function(result) {
-				// console.log(result);
-				$('#amount').text(result);
+				$('#amount').text(parseFloat(result).toFixed(2));
 			});
 		});
+
+		// fetch('/fetch_currency')
+		// .then(function(response) { 
+		// 	result = response.json()
+		// 	console.log(result)
+		// 	return result
+		// })
+		
+		// fetch('/fetch_currency')
+		// .then(response => response.json())
+		// .then(result => {
+		// 	var old_cur = 'USD';
+		// 	localStorage.setItem("old_cur", old_cur)
+		// 	var new_cur = response['new'];
+		// 	return new_cur;
+		// })
+		// .then(new_cur => {
+		// 	var old_cur = localStorage.getItem("old_cur");
+		// 	console.log(old_cur)
+		// 	var data = {
+		// 		"old_cur": old_cur,
+		// 		"new_cur": new_cur,
+		// 		"amount": amount
+		// 	}
+
+		// 	fetch('/convert_currency', {
+		// 		method: 'POST',
+		// 		body: JSON.stringify(data),
+		// 		headers: {
+		// 			'Content-Type': 'application/json'
+ 	// 			}
+		// 	})
+		// 	.then(response => response.json())
+		// 	.then(result => {
+		// 		console.log(result)
+		// 		$('#amount').text(result);
+		// 	})
+
+
+		// })
+		// .catch(err => console.log(err));
+		
 
 		
 	});

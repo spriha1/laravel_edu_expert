@@ -11,17 +11,27 @@ class ClassController extends Controller
 
     public function __construct()
     {
-        $this->user = new User;
-        $this->subject = new Subject;
-        $this->clas = new Clas;
-        $this->task = new Task;
+        $this->user         = new User;
+        $this->subject      = new Subject;
+        $this->clas         = new Clas;
+        $this->task         = new Task;
         $this->teacher_task = new TeacherTask;
     }
+
+    /**
+    * 
+    * @method render_view() 
+    * 
+    * @param void
+    * @return string [html view of manage_class page]
+    * Desc : This method returns the view of manage_class page
+    */
 
     public function render_view()
     {
         try {
             $subjects = $this->subject->select()->get();
+
             return view('manage_class', [
                 'subjects' => $subjects
             ]);
@@ -29,8 +39,16 @@ class ClassController extends Controller
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
-    	
     }
+
+    /**
+    * 
+    * @method display_class() 
+    * 
+    * @param void
+    * @return json 
+    * Desc : This method fetches and displays the disinct classes from the database
+    */
 
     public function display_class()
     {
@@ -43,11 +61,25 @@ class ClassController extends Controller
         }
     }
 
+    /**
+    * 
+    * @method fetch_teachers() 
+    * 
+    * @param Request object
+    * @return json 
+    * Desc : This method fetches and returns the list of teachers corresponding to a particular subject
+    */
+
     public function fetch_teachers(Request $request)
     {
     	if ($request->filled('subject_id')) {
             try {
-                $teachers = $this->user->join('teacher_subjects', 'users.id', '=', 'teacher_subjects.teacher_id')->where('subject_id', $request->input('subject_id'))->select('users.id', 'firstname')->get();
+                $teachers = $this->user
+                ->join('teacher_subjects', 'users.id', '=', 'teacher_subjects.teacher_id')
+                ->where('subject_id', $request->input('subject_id'))
+                ->select('users.id', 'firstname')
+                ->get();
+
                 return(json_encode($teachers));
             }
             catch (Exception $e) {
@@ -55,6 +87,15 @@ class ClassController extends Controller
             }
     	}
     }
+
+    /**
+    * 
+    * @method add_class() 
+    * 
+    * @param Request object
+    * @return json 
+    * Desc : This method adds details of a class to the database and returns the id of the same
+    */
 
     public function add_class(Request $request)
     {
@@ -72,22 +113,36 @@ class ClassController extends Controller
                     Log::error($e->getMessage());
                 }
     		}
+
             try{
-                $result = $this->clas->where('id', $id)->select('class')->get();
+                $result = $this->clas->where('id', $id)
+                            ->select('class')
+                            ->get();
             }
     		catch (Exception $e) {
                 Log::error($e->getMessage());
             }
+
     		return(json_encode($result));
     	}
     }
+
+    /**
+    * 
+    * @method remove_class() 
+    * 
+    * @param Request object
+    * @return void 
+    * Desc : This method deletes a class from the database
+    */
 
     public function remove_class(Request $request)
     {
     	if ($request->filled('class_id'))
     	{
             try {
-                $this->clas->where('class', $request->input('class_id'))->delete();
+                $this->clas->where('class', $request->input('class_id'))
+                ->delete();
             }
     		catch (Exception $e) {
                 Log::error($e->getMessage());
@@ -95,18 +150,42 @@ class ClassController extends Controller
     	}
     }
 
+    /**
+    * 
+    * @method fetch_class_details() 
+    * 
+    * @param Request object
+    * @return json 
+    * Desc : This method fetches and returns the subjects and teachers associated with a class
+    */
+
     public function fetch_class_details(Request $request)
     {
     	if ($request->filled('class')) {
             try {
-                $result = $this->user->join('class', 'users.id', '=', 'class.teacher_id')->join('subjects', 'class.subject_id' , '=', 'subjects.id')->where('class.class', $request->input('class'))->select('users.id as userid', 'firstname', 'subjects.id as subjectid', 'class.class', 'name')->get();
+                $result = $this->user
+                ->join('class', 'users.id', '=', 'class.teacher_id')
+                ->join('subjects', 'class.subject_id' , '=', 'subjects.id')
+                ->where('class.class', $request->input('class'))
+                ->select('users.id as userid', 'firstname', 'subjects.id as subjectid', 'class.class', 'name')
+                ->get();
             }
     		catch (Exception $e) {
                 Log::error($e->getMessage());
             }
+
     		return(json_encode($result));
     	}
     }
+
+    /**
+    * 
+    * @method remove_class_subject() 
+    * 
+    * @param Request object
+    * @return void 
+    * Desc : This method deletes the record for a specific class and subject
+    */
 
     public function remove_class_subject(Request $request)
     {
@@ -124,6 +203,15 @@ class ClassController extends Controller
     	}
     }
 
+    /**
+    * 
+    * @method add_class_subject() 
+    * 
+    * @param Request object
+    * @return json 
+    * Desc : This method inserts a record for a specific class and subject
+    */
+
     public function add_class_subject(Request $request)
     {
     	if ($request->filled('class') && $request->filled('subjects')) {
@@ -131,19 +219,36 @@ class ClassController extends Controller
     		for ($i = 0; $i < $length; $i++) {
                 try {
                     $id = $this->clas->insertGetId([
-                        'class' => $request->input('class'),
+                        'class'      => $request->input('class'),
                         'subject_id' => $request->input('subjects')[$i],
                         'teacher_id' => $request->input($request->input('subjects')[$i])
                     ]);
-                    $result = $this->user->join('class', 'users.id', '=', 'class.teacher_id')->join('subjects', 'class.subject_id', '=', 'subjects.id')->where([['class.id', $id],['class.class', $request->input('class')]])->select('users.id as userid', 'firstname', 'subjects.id as subjectid', 'class.class', 'name')->get();
+                    $result = $this->user
+                    ->join('class', 'users.id', '=', 'class.teacher_id')
+                    ->join('subjects', 'class.subject_id', '=', 'subjects.id')
+                    ->where([
+                        ['class.id', $id],
+                        ['class.class', $request->input('class')]
+                    ])->select('users.id as userid', 'firstname', 'subjects.id as subjectid', 'class.class', 'name')
+                    ->get();
                 }
     			catch (Exception $e) {
                     Log::error($e->getMessage());
                 }
+
     			return(json_encode($result));
     		}
     	}
     }
+
+    /**
+    * 
+    * @method update_teacher() 
+    * 
+    * @param Request object
+    * @return json 
+    * Desc : This method updates a teacher for a class and subject and returns the id of the same
+    */
 
     public function update_teacher(Request $request)
     {
@@ -153,19 +258,27 @@ class ClassController extends Controller
                     ['subject_id', $request->input('subject_id')],
                     ['class', $request->input('class_id')]
                 ])->update(['teacher_id' => $request->input('teacher_id')]);
-                $result = $this->user->where('id', $request->input('teacher_id'))->select('firstname')->get();
+
+                $result = $this->user->where('id', $request->input('teacher_id'))
+                            ->select('firstname')
+                            ->get();
+
                 $results = $this->task->where([
                     ['subject_id', $request->input('subject_id')],
                     ['class', $request->input('class_id')]
-                ])->select('id')->get();
+                ])->select('id')
+                ->get();
+
                 foreach ($results as $res) {
                     $task_id = $res->id;
-                    $this->teacher_task->where('task_id', $task_id)->update(['teacher_id' => $request->input('teacher_id')]);
+                    $this->teacher_task->where('task_id', $task_id)
+                    ->update(['teacher_id' => $request->input('teacher_id')]);
                 }
             }
     		catch (Exception $e) {
                 Log::error($e->getMessage());
             }
+
     		return(json_encode($result));
     	}
     }

@@ -13,16 +13,16 @@
 					<div class="box-header">
 						<!-- <input class="date" id="date" type="date"> -->
 						<div class="row">
-							<div class="col-sm-6">
+							<div class="col-md-6 col-sm-12">
 								<div class="row">
 									<input id="date" class="datepicker" style="margin-left: 16px">
 									<button class="btn btn-success" style="display:none" id="accept">Accept</button>
 									<button class="btn btn-danger" style="display:none" id="reject">Reject</button>
 								</div>
 							</div>
-							<div class="col-sm-1">
+							<div class="col-md-1 col-sm-12">
 							</div>
-							<div class="col-sm-5">
+							<div class="col-md-5 col-sm-12 mx-auto">
 								<div class="row">
 									<span class="badge"></span>
 									<select name="search" id="search">
@@ -41,7 +41,7 @@
 						<input type="hidden" id="user_id" value="{{ Auth::id() }}">
 						<!-- <input type="hidden" id="user_type" value="teacher"> -->
 
-						<table id="timetable" class="table table-bordered table-striped responsive">
+						<table id="timetable" class="table table-bordered table-striped table-responsive">
 							<thead>
 								<tr>
 									<th width="30%">

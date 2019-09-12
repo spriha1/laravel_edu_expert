@@ -18,7 +18,7 @@ class UpdateMail extends Mailable
      */
     public function __construct($hash, $email)
     {
-        $this->hash = base64_encode($hash);
+        $this->hash  = base64_encode($hash);
         $this->email = base64_encode($email);
     }
 
@@ -30,7 +30,7 @@ class UpdateMail extends Mailable
     public function build()
     {
         return $this->view('emails.update_mail')->with([
-                        'hash' => $this->hash,
+                        'hash'  => $this->hash,
                         'email' => $this->email,
                     ]);
     }

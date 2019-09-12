@@ -22,7 +22,7 @@ class UserVerification extends Mailable
     {
         $this->username = $request->input('username');
         $this->password = $request->input('password');
-        $this->code = base64_encode($hash);
+        $this->code     = base64_encode($hash);
     }
 
     /**
@@ -35,7 +35,7 @@ class UserVerification extends Mailable
         return $this->view('emails.user_verification')->with([
                         'username' => $this->username,
                         'password' => $this->password,
-                        'code' => $this->code,
+                        'code'     => $this->code,
                     ]);
     }
 }
