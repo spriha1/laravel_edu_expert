@@ -27,12 +27,16 @@ class CurrencyController extends Controller
     public function update_currency(Request $request)
     {
     	$new = $request->input('currency');
+        try {
+            $this->currency->where('select_status', 1)
+            ->update(['select_status' => 0]);
 
-    	$this->currency->where('select_status', 1)
-        ->update(['select_status' => 0]);
-
-    	$this->currency->where('code', $new)
-        ->update(['select_status' => 1]);
+            $this->currency->where('code', $new)
+            ->update(['select_status' => 1]);
+        }
+    	catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
     }
 
     /**
@@ -81,7 +85,12 @@ class CurrencyController extends Controller
 
     public function fetch_currency()
     {
-    	$new = $this->currency->where('select_status', 1)->first();
+        try {
+            $new = $this->currency->where('select_status', 1)->first();
+        }
+    	catch(Exception $e) {
+            Log::error($e->getMessage());
+        }
 
     	$response = array("new"=>$new['code']);
 

@@ -12,7 +12,7 @@ use App\Http\Requests\Registration;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-Use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 
@@ -448,9 +448,14 @@ class AjaxController extends Controller
 
     public function fetch_teacher_class(Request $request)
     {
-        $results = $this->clas->where('teacher_id', $request->input('teacher_id'))
+        try {
+            $results = $this->clas->where('teacher_id', $request->input('teacher_id'))
                     ->select('class')
                     ->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
         return(json_encode($results));
     }
 
@@ -465,12 +470,17 @@ class AjaxController extends Controller
 
     public function fetch_teacher_class_subjects(Request $request)
     {
-        $results = $this->clas->join('subjects', 'subjects.id', '=', 'class.subject_id')
+        try {
+            $results = $this->clas->join('subjects', 'subjects.id', '=', 'class.subject_id')
                     ->where([
                         ['class', $request->input('class_id')],
                         ['teacher_id', $request->input('teacher_id')]
                     ])->select('subjects.id', 'name')
                     ->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
         return(json_encode($results));
     }
 
@@ -488,10 +498,15 @@ class AjaxController extends Controller
         $check  = 0;
 
         if ($request->input('status') === 'Approved' || $request->input('status') === 'Rejected') {
-            $result = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+            try {
+                $result = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
                         ->where('users.id', $request->input('user'))
                         ->select('user_type')
                         ->first();
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
 
             if ($result['user_type'] === 'Admin') {
                 $check = 1;
@@ -499,19 +514,30 @@ class AjaxController extends Controller
         }
 
         if ($request->input('status') === 'Pending') {
-            $result = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+            try {
+                $result = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
                         ->where('users.id', $request->input('user'))
                         ->select('user_type')
                         ->first();
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
+
             if ($result['user_type'] === 'Teacher') {
-                $result = $this->request_status
-                ->join('statuses', 'status_code', '=', 'statuses.id')
-                ->where([
-                    ['user_id', $request->input('user_id')],
-                    ['week_number', $request->input('week')],
-                    ['year', $request->input('year')]
-                ])->select('name')
-                ->first();
+                try {
+                    $result = $this->request_status
+                    ->join('statuses', 'status_code', '=', 'statuses.id')
+                    ->where([
+                        ['user_id', $request->input('user_id')],
+                        ['week_number', $request->input('week')],
+                        ['year', $request->input('year')]
+                    ])->select('name')
+                    ->first();
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
 
                 if ($result['name'] !== 'Approved') {
                     $check = 1;
@@ -520,36 +546,56 @@ class AjaxController extends Controller
         }
 
         if ($check === 1) {
-            $statuses = $this->status->where('name', $request->input('status'))
+            try {
+                $statuses = $this->status->where('name', $request->input('status'))
                         ->select('id')
                         ->get();
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
 
             foreach ($statuses as $status) {
                 $status_code = $status->id;
             }
 
-            $results = $this->request_status->where([
-                ['user_id', $request->input('user_id')],
-                ['week_number', $request->input('week')],
-                ['year', $request->input('year')]
-            ])->select()
-            ->get();
-
-            if ($results->count()) {
-                $this->request_status->where([
+            try {
+                $results = $this->request_status->where([
                     ['user_id', $request->input('user_id')],
                     ['week_number', $request->input('week')],
                     ['year', $request->input('year')]
-                ])->update(['status_code' => $status_code]);
+                ])->select()
+                ->get();
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
+
+            if ($results->count()) {
+                try {
+                    $this->request_status->where([
+                        ['user_id', $request->input('user_id')],
+                        ['week_number', $request->input('week')],
+                        ['year', $request->input('year')]
+                    ])->update(['status_code' => $status_code]);
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
             }
 
             else {
-                $this->request_status->insert([
-                    'user_id' => $request->input('user_id'),
-                    'week_number' => $request->input('week'),
-                    'status_code' => $status_code,
-                    'year' => $request->input('year')
-                ]);
+                try {
+                    $this->request_status->insert([
+                        'user_id' => $request->input('user_id'),
+                        'week_number' => $request->input('week'),
+                        'status_code' => $status_code,
+                        'year' => $request->input('year')
+                    ]);
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
             }
 
             return $request->input('status');
@@ -567,15 +613,19 @@ class AjaxController extends Controller
 
     public function fetch_request_status(Request $request)
     {
-        $results = $this->request_status
-        ->join('statuses', 'statuses.id', '=', 'request_status.status_code')
-        ->where([
-            ['user_id', $request->input('user_id')],
-            ['week_number', $request->input('week')],
-            ['year', $request->input('year')]
-        ])->select('statuses.name')
-        ->get();
-
+        try {
+            $results = $this->request_status
+            ->join('statuses', 'statuses.id', '=', 'request_status.status_code')
+            ->where([
+                ['user_id', $request->input('user_id')],
+                ['week_number', $request->input('week')],
+                ['year', $request->input('year')]
+            ])->select('statuses.name')
+            ->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
         return(json_encode($results));
     }
 

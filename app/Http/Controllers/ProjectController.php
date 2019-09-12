@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\UpdateMail;
 use App\Mail\ForgotPassword;
 use DB;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class ProjectController extends Controller
 {
@@ -57,8 +59,13 @@ class ProjectController extends Controller
 
     public function register()
     {
-        $user_types = $this->user_type->where('user_type', '!=', "Admin")->get();
-        $subjects   = $this->subject->all();
+        try {
+            $user_types = $this->user_type->where('user_type', '!=', "Admin")->get();
+            $subjects   = $this->subject->all();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 
         return view('register', [
             'user_types' => $user_types, 
@@ -97,8 +104,13 @@ class ProjectController extends Controller
                 'user_reg_status' => 1, 
                 'block_status'    => 0
             ])) {
-                          
-            $user_type = $this->user_type->where('id', Auth::user()->user_type_id)->get();
+                    
+            try {
+                $user_type = $this->user_type->where('id', Auth::user()->user_type_id)->get();
+            }      
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
 
             foreach ($user_type as $val) {                    
                 if ($val->user_type === 'Admin') {                        
@@ -129,13 +141,18 @@ class ProjectController extends Controller
 
     public function pending_requests()
     {
-        $user_types = $this->user_type->where('user_type', '!=', 'Admin')
+        try {
+            $user_types = $this->user_type->where('user_type', '!=', 'Admin')
                         ->select('user_type')
                         ->get();
 
-        $results = $this->user->whereRaw("user_reg_status = 0 AND email_verification_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")
-        ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
-        ->get();
+            $results = $this->user->whereRaw("user_reg_status = 0 AND email_verification_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")
+            ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
+            ->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 
         return view('pending_requests', [
             'user_types' => $user_types,
@@ -155,9 +172,14 @@ class ProjectController extends Controller
 
     public function post_pending_requests(Request $request)
     {
-        $user_types = $this->user_type->where('user_type', '!=', 'Admin')
+        try {
+            $user_types = $this->user_type->where('user_type', '!=', 'Admin')
                         ->select('user_type')
                         ->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 
         $c = 0;
         foreach ($user_types as $key => $value) {
@@ -166,17 +188,28 @@ class ProjectController extends Controller
             }
         }
         if ($c > 0) {
-            $results = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([
+            try {
+                $results = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+                ->where([
                     ['user_reg_status', 0], 
                     ['user_type', $request->input('user_type')]
                 ])->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')
                 ->get();
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
         }
 
         else {
-            $results = $this->user->whereRaw("user_reg_status = 0 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")
-            ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
-            ->get();
+            try {
+                $results = $this->user->whereRaw("user_reg_status = 0 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")
+                ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
+                ->get();
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
         }
 
         return view('pending_requests', [
@@ -197,7 +230,13 @@ class ProjectController extends Controller
 
     public function add_users($id)
     {
-        $this->user->where('id', $id)->update(['user_reg_status' => 1]);
+        try {
+            $this->user->where('id', $id)->update(['user_reg_status' => 1]);
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
+
         return redirect()->back();
     }
 
@@ -212,7 +251,13 @@ class ProjectController extends Controller
 
     public function remove_users($id)
     {
-        $this->user->where('id', $id)->delete();
+        try {
+            $this->user->where('id', $id)->delete();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
+
         return redirect()->back();
     }
 
@@ -227,7 +272,13 @@ class ProjectController extends Controller
 
     public function block_users($id)
     {
-        $this->user->where('id', $id)->update(['block_status' => 1]);
+        try {
+            $this->user->where('id', $id)->update(['block_status' => 1]);
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
+
         return redirect()->back();
     }
 
@@ -242,7 +293,13 @@ class ProjectController extends Controller
 
     public function unblock_users($id)
     {
-        $this->user->where('id', $id)->update(['block_status' => 0]);
+        try {
+            $this->user->where('id', $id)->update(['block_status' => 0]);
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
+
         return redirect()->back();
     }
 
@@ -257,13 +314,18 @@ class ProjectController extends Controller
 
     public function regd_users()
     {
-        $user_types = $this->user_type->where('user_type', '!=', 'Admin')
+        try {
+            $user_types = $this->user_type->where('user_type', '!=', 'Admin')
                         ->select('user_type')
                         ->get();
 
-        $results = $this->user->whereRaw("user_reg_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")
-        ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
-        ->get();
+            $results = $this->user->whereRaw("user_reg_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")
+            ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
+            ->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 
         return view('regd_users', [
             'user_types' => $user_types,
@@ -283,9 +345,14 @@ class ProjectController extends Controller
 
     public function post_regd_users(Request $request)
     {
-        $user_types = $this->user_type->where('user_type', '!=', 'Admin')
+        try {
+            $user_types = $this->user_type->where('user_type', '!=', 'Admin')
                         ->select('user_type')
                         ->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 
         $c = 0;
 
@@ -296,17 +363,28 @@ class ProjectController extends Controller
         }
 
         if ($c > 0) {
-            $results = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([
+            try {
+                $results = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+                ->where([
                     ['user_reg_status', 1], 
                     ['user_type', $request->input('user_type')]
                 ])->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')
-            ->get();
+                ->get();
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
         }
 
         else {
-            $results = $this->user->whereRaw("user_reg_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")
-            ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
-            ->get();
+            try {
+                $results = $this->user->whereRaw("user_reg_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")
+                ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
+                ->get();
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
         }
 
         return view('regd_users', [
@@ -327,27 +405,42 @@ class ProjectController extends Controller
 
     public function render_admin_dashboard()
     {
-        $regd_users = $this->user->where('user_reg_status', 1)
+        try {
+            $regd_users = $this->user->where('user_reg_status', 1)
                         ->selectRaw('count(*) as total')
                         ->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 
         foreach ($regd_users as $regd_user) {
             $regd_user_count = $regd_user->total;
         }
 
-        $pending_users = $this->user->where([
-            ['user_reg_status', 0],
-            ['email_verification_status', 1]
-        ])->selectRaw('count(*) as total')
-        ->get();
+        try {
+            $pending_users = $this->user->where([
+                ['user_reg_status', 0],
+                ['email_verification_status', 1]
+            ])->selectRaw('count(*) as total')
+            ->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 
         foreach ($pending_users as $pending_user) {
             $pending_user_count = $pending_user->total;
         }
 
-        $shared_timesheets = $this->shared_timesheet->where('to_id', Auth::id())
+        try {
+            $shared_timesheets = $this->shared_timesheet->where('to_id', Auth::id())
                                 ->selectRaw('count(*) as total')
                                 ->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 
         foreach ($shared_timesheets as $shared_timesheet) {
             $shared_timesheet_count = $shared_timesheet->total;
@@ -399,18 +492,28 @@ class ProjectController extends Controller
 
     public function profile()
     {
-        $usertypes = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
-        ->where('users.id', Auth::id())
-        ->select('user_type')->get();
+        try {
+            $usertypes = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+            ->where('users.id', Auth::id())
+            ->select('user_type')->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 
         foreach ($usertypes as $usertype) {
 
             if ($usertype->user_type === 'Teacher') {
-                $rates = $this->user->where('id', Auth::id())
+                try {
+                    $rates = $this->user->where('id', Auth::id())
                             ->select('rate')
                             ->get();
 
-                $currencies = $this->currency->get();
+                    $currencies = $this->currency->get();
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
 
                 return view('profile', [
                     'usertype' => $usertype->user_type,
@@ -420,11 +523,17 @@ class ProjectController extends Controller
             }
 
             else if ($usertype->user_type === 'Admin') {
-                $tax = $this->tax->where('name', 'GST')
+                try {
+                    $tax = $this->tax->where('name', 'GST')
                         ->select('percentage')
                         ->first();
 
-                $currencies = $this->currency->get();
+                    $currencies = $this->currency->get();
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
+                
 
                 return view('profile', [
                     'usertype' => $usertype->user_type,
@@ -452,16 +561,26 @@ class ProjectController extends Controller
     public function verify_mail($code)
     {
         $hash = base64_decode($code);
-        $results = $this->user->where([
-            ['email_verification_code', $hash],
-            ['email_verification_status', 0]
-        ])->get();
-
-        if($results->count()) {
-            $this->user->where([
+        try {
+            $results = $this->user->where([
                 ['email_verification_code', $hash],
                 ['email_verification_status', 0]
-            ])->update(['email_verification_status' => 1]);
+            ])->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
+
+        if($results->count()) {
+            try {
+                $this->user->where([
+                    ['email_verification_code', $hash],
+                    ['email_verification_status', 0]
+                ])->update(['email_verification_status' => 1]);
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
             echo '<div>Your account has been activated, you can now <a href="/">login</a></div>';
         }
         else {
@@ -481,16 +600,27 @@ class ProjectController extends Controller
     {
         $hash = base64_decode($hash);
         $email = base64_decode($email);
-        $result = $this->user->where([
-            ['email_verification_code', $hash],
-            ['email_verification_status', 0]
-        ])->select('id')->get();
+        try {
+            $result = $this->user->where([
+                ['email_verification_code', $hash],
+                ['email_verification_status', 0]
+            ])->select('id')->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
+
         if($result->count()) {
             foreach ($result as $res) {
-                $this->user->where([
-                    ['id', $res->id],
-                    ['email_verification_status', 0]
-                ])->update(['email_verification_status' => 1, 'email' => $email]);
+                try {
+                    $this->user->where([
+                        ['id', $res->id],
+                        ['email_verification_status', 0]
+                    ])->update(['email_verification_status' => 1, 'email' => $email]);
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
             }
             echo '<div>Your email has been updated, you can continue';
         }
@@ -510,21 +640,37 @@ class ProjectController extends Controller
     public function send_password_mail(Request $request)
     {
         if($request->filled('username')) {
-            $result = $this->user->where('username', $request->input('username'))
+            try {
+                $result = $this->user->where('username', $request->input('username'))
                         ->select('id')
                         ->get();
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
 
             if($result->count()) {
                 $unique = uniqid();
-                $this->user->where('username', $request->input('username'))
-                ->update(['token' => $unique]);
+                try {
+                    $this->user->where('username', $request->input('username'))
+                    ->update(['token' => $unique]);
 
-                $results = $this->user->where('username', $request->input('username'))
+                    $results = $this->user->where('username', $request->input('username'))
                             ->select('email', 'token')
                             ->get();
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
 
                 foreach ($results as $result) {
-                    Mail::to($result->email)->send(new ForgotPassword($result->token));
+                    try {
+                        Mail::to($result->email)->send(new ForgotPassword($result->token));
+                    }
+                    catch (Exception $e) {
+                        Log::error($e->getMessage());
+                    }
+
                     echo "Please reset your password by clicking the link that has been sent to your email.";
                 }
             }
@@ -547,7 +693,13 @@ class ProjectController extends Controller
         $expiry_time = base64_decode($expiry_time);
         $current_time = time();
         if ($current_time > $expiry_time) {
-            $this->user->where('token', $token)->update(['token' => NULL]);
+            try {
+                $this->user->where('token', $token)->update(['token' => NULL]);
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
+
             echo "The link has expired";
         }
         else {
@@ -566,14 +718,25 @@ class ProjectController extends Controller
     public function reset_password(Request $request)
     {
         if($request->filled('password')) {
-            $result = $this->user->where([
-                ['token', session('token')],
-                ['user_reg_status', 1]
-            ])->select('username')->get();
+            try {
+                $result = $this->user->where([
+                    ['token', session('token')],
+                    ['user_reg_status', 1]
+                ])->select('username')->get();
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
 
             if($result->count()) {
                 $password = Hash::make($request->input('password'));
-                $this->user->where('token', session('token'))->update(['password' => $password]);
+                try{
+                    $this->user->where('token', session('token'))->update(['password' => $password]);
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
+
                 echo '<div>Your password has been reset, you can now <a href="/"> login</a></div>';
             }
             else {
@@ -593,12 +756,17 @@ class ProjectController extends Controller
 
     public function task_management()
     {
-        $teachers = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+        try {
+            $teachers = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
                         ->where('user_type', 'Teacher')
                         ->select('firstname', 'users.id')
                         ->get();
 
-        $classes = $this->clas->select('class')->distinct()->get();
+            $classes = $this->clas->select('class')->distinct()->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 
         return view('task_management', [
             'classes' => $classes,
@@ -739,10 +907,16 @@ class ProjectController extends Controller
     public function fetch_subjects(Request $request)
     {
         if ($request->filled('class_id')) {
-            $result = $this->subject->join('class', 'subjects.id', '=', 'class.subject_id')
+            try {
+                $result = $this->subject->join('class', 'subjects.id', '=', 'class.subject_id')
                         ->where('class.class', $request->input('class_id'))
                         ->select('subjects.id', 'name')
                         ->get();
+            }
+
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
             return(json_encode($result));
         }
     }

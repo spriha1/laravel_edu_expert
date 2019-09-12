@@ -1,10 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\{UserType, SharedTimesheet, Holiday, TeacherTask, User, StudentTask, Tax, Currency};
+use Illuminate\Support\Facades\Log;
+use Exception;
+
 class TimesheetController extends Controller
 {
     protected $user_type, $shared_timesheet, $holiday, $teacher_task, $user, $student_task, $tax, $currency;
@@ -37,19 +41,30 @@ class TimesheetController extends Controller
         	$date        = $request->input('date');
         	$date        = date_to_timestamp($date_format, $date);
 
-        	$results     = $this->user_type
+            try {
+                $results = $this->user_type
                             ->join('users', 'users.user_type_id', '=', 'user_types.id')
                             ->where('users.id', $request->input('user_id'))
                             ->select('user_type')
                             ->get();
+            }
+        	catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
 
         	foreach ($results as $result) {
         		if ($result->user_type === 'Teacher') {
-        			$users = $this->user_type
+                    try {
+                        $users = $this->user_type
                                 ->join('users', 'users.user_type_id', '=', 'user_types.id')
                                 ->where('user_types.user_type', 'Admin')
                                 ->select('users.id')
                                 ->get();
+                    }
+                    catch (Exception $e) {
+                        Log::error($e->getMessage());
+                    }
+        			
 
         			foreach ($users as $user) {
         				$to_id = $user->id;
@@ -57,16 +72,26 @@ class TimesheetController extends Controller
         		}
 
         		else if ($result->user_type === 'Student') {
-                    $classes = $this->user->where('id', $request->input('user_id'))
+                    try{
+                        $classes = $this->user->where('id', $request->input('user_id'))
                                 ->select('class')
                                 ->get();
+                    }
+                    catch (Exception $e) {
+                        Log::error($e->getMessage());
+                    }
 
                     foreach ($classes as $class) {
-                        $results = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
-                        ->where([
-                            ['user_types.user_type', 'Teacher'],
-                            ['users.class', $class->class]
-                        ])->select('users.id')->get();
+                        try {
+                            $results = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+                            ->where([
+                                ['user_types.user_type', 'Teacher'],
+                                ['users.class', $class->class]
+                            ])->select('users.id')->get();
+                        }
+                        catch (Exception $e) {
+                            Log::error($e->getMessage());
+                        }
 
                         foreach ($results as $result) {
                             $to_id = $result->id;
@@ -74,11 +99,17 @@ class TimesheetController extends Controller
                     }
         		}
         	}
-        	$this->shared_timesheet->insert([
-        		'from_id' => $request->input('user_id'),
-        		'to_id'   => $to_id,
-        		'of_date' => $date
-        	]);
+            try {
+                $this->shared_timesheet->insert([
+                    'from_id' => $request->input('user_id'),
+                    'to_id'   => $to_id,
+                    'of_date' => $date
+                ]);
+            }
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
+        	
     	}
     }
 
@@ -116,20 +147,31 @@ class TimesheetController extends Controller
 
 			if ($counter === 0) {
 				if ($request->input('user_type') === 'teacher') {
-					$result = $this->teacher_task->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
-                    ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
-                    ->where('teacher_id', $request->input('user_id'))
-                    ->whereRaw('DATE(FROM_UNIXTIME(on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
-					->select('task_id', 'class', 'name', 'total_time', 'on_date')->get();
+                    try {
+                        $result = $this->teacher_task->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
+                        ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                        ->where('teacher_id', $request->input('user_id'))
+                        ->whereRaw('DATE(FROM_UNIXTIME(on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
+                        ->select('task_id', 'class', 'name', 'total_time', 'on_date')->get();
+                    }
+                    catch (Exception $e) {
+                        Log::error($e->getMessage());
+                    }
+					
 				}
 				else if ($request->input('user_type') === 'student') {
-                    $result = $this->student_task->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
-                    ->join('teacher_tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
-                    ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
-                    ->join('users as teacher', 'teacher.id', '=', 'teacher_tasks.teacher_id')
-                    ->where('student_id', $request->input('user_id'))
-                    ->whereRaw('DATE(FROM_UNIXTIME(student_tasks.on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
-                    ->select('teacher_tasks.task_id', 'teacher.firstname', 'name', 'student_tasks.total_time', 'student_tasks.on_date')->get();
+                    try {
+                        $result = $this->student_task->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
+                        ->join('teacher_tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
+                        ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                        ->join('users as teacher', 'teacher.id', '=', 'teacher_tasks.teacher_id')
+                        ->where('student_id', $request->input('user_id'))
+                        ->whereRaw('DATE(FROM_UNIXTIME(student_tasks.on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
+                        ->select('teacher_tasks.task_id', 'teacher.firstname', 'name', 'student_tasks.total_time', 'student_tasks.on_date')->get();
+                    }
+                    catch (Exception $e) {
+                        Log::error($e->getMessage());
+                    }
 				}
 				return(json_encode($result));
 			}
@@ -192,11 +234,17 @@ class TimesheetController extends Controller
 			}
 			if ($request->input('user_type') === 'teacher') {
 				foreach ($week_dates as $date) {
-					$result = $this->teacher_task->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
-                    ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
-                    ->where('teacher_id', $request->input('user_id'))
-                    ->whereRaw('DATE(FROM_UNIXTIME(start_date)) <= DATE(FROM_UNIXTIME('.$date.')) && DATE(FROM_UNIXTIME(end_date)) >= DATE(FROM_UNIXTIME('.$date.'))')
-                    ->select('task_id', 'class', 'name')->get();
+                    try {
+                        $result = $this->teacher_task->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
+                        ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                        ->where('teacher_id', $request->input('user_id'))
+                        ->whereRaw('DATE(FROM_UNIXTIME(start_date)) <= DATE(FROM_UNIXTIME('.$date.')) && DATE(FROM_UNIXTIME(end_date)) >= DATE(FROM_UNIXTIME('.$date.'))')
+                        ->select('task_id', 'class', 'name')->get();
+                    }
+                    catch (Exception $e) {
+                        Log::error($e->getMessage());
+                    }
+					
 					foreach ($result as $key => $value) {
 						array_push($tasks, $value['task_id']);
 					}
@@ -206,13 +254,18 @@ class TimesheetController extends Controller
 				$tasks = array_unique($tasks);
 
 				foreach ($tasks as $task) {
-					$result3 = $this->teacher_task
-                    ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
-                    ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
-                    ->where([
-						['teacher_id', $request->input('user_id')],
-						['teacher_tasks.task_id', '=', $task]
-					])->select('task_id', 'class', 'name')->get();
+                    try {
+                        $result3 = $this->teacher_task
+                        ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
+                        ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                        ->where([
+                            ['teacher_id', $request->input('user_id')],
+                            ['teacher_tasks.task_id', '=', $task]
+                        ])->select('task_id', 'class', 'name')->get();
+                    }
+					catch (Exception $e) {
+                        Log::error($e->getMessage());
+                    }
 
 					array_push($arr, $result3);
 				}
@@ -224,16 +277,21 @@ class TimesheetController extends Controller
 					$res = [];
 
 					foreach ($week_dates as $date) {
-						$result2 = $this->teacher_task
-                        ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
-                        ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
-                        ->where([
-							['teacher_id', $request->input('user_id')],
-							['teacher_tasks.task_id', '=', $task]
-						])
-                        ->whereRaw('DATE(FROM_UNIXTIME(on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
-                        ->select('task_id', 'class', 'name', 'on_date', 'total_time')
-                        ->get();
+                        try {
+                            $result2 = $this->teacher_task
+                            ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
+                            ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                            ->where([
+                                ['teacher_id', $request->input('user_id')],
+                                ['teacher_tasks.task_id', '=', $task]
+                            ])
+                            ->whereRaw('DATE(FROM_UNIXTIME(on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
+                            ->select('task_id', 'class', 'name', 'on_date', 'total_time')
+                            ->get();
+                        }
+						catch (Exception $e) {
+                            Log::error($e->getMessage());
+                        }
 
 						array_push($res, $result2);
 					}
@@ -244,15 +302,20 @@ class TimesheetController extends Controller
 
 			else if ($request->input('user_type') === 'student') {
                 foreach ($week_dates as $date) {
-                    $result = $this->student_task
-                    ->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
-                    ->join('teacher_tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
-                    ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
-                    ->join('users as teacher', 'teacher.id', '=', 'teacher_tasks.teacher_id')
-                    ->where('student_id', $request->input('user_id'))
-                    ->whereRaw('DATE(FROM_UNIXTIME(start_date)) <= DATE(FROM_UNIXTIME('.$date.')) && DATE(FROM_UNIXTIME(end_date)) >= DATE(FROM_UNIXTIME('.$date.'))')
-                    ->select('student_tasks.task_id', 'teacher.firstname', 'name')
-                    ->get();
+                    try {
+                        $result = $this->student_task
+                        ->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
+                        ->join('teacher_tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
+                        ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                        ->join('users as teacher', 'teacher.id', '=', 'teacher_tasks.teacher_id')
+                        ->where('student_id', $request->input('user_id'))
+                        ->whereRaw('DATE(FROM_UNIXTIME(start_date)) <= DATE(FROM_UNIXTIME('.$date.')) && DATE(FROM_UNIXTIME(end_date)) >= DATE(FROM_UNIXTIME('.$date.'))')
+                        ->select('student_tasks.task_id', 'teacher.firstname', 'name')
+                        ->get();
+                    }
+                    catch (Exception $e) {
+                        Log::error($e->getMessage());
+                    }
 
                     foreach ($result as $key => $value) {
                         array_push($tasks, $value['task_id']);
@@ -262,16 +325,21 @@ class TimesheetController extends Controller
                 $tasks = array_unique($tasks);
 
                 foreach ($tasks as $task) {
-                    $result3 = $this->student_task
-                    ->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
-                    ->join('teacher_tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
-                    ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
-                    ->join('users as teacher', 'teacher.id', '=', 'teacher_tasks.teacher_id')
-                    ->where([
-                        ['student_id', $request->input('user_id')],
-                        ['student_tasks.task_id', '=', $task]
-                    ])->select('student_tasks.task_id', 'teacher.firstname', 'name')
-                    ->get();
+                    try {
+                        $result3 = $this->student_task
+                        ->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
+                        ->join('teacher_tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
+                        ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                        ->join('users as teacher', 'teacher.id', '=', 'teacher_tasks.teacher_id')
+                        ->where([
+                            ['student_id', $request->input('user_id')],
+                            ['student_tasks.task_id', '=', $task]
+                        ])->select('student_tasks.task_id', 'teacher.firstname', 'name')
+                        ->get();
+                    }
+                    catch (Exception $e) {
+                        Log::error($e->getMessage());
+                    }
 
                     array_push($arr, $result3);
                 }
@@ -281,18 +349,23 @@ class TimesheetController extends Controller
                 foreach ($tasks as $task) {
                     $res = [];
                     foreach ($week_dates as $date) {
-                        $result2 = $this->student_task
-                        ->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
-                        ->join('teacher_tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
-                        ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
-                        ->join('users as teacher', 'teacher.id', '=', 'teacher_tasks.teacher_id')
-                        ->where([
-                            ['student_id', $request->input('user_id')],
-                            ['student_tasks.task_id', '=', $task]
-                        ])
-                        ->whereRaw('DATE(FROM_UNIXTIME(student_tasks.on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
-                        ->select('student_tasks.task_id', 'teacher.firstname', 'name', 'student_tasks.on_date', 'student_tasks.total_time')
-                        ->get();
+                        try {
+                            $result2 = $this->student_task
+                            ->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
+                            ->join('teacher_tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
+                            ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                            ->join('users as teacher', 'teacher.id', '=', 'teacher_tasks.teacher_id')
+                            ->where([
+                                ['student_id', $request->input('user_id')],
+                                ['student_tasks.task_id', '=', $task]
+                            ])
+                            ->whereRaw('DATE(FROM_UNIXTIME(student_tasks.on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
+                            ->select('student_tasks.task_id', 'teacher.firstname', 'name', 'student_tasks.on_date', 'student_tasks.total_time')
+                            ->get();
+                        }
+                        catch (Exception $e) {
+                            Log::error($e->getMessage());
+                        }
 
                         array_push($res, $result2);
                     }
@@ -318,11 +391,16 @@ class TimesheetController extends Controller
 
     public function teacher_timesheets()
     {
-    	$results = $this->shared_timesheet
-        ->join('users', 'shared_timesheets.from_id', '=', 'users.id')
-        ->where('to_id', Auth::id())
-        ->select('from_id', 'of_date', 'firstname', 'username')
-        ->get();
+        try {
+            $results = $this->shared_timesheet
+            ->join('users', 'shared_timesheets.from_id', '=', 'users.id')
+            ->where('to_id', Auth::id())
+            ->select('from_id', 'of_date', 'firstname', 'username')
+            ->get();
+        }
+    	catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 
     	return view('teacher_timesheets', [
     		'results' => $results
@@ -340,11 +418,16 @@ class TimesheetController extends Controller
 
     public function student_timesheets()
     {
-        $results = $this->shared_timesheet
-        ->join('users', 'shared_timesheets.from_id', '=', 'users.id')
-        ->where('to_id', Auth::id())
-        ->select('from_id', 'of_date', 'firstname', 'username')
-        ->get();
+        try {
+            $results = $this->shared_timesheet
+            ->join('users', 'shared_timesheets.from_id', '=', 'users.id')
+            ->where('to_id', Auth::id())
+            ->select('from_id', 'of_date', 'firstname', 'username')
+            ->get();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 
         return view('student_timesheets', [
             'results' => $results
@@ -362,15 +445,20 @@ class TimesheetController extends Controller
 
     public function timesheets()
     {
-        $users = $this->user
-        ->join('user_types', 'users.user_type_id', '=', 'user_types.id')
-        ->where('user_type', '=', 'Teacher')
-        ->select('firstname', 'email', 'users.id', 'user_type', 'rate')
-        ->get();
+        try {
+            $users = $this->user
+            ->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+            ->where('user_type', '=', 'Teacher')
+            ->select('firstname', 'email', 'users.id', 'user_type', 'rate')
+            ->get();
 
-        $tax = $this->tax->where('name', 'GST')->select('percentage')->first();
+            $tax = $this->tax->where('name', 'GST')->select('percentage')->first();
 
-        $currency = $this->currency->where('select_status', 1)->select('name')->first();
+            $currency = $this->currency->where('select_status', 1)->select('name')->first();
+        }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
 
         return view('timesheets', [
             'users' => $users,
@@ -438,13 +526,18 @@ class TimesheetController extends Controller
 
             if ($request->input('user_type') === 'Teacher') {
                 foreach ($week_dates as $date) {
-                    $result = $this->teacher_task
-                    ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
-                    ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
-                    ->where('teacher_id', $request->input('user_id'))
-                    ->whereRaw('DATE(FROM_UNIXTIME(start_date)) <= DATE(FROM_UNIXTIME('.$date.')) && DATE(FROM_UNIXTIME(end_date)) >= DATE(FROM_UNIXTIME('.$date.'))')
-                    ->select('task_id', 'class', 'name')
-                    ->get();
+                    try {
+                        $result = $this->teacher_task
+                        ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
+                        ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                        ->where('teacher_id', $request->input('user_id'))
+                        ->whereRaw('DATE(FROM_UNIXTIME(start_date)) <= DATE(FROM_UNIXTIME('.$date.')) && DATE(FROM_UNIXTIME(end_date)) >= DATE(FROM_UNIXTIME('.$date.'))')
+                        ->select('task_id', 'class', 'name')
+                        ->get();
+                    }
+                    catch (Exception $e) {
+                        Log::error($e->getMessage());
+                    }
 
                     foreach ($result as $key => $value) {
                         array_push($tasks, $value['task_id']);
@@ -454,13 +547,18 @@ class TimesheetController extends Controller
                 $tasks = array_unique($tasks);
 
                 foreach ($tasks as $task) {
-                    $result3 = $this->teacher_task
-                    ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
-                    ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
-                    ->where([
-                        ['teacher_id', $request->input('user_id')],
-                        ['teacher_tasks.task_id', '=', $task]
-                    ])->select('task_id', 'class', 'name')->get();
+                    try {
+                        $result3 = $this->teacher_task
+                        ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
+                        ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                        ->where([
+                            ['teacher_id', $request->input('user_id')],
+                            ['teacher_tasks.task_id', '=', $task]
+                        ])->select('task_id', 'class', 'name')->get();
+                    }
+                    catch (Exception $e) {
+                        Log::error($e->getMessage());
+                    }
 
                     array_push($arr, $result3);
                 }
@@ -470,16 +568,21 @@ class TimesheetController extends Controller
                 foreach ($tasks as $task) {
                     $res = [];
                     foreach ($week_dates as $date) {
-                        $result2 = $this->teacher_task
-                        ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
-                        ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
-                        ->where([
-                            ['teacher_id', $request->input('user_id')],
-                            ['teacher_tasks.task_id', '=', $task]
-                        ])
-                        ->whereRaw('DATE(FROM_UNIXTIME(on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
-                        ->select('task_id', 'class', 'name', 'on_date', 'total_time')
-                        ->get();
+                        try {
+                            $result2 = $this->teacher_task
+                            ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
+                            ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                            ->where([
+                                ['teacher_id', $request->input('user_id')],
+                                ['teacher_tasks.task_id', '=', $task]
+                            ])
+                            ->whereRaw('DATE(FROM_UNIXTIME(on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
+                            ->select('task_id', 'class', 'name', 'on_date', 'total_time')
+                            ->get();
+                        }
+                        catch (Exception $e) {
+                            Log::error($e->getMessage());
+                        }
 
                         array_push($res, $result2);
                     }
@@ -490,13 +593,18 @@ class TimesheetController extends Controller
 
             else if ($request->input('user_type') === 'Student') {
                 foreach ($week_dates as $date) {
-                    $result = $this->student_task
-                    ->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
-                    ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
-                    ->where('student_id', $request->input('user_id'))
-                    ->whereRaw('DATE(FROM_UNIXTIME(start_date)) <= DATE(FROM_UNIXTIME('.$date.')) && DATE(FROM_UNIXTIME(end_date)) >= DATE(FROM_UNIXTIME('.$date.'))')
-                    ->select('task_id', 'class', 'name')
-                    ->get();
+                    try {
+                        $result = $this->student_task
+                        ->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
+                        ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                        ->where('student_id', $request->input('user_id'))
+                        ->whereRaw('DATE(FROM_UNIXTIME(start_date)) <= DATE(FROM_UNIXTIME('.$date.')) && DATE(FROM_UNIXTIME(end_date)) >= DATE(FROM_UNIXTIME('.$date.'))')
+                        ->select('task_id', 'class', 'name')
+                        ->get();
+                    }
+                    catch (Exception $e) {
+                        Log::error($e->getMessage());
+                    }
 
                     foreach ($result as $key => $value) {
                         array_push($tasks, $value['task_id']);
@@ -506,14 +614,19 @@ class TimesheetController extends Controller
                 $tasks = array_unique($tasks);
 
                 foreach ($tasks as $task) {
-                    $result3 = $this->student_task
-                    ->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
-                    ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
-                    ->where([
-                        ['student_id', $request->input('user_id')],
-                        ['student_tasks.task_id', '=', $task]
-                    ])->select('task_id', 'class', 'name')
-                    ->get();
+                    try {
+                        $result3 = $this->student_task
+                        ->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
+                        ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                        ->where([
+                            ['student_id', $request->input('user_id')],
+                            ['student_tasks.task_id', '=', $task]
+                        ])->select('task_id', 'class', 'name')
+                        ->get();
+                    }
+                    catch (Exception $e) {
+                        Log::error($e->getMessage());
+                    }
 
                     array_push($arr, $result3);
                 }
@@ -523,16 +636,21 @@ class TimesheetController extends Controller
                 foreach ($tasks as $task) {
                     $res = [];
                     foreach ($week_dates as $date) {
-                        $result2 = $this->student_task
-                        ->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
-                        ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
-                        ->where([
-                            ['student_id', $request->input('user_id')],
-                            ['student_tasks.task_id', '=', $task]
-                        ])
-                        ->whereRaw('DATE(FROM_UNIXTIME(student_tasks.on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
-                        ->select('task_id', 'class', 'name', 'on_date', 'total_time')
-                        ->get();
+                        try {
+                            $result2 = $this->student_task
+                            ->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
+                            ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
+                            ->where([
+                                ['student_id', $request->input('user_id')],
+                                ['student_tasks.task_id', '=', $task]
+                            ])
+                            ->whereRaw('DATE(FROM_UNIXTIME(student_tasks.on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
+                            ->select('task_id', 'class', 'name', 'on_date', 'total_time')
+                            ->get();
+                        }
+                        catch (Exception $e) {
+                            Log::error($e->getMessage());
+                        }
 
                         array_push($res, $result2);
                     }
@@ -560,27 +678,37 @@ class TimesheetController extends Controller
     {
         if ($request->filled('from_id') && $request->filled('of_date') && $request->filled('user_type')) {
             if ($request->input('user_type') === 'teacher') {
-                $result = $this->teacher_task
-                ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
-                ->join('subjects', 'subjects.id', '=', 'tasks.subject_id')
-                ->where([
-                    ['teacher_id', $request->input('from_id')],
-                    ['start_date', '<=', $request->input('of_date')],
-                    ['end_date', '>=', $request->input('of_date')]
-                ])->select('name', 'class', 'total_time')
-                ->get();
+                try {
+                    $result = $this->teacher_task
+                    ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
+                    ->join('subjects', 'subjects.id', '=', 'tasks.subject_id')
+                    ->where([
+                        ['teacher_id', $request->input('from_id')],
+                        ['start_date', '<=', $request->input('of_date')],
+                        ['end_date', '>=', $request->input('of_date')]
+                    ])->select('name', 'class', 'total_time')
+                    ->get();
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
             }
 
             else if ($request->input('user_type') === 'student') {
-                $result = $this->student_task
-                ->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
-                ->join('subjects', 'subjects.id', '=', 'tasks.subject_id')
-                ->where([
-                    ['student_id', $request->input('from_id')],
-                    ['start_date', '<=', $request->input('of_date')],
-                    ['end_date', '>=', $request->input('of_date')]
-                ])->select('name', 'total_time')
-                ->get();
+                try {
+                    $result = $this->student_task
+                    ->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
+                    ->join('subjects', 'subjects.id', '=', 'tasks.subject_id')
+                    ->where([
+                        ['student_id', $request->input('from_id')],
+                        ['start_date', '<=', $request->input('of_date')],
+                        ['end_date', '>=', $request->input('of_date')]
+                    ])->select('name', 'total_time')
+                    ->get();
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
             }
             return(json_encode($result));
         }
@@ -604,51 +732,81 @@ class TimesheetController extends Controller
             $date        = date_to_timestamp($date_format, $date);
 
             if ($request->input('user_type') === 'teacher') {
-                $results = $this->teacher_task->where([
-                    ['task_id', $request->input('task_id')],
-                    ['teacher_id', $request->input('user_id')]
-                ])->select()->get();
+                try {
+                    $results = $this->teacher_task->where([
+                        ['task_id', $request->input('task_id')],
+                        ['teacher_id', $request->input('user_id')]
+                    ])->select()->get();
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
 
                 foreach ($results as $result) {
                     if ($result->on_date == $date) {
-                        $this->teacher_task->where([
-                            ['task_id', $request->input('task_id')],
-                            ['teacher_id', $request->input('user_id')],
-                            ['on_date', $date]
-                        ])->update(['total_time' => $request->input('time')]);
+                        try {
+                            $this->teacher_task->where([
+                                ['task_id', $request->input('task_id')],
+                                ['teacher_id', $request->input('user_id')],
+                                ['on_date', $date]
+                            ])->update(['total_time' => $request->input('time')]);
+                        }
+                        catch (Exception $e) {
+                            Log::error($e->getMessage());
+                        }
                     }
                 }
             }
 
             else if ($request->input('user_type') === 'student') {
-                $results = $this->student_task->where([
-                    ['task_id', $request->input('task_id')],
-                    ['student_id', $request->input('user_id')]
-                ])->select()->get();
+                try {
+                    $results = $this->student_task->where([
+                        ['task_id', $request->input('task_id')],
+                        ['student_id', $request->input('user_id')]
+                    ])->select()->get();
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
 
                 foreach ($results as $result) {
                     if ($result->on_date == 0 && $result->total_time == 0) {
-                        $this->student_task->where([
-                            ['task_id', $request->input('task_id')],
-                            ['student_id', $request->input('user_id')]
-                        ])->update(['total_time' => $request->input('time'), 'on_date' => $date]);
+                        try {
+                            $this->student_task->where([
+                                ['task_id', $request->input('task_id')],
+                                ['student_id', $request->input('user_id')]
+                            ])->update(['total_time' => $request->input('time'), 'on_date' => $date]);
+                        }
+                        catch (Exception $e) {
+                            Log::error($e->getMessage());
+                        }
                     }
 
                     else if ($result->on_date == $date) {
-                        $this->student_task->where([
-                            ['task_id', $request->input('task_id')],
-                            ['student_id', $request->input('user_id')],
-                            ['on_date', $date]
-                        ])->update(['total_time' => $request->input('time')]);
+                        try {
+                            $this->student_task->where([
+                                ['task_id', $request->input('task_id')],
+                                ['student_id', $request->input('user_id')],
+                                ['on_date', $date]
+                            ])->update(['total_time' => $request->input('time')]);
+                        }
+                        catch (Exception $e) {
+                            Log::error($e->getMessage());
+                        }
                     }
 
                     else {
-                        $this->student_task->insert([
-                            'task_id' => $request->input('task_id'),
-                            'student_id' => $request->input('user_id'),
-                            'on_date' => $date,
-                            'total_time' => $request->input('time')
-                        ]);
+                        try {
+                            $this->student_task->insert([
+                                'task_id' => $request->input('task_id'),
+                                'student_id' => $request->input('user_id'),
+                                'on_date' => $date,
+                                'total_time' => $request->input('time')
+                            ]);
+                        }
+                        catch (Exception $e) {
+                            Log::error($e->getMessage());
+                        }
                     }
                 }
             }
@@ -670,24 +828,34 @@ class TimesheetController extends Controller
 
             if ($request->input('user_type') === 'teacher') {
 
-                $this->teacher_task->where([
-                    ['task_id', $request->input('task_id')],
-                    ['teacher_id', $request->input('user_id')]
-                ])
-                ->whereRaw('DATE(FROM_UNIXTIME(on_date)) = DATE(FROM_UNIXTIME('.$request->input('date').'))')
-                ->update([
-                    'total_time' => $request->input('time')
-                ]);
+                try {
+                    $this->teacher_task->where([
+                        ['task_id', $request->input('task_id')],
+                        ['teacher_id', $request->input('user_id')]
+                    ])
+                    ->whereRaw('DATE(FROM_UNIXTIME(on_date)) = DATE(FROM_UNIXTIME('.$request->input('date').'))')
+                    ->update([
+                        'total_time' => $request->input('time')
+                    ]);
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
             }
 
             else if ($request->input('user_type') === 'student') {
-                $this->student_task->where([
-                    ['task_id', $request->input('user_type')],
-                    ['student_id', $request->input('user_id')],
-                    ['on_date', $request->input('date')]
-                ])->update([
-                    'total_time' => $request->input('time')
-                ]);
+                try {
+                    $this->student_task->where([
+                        ['task_id', $request->input('user_type')],
+                        ['student_id', $request->input('user_id')],
+                        ['on_date', $request->input('date')]
+                    ])->update([
+                        'total_time' => $request->input('time')
+                    ]);
+                }
+                catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
             }
         }
     }
