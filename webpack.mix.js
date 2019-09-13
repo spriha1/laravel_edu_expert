@@ -25,6 +25,7 @@ mix.js('resources/js/app.js', 'public/js')
 	.js('resources/js/timetable.js', 'public/js')
 	.js('resources/js/admin_timetable.js', 'public/js')
 	.js('resources/js/timesheet.js', 'public/js')
+	.js('resources/js/stripe.js', 'public/js')
 	.js('resources/js/admin_lte_dashboard.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css')
     .version();

@@ -323,6 +323,7 @@ function load_display_data(date, user_id, dateFormatTemplate, user_type, rate, t
 			var new_cur = response['new'];
 			$.post('/convert_currency', {old_cur: old_cur, new_cur: new_cur, amount: amount}, function(result) {
 				$('#amount').text(parseFloat(result).toFixed(2));
+				$('input[name="amount"]').val(parseFloat(result).toFixed(2));
 			});
 		});
 

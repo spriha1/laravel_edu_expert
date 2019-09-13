@@ -454,7 +454,7 @@ class TimesheetController extends Controller
 
             $tax = $this->tax->where('name', 'GST')->select('percentage')->first();
 
-            $currency = $this->currency->where('select_status', 1)->select('name')->first();
+            $currency = $this->currency->where('select_status', 1)->first();
         }
         catch (Exception $e) {
             Log::error($e->getMessage());
@@ -463,7 +463,7 @@ class TimesheetController extends Controller
         return view('timesheets', [
             'users' => $users,
             'tax' => $tax['percentage'],
-            'currency' => $currency['name']
+            'currency' => $currency
         ]);
     }
 

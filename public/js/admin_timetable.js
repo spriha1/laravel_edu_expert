@@ -447,6 +447,7 @@ function load_display_data(date, user_id, dateFormatTemplate, user_type, rate, t
         amount: amount
       }, function (result) {
         $('#amount').text(parseFloat(result).toFixed(2));
+        $('input[name="amount"]').val(parseFloat(result).toFixed(2));
       });
     }); // fetch('/fetch_currency')
     // .then(function(response) { 

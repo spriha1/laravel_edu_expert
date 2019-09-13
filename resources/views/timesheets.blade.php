@@ -126,7 +126,7 @@
 								<th>Total time</th>
 								<th>Rate</th>
 								<th>GST</th>
-								<th>Total amount ( In {{ $currency }} )</th>
+								<th>Total amount ( In {{ $currency->name }} )</th>
 								<th></th>
 							</tr>
 						</thead>
@@ -135,10 +135,16 @@
 								<td id="time"></td>
 								<td id="rate"></td>
 								<td id="gst">{{ $tax }}</td>
-								<td id="amount"></td>
+								<td id="amount" currency={{ $currency->code }}></td>
 								<td>
 									<!-- <input formaction="/stripe_payment" type="submit" class="btn btn-success" id="pay" value="Pay"> -->
-									<a class="btn btn-success" href="/stripe_payment">Pay</a>
+									<form method="POST" action="/stripe_payment">
+										@csrf
+										<input type="hidden" name="amount" value="">
+										<input type="hidden" name="currency" value={{ $currency->code }}>
+										<button type="submit" class="btn btn-success" id="pay">Pay</button>
+									</form>
+									<!-- <a class="btn btn-success" href="/stripe_payment">Pay</a> -->
 								</td>
 							</tr>
 						</tbody>
