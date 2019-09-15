@@ -95,10 +95,7 @@
 
 $(document).ready(function () {
   var url = window.location.pathname;
-  $('.main-sidebar .sidebar ul li a[href="' + url + '"]').parent().addClass('active'); // $(".chosen").select2({
-  // 	matcher: matchCustom
-  // });
-
+  $('.main-sidebar .sidebar ul li a[href="' + url + '"]').parent().addClass('active');
   var footer = document.getElementById("footer").getAttribute("footer");
 
   if (footer === "footer") {
@@ -207,7 +204,6 @@ $(document).ready(function () {
           $("#alert").text("Please enter a username");
           $("#alert").css("display", "block");
         } else {
-          // console.log('hi');
           var username = $('#username').val();
           $.get("/fetch_info", {
             q1: "username",

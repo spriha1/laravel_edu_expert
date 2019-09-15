@@ -125,16 +125,6 @@ $(document).ready(function () {
   var marker = new mapboxgl.Marker() // Initialize a new marker
   .setLngLat([_long, lat]) // Marker [lng, lat] coordinates
   .addTo(map); // Add the marker to the map
-  // var map = new mapboxgl.Map({
-  // 	container: 'map', // Container ID
-  // 	style: 'mapbox://styles/mapbox/streets-v11', // Map style to use
-  // 	//center: [85.8245, 20.2961], // Starting position [lng, lat]
-  // 	center: [85.8245, 20.2961],
-  // 	zoom: 12, // Starting zoom level
-  // });
-  // var marker = new mapboxgl.Marker() // Initialize a new marker
-  // .setLngLat([85.8245, 20.2961]) // Marker [lng, lat] coordinates
-  // .addTo(map); // Add the marker to the map
 
   var geocoder = new MapboxGeocoder({
     // Initialize the geocoder
@@ -145,36 +135,20 @@ $(document).ready(function () {
     },
     mapboxgl: mapboxgl,
     // Set the mapbox-gl instance
-    //marker: false, // Do not use the default marker style
     placeholder: 'Search for places',
     // Placeholder text for the search bar
-    //bbox: [85.0985, 20.9517, 85.0985, 20.9517], // Boundary for Berkeley
     proximity: {
       longitude: _long,
       latitude: lat // Coordinates of UC Berkeley
 
     }
-  }); // Add the geocoder to the map
-  // map.addControl(geocoder);
-  // $('.mapboxgl-ctrl-geocoder--input').appendTo('#geo')
-
+  });
   document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
   $('.mapboxgl-ctrl-geocoder--input').val(address); // After the map style has loaded on the page,
   // add a source layer and default styling for a single point
 
   map.on('load', function () {
-    // map.addSource('single-point', {
-    // 	type: 'geojson',
-    // 	data: {
-    // 		type: 'FeatureCollection',
-    // 		features: []
-    // 	}
-    // });
-    // Listen for the `result` event from the Geocoder
-    // `result` event is triggered when a user makes a selection
-    // Add a marker at the result's coordinates
     geocoder.on('result', function (ev) {
-      console.log(ev);
       _long = ev.result.center[0];
       lat = ev.result.center[1];
       address = ev.result.place_name;
@@ -210,15 +184,6 @@ $(document).ready(function () {
         $('#alert').text("Error");
         $("#alert").css("display", "block");
       }
-    });
-  });
-  $('#currency').change(function () {
-    var currency = $(this).val();
-    $.post('/update_currency', {
-      currency: currency
-    }, function (result) {
-      $('#info').text("Currency Updated successfully");
-      $("#info").css("display", "block");
     });
   });
   $('body').click(function () {

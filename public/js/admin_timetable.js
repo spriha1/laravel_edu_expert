@@ -99,8 +99,8 @@ $(document).ready(function () {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
   });
-  var user = $('#user_id').val();
   var user_id, user_type, rate, tax;
+  var user = $('#user_id').val();
   var date = new Date();
   $('.datepicker').datepicker('setDate', date);
   var date = $('#date').val();
@@ -113,7 +113,6 @@ $(document).ready(function () {
     user_type = $('option:selected').attr('usertype');
     date = $('#date').val();
     date_format = $('#date_format').val();
-    console.log(date_format);
     var year = parseInt(get_year(date, date_format));
     var d = format_date(date, date_format);
     var week = getNumberOfWeek(d);
@@ -145,8 +144,6 @@ $(document).ready(function () {
         $('#reject').css('display', 'none');
       }
     });
-    console.log('date format');
-    console.log(date_format);
     load_display_data(date, user_id, date_format, user_type, rate, tax);
   });
   $('#accept').click(function () {
@@ -213,6 +210,7 @@ $(document).ready(function () {
         if (status == 'Pending') {
           $('#accept').css('display', 'inline');
           $('#reject').css('display', 'inline');
+          $('.badge').text('');
         } else if (status == 'Approved') {
           $('#accept').css('display', 'none');
           $('#reject').css('display', 'inline');
@@ -264,6 +262,9 @@ function format_date(date, date_format) {
       date = date.split('.');
       date = new Date(date[2], date[1] - 1, date[0]);
       break;
+
+    default:
+      date = 0;
   }
 
   return date;
@@ -300,6 +301,9 @@ function get_year(date, date_format) {
       date = date.split('.');
       var year = date[2];
       break;
+
+    default:
+      var year = 0;
   }
 
   return year;
@@ -312,19 +316,14 @@ function getNumberOfWeek(date) {
   return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
 
-function load_display_data(date, user_id, dateFormatTemplate, user_type, rate, tax) {
-  // var dateF = date_format;
-  console.log(date_format);
+function load_display_data(date, user_id, date_form, user_type, rate, tax) {
   $.post('/post_timesheets', {
     date: date,
     user_id: user_id,
-    date_format: dateFormatTemplate,
+    date_format: date_form,
     user_type: user_type
   }, function (result) {
-    console.log("inside the call");
-    console.log(dateFormatTemplate);
     var response = JSON.parse(result);
-    console.log(dateFormatTemplate);
     $('.timetable').html("");
     var len = response['original_dates'].length;
 
@@ -342,7 +341,7 @@ function load_display_data(date, user_id, dateFormatTemplate, user_type, rate, t
         month = '0' + month;
       }
 
-      switch (dateFormatTemplate) {
+      switch (date_form) {
         case "yyyy/mm/dd":
           date = year + '/' + month + '/' + day;
           break;
@@ -366,6 +365,9 @@ function load_display_data(date, user_id, dateFormatTemplate, user_type, rate, t
         case "dd.mm.yyyy":
           date = day + '.' + month + '.' + year;
           break;
+
+        default:
+          date = year + '-' + month + '-' + day;
       }
 
       $('table thead #' + i).text(date);
@@ -390,7 +392,7 @@ function load_display_data(date, user_id, dateFormatTemplate, user_type, rate, t
 
       var task = tasks[i][0].name + ' / ' + tasks[i][0]["class"];
       $("tbody tr[task_id=" + task_id + "] .task").text(task);
-      var len = response[task_id].length; // var sum = 0;
+      var len = response[task_id].length;
 
       for (var j = 0; j < len; j++) {
         if (response[task_id][j].length != 0) {
@@ -413,7 +415,7 @@ function load_display_data(date, user_id, dateFormatTemplate, user_type, rate, t
       }
     }
 
-    var amount = 0; // var tax = 2;
+    var amount = 0;
 
     if (sum != 0) {
       rate_per_second = rate / 3600;
@@ -429,17 +431,19 @@ function load_display_data(date, user_id, dateFormatTemplate, user_type, rate, t
     }
 
     $('#time').text(time);
-    $('#rate').text(rate); // $('#amount').text(amount);
-
+    $('#rate').text(rate);
     var user_id = $('#search').val();
     var date = $('#date').val();
     var date_format = $('#date_format').val();
     var year = parseInt(get_year(date, date_format));
     var d = format_date(date, date_format);
     var week = getNumberOfWeek(d);
-    $.get('/fetch_currency', function (result) {
+    console.log(amount);
+    $.get('/fetch_currency', {
+      user_id: user_id
+    }, function (result) {
       var response = JSON.parse(result);
-      var old_cur = 'USD';
+      var old_cur = response['old'];
       var new_cur = response['new'];
       $.post('/convert_currency', {
         old_cur: old_cur,
@@ -449,42 +453,7 @@ function load_display_data(date, user_id, dateFormatTemplate, user_type, rate, t
         $('#amount').text(parseFloat(result).toFixed(2));
         $('input[name="amount"]').val(parseFloat(result).toFixed(2));
       });
-    }); // fetch('/fetch_currency')
-    // .then(function(response) { 
-    // 	result = response.json()
-    // 	console.log(result)
-    // 	return result
-    // })
-    // fetch('/fetch_currency')
-    // .then(response => response.json())
-    // .then(result => {
-    // 	var old_cur = 'USD';
-    // 	localStorage.setItem("old_cur", old_cur)
-    // 	var new_cur = response['new'];
-    // 	return new_cur;
-    // })
-    // .then(new_cur => {
-    // 	var old_cur = localStorage.getItem("old_cur");
-    // 	console.log(old_cur)
-    // 	var data = {
-    // 		"old_cur": old_cur,
-    // 		"new_cur": new_cur,
-    // 		"amount": amount
-    // 	}
-    // 	fetch('/convert_currency', {
-    // 		method: 'POST',
-    // 		body: JSON.stringify(data),
-    // 		headers: {
-    // 			'Content-Type': 'application/json'
-    // 			}
-    // 	})
-    // 	.then(response => response.json())
-    // 	.then(result => {
-    // 		console.log(result)
-    // 		$('#amount').text(result);
-    // 	})
-    // })
-    // .catch(err => console.log(err));
+    });
   });
 }
 

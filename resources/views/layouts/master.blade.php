@@ -18,14 +18,9 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/css/select2.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
-        <!-- <link rel = "stylesheet" href = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
-        <script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script> -->
-        
         <link href='https://api.mapbox.com/mapbox-gl-js/v1.2.0/mapbox-gl.css' rel='stylesheet' />
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        
         <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.2.0/mapbox-gl-geocoder.css' type='text/css' />
-
         <script src="https://js.stripe.com/v3/"></script>
     </head>
     <body class="hold-transition skin-blue sidebar-mini">
@@ -46,7 +41,6 @@
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <span class="hidden-xs">
-                                    <!-- <?php //echo $_SESSION['firstname'] ?> -->
                                     {{ Auth::user()->firstname }}
                                 </span>
                             </a>
@@ -55,7 +49,6 @@
                                 <li class="user-header">
                                     <p>
                                         {{ Auth::user()->firstname }}
-                                        <!-- <?php //echo $_SESSION['firstname'] ?> -->
                                     </p>
                                 </li>
                                 <!-- Menu Body -->
@@ -79,7 +72,6 @@
             <!-- sidebar: style can be found in sidebar.less -->
             <section class="sidebar">
                 <!-- Sidebar user panel -->
-                
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu" data-widget="tree">
                     @yield('sidenav_content');
@@ -87,9 +79,7 @@
             </section>
             <!-- /.sidebar -->
         </aside>
-   
     @yield('content')
-
     @yield('footer')
 </body>
 </html>

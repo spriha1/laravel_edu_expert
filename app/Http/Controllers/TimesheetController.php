@@ -36,11 +36,10 @@ class TimesheetController extends Controller
 
     public function add_shared_timesheets(Request $request)
     {
-    	if ($request->filled('user_id') && $request->filled('date')) {
-    		$date_format = $request->input('date_format');
-        	$date        = $request->input('date');
-        	$date        = date_to_timestamp($date_format, $date);
-
+        if ($request->filled('user_id') && $request->filled('date')) {
+            $date_format = $request->input('date_format');
+            $date        = $request->input('date');
+            $date        = date_to_timestamp($date_format, $date);
             try {
                 $results = $this->user_type
                             ->join('users', 'users.user_type_id', '=', 'user_types.id')
@@ -48,12 +47,13 @@ class TimesheetController extends Controller
                             ->select('user_type')
                             ->get();
             }
-        	catch (Exception $e) {
+
+            catch (Exception $e) {
                 Log::error($e->getMessage());
             }
 
-        	foreach ($results as $result) {
-        		if ($result->user_type === 'Teacher') {
+            foreach ($results as $result) {
+                if ($result->user_type === 'Teacher') {
                     try {
                         $users = $this->user_type
                                 ->join('users', 'users.user_type_id', '=', 'user_types.id')
@@ -61,22 +61,23 @@ class TimesheetController extends Controller
                                 ->select('users.id')
                                 ->get();
                     }
+
                     catch (Exception $e) {
                         Log::error($e->getMessage());
                     }
-        			
 
-        			foreach ($users as $user) {
-        				$to_id = $user->id;
-        			}
-        		}
+                    foreach ($users as $user) {
+                        $to_id = $user->id;
+                    }
+                }
 
-        		else if ($result->user_type === 'Student') {
+                else if ($result->user_type === 'Student') {
                     try{
                         $classes = $this->user->where('id', $request->input('user_id'))
                                 ->select('class')
                                 ->get();
                     }
+
                     catch (Exception $e) {
                         Log::error($e->getMessage());
                     }
@@ -89,6 +90,7 @@ class TimesheetController extends Controller
                                 ['users.class', $class->class]
                             ])->select('users.id')->get();
                         }
+
                         catch (Exception $e) {
                             Log::error($e->getMessage());
                         }
@@ -97,8 +99,9 @@ class TimesheetController extends Controller
                             $to_id = $result->id;
                         }
                     }
-        		}
-        	}
+                }
+            }
+
             try {
                 $this->shared_timesheet->insert([
                     'from_id' => $request->input('user_id'),
@@ -106,11 +109,11 @@ class TimesheetController extends Controller
                     'of_date' => $date
                 ]);
             }
+
             catch (Exception $e) {
                 Log::error($e->getMessage());
             }
-        	
-    	}
+        }
     }
 
     /**
@@ -124,29 +127,27 @@ class TimesheetController extends Controller
 
     public function display_daily_timetable(Request $request)
     {
-    	if ($request->filled('date') && $request->filled('user_id') && $request->filled('user_type')) {
-    		$date_format = $request->input('date_format');
-        	$date        = $request->input('date');
-        	$date        = date_to_timestamp($date_format, $date);
-			$dow         = date('w', $date);
-			$counter     = 0;
+        if ($request->filled('date') && $request->filled('user_id') && $request->filled('user_type')) {
+            $date_format = $request->input('date_format');
+            $date        = $request->input('date');
+            $date        = date_to_timestamp($date_format, $date);
+            $dow         = date('w', $date);
+            $counter     = 0;
+            $holidays    = $this->holiday->select()->get();
+            foreach ($holidays as $holiday) {
+                if (!is_null($holiday->dow) && $dow == $holiday->dow) {
+                    $counter++;
+                }
 
-			$holidays    = $this->holiday->select()->get();
+                else if (!is_null($holiday->start_date) && !is_null($holiday->end_date)) {
+                    if (($holiday->start_date <= $date) && ($holiday->end_date >= $date)) {
+                        $counter++;
+                    }
+                }
+            }
 
-			foreach ($holidays as $holiday) {
-				if (!is_null($holiday->dow) && $dow == $holiday->dow) {
-					$counter++;
-				}
-
-				else if (!is_null($holiday->start_date) && !is_null($holiday->end_date)) {
-					if (($holiday->start_date <= $date) && ($holiday->end_date >= $date)) {
-						$counter++;
-					}
-				}
-			}
-
-			if ($counter === 0) {
-				if ($request->input('user_type') === 'teacher') {
+            if ($counter === 0) {
+                if ($request->input('user_type') === 'teacher') {
                     try {
                         $result = $this->teacher_task->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
                         ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
@@ -154,12 +155,13 @@ class TimesheetController extends Controller
                         ->whereRaw('DATE(FROM_UNIXTIME(on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
                         ->select('task_id', 'class', 'name', 'total_time', 'on_date')->get();
                     }
+
                     catch (Exception $e) {
                         Log::error($e->getMessage());
                     }
-					
-				}
-				else if ($request->input('user_type') === 'student') {
+                }
+
+                else if ($request->input('user_type') === 'student') {
                     try {
                         $result = $this->student_task->join('tasks', 'tasks.id', '=', 'student_tasks.task_id')
                         ->join('teacher_tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
@@ -169,13 +171,15 @@ class TimesheetController extends Controller
                         ->whereRaw('DATE(FROM_UNIXTIME(student_tasks.on_date)) = DATE(FROM_UNIXTIME('.$date.'))')
                         ->select('teacher_tasks.task_id', 'teacher.firstname', 'name', 'student_tasks.total_time', 'student_tasks.on_date')->get();
                     }
+
                     catch (Exception $e) {
                         Log::error($e->getMessage());
                     }
-				}
-				return(json_encode($result));
-			}
-    	}
+                }
+
+                return(json_encode($result));
+            }
+        }
     }
 
     /**
@@ -189,51 +193,51 @@ class TimesheetController extends Controller
 
     public function display_timetable(Request $request)
     {
-    	if ($request->filled('date') && $request->filled('user_id') && $request->filled('user_type')) {
-    		$date_format = $request->input('date_format');
-        	$date        = $request->input('date');
-        	$date        = date_to_timestamp($date_format, $date);
-        	$ts          = $date;
-			// calculate the number of days since Monday
-			$dow         = date('w', $ts);
-			$offset = $dow - 1;
+        if ($request->filled('date') && $request->filled('user_id') && $request->filled('user_type')) {
+            $date_format = $request->input('date_format');
+            $date        = $request->input('date');
+            $date        = date_to_timestamp($date_format, $date);
+            $ts          = $date;
+            // calculate the number of days since Monday
+            $dow         = date('w', $ts);
+            $offset = $dow - 1;
+            if ($offset < 0) {
+                $offset = 6;
+            }
 
-			if ($offset < 0) {
-			    $offset = 6;
-			}
-			// calculate timestamp for the Monday
-			$ts         = $ts - $offset*86400;
-			$week_dates = array();
-			// loop from Monday till Sunday 
-			for ($i = 0; $i < 7; $i++, $ts += 86400) {
-				array_push($week_dates, $ts);
-			}
-			
-			$results = array();
-			$res     = array();
-			$tasks   = array();
-			$arr     = array();
-			$week    = $week_dates;
-			$counter = 0;
+            // calculate timestamp for the Monday
+            $ts         = $ts - $offset*86400;
+            $week_dates = array();
+            // loop from Monday till Sunday 
+            for ($i = 0; $i < 7; $i++, $ts += 86400) {
+                array_push($week_dates, $ts);
+            }
 
-			$holidays = $this->holiday->select()->get();
-			$length   = count($week_dates);
-			for ($i = 0; $i < $length; $i++) {
-				$dow = date('w', $week_dates[$i]);
-				foreach ($holidays as $holiday) {
-					if (!is_null($holiday->dow) && $dow == $holiday->dow) {
-						$week_dates[$i] = 0;
-					}
+            $results = array();
+            $res     = array();
+            $tasks   = array();
+            $arr     = array();
+            $week    = $week_dates;
+            $counter = 0;
+            $holidays = $this->holiday->select()->get();
+            $length   = count($week_dates);
+            for ($i = 0; $i < $length; $i++) {
+                $dow = date('w', $week_dates[$i]);
+                foreach ($holidays as $holiday) {
+                    if (!is_null($holiday->dow) && $dow == $holiday->dow) {
+                        $week_dates[$i] = 0;
+                    }
 
-					else if (!is_null($holiday->start_date) && !is_null($holiday->end_date)) {
-						if (($holiday->start_date <= $week_dates[$i]) && ($holiday->end_date >= $week_dates[$i])) {
-							$week_dates[$i] = 0;
-						}
-					}
-				}
-			}
-			if ($request->input('user_type') === 'teacher') {
-				foreach ($week_dates as $date) {
+                    else if (!is_null($holiday->start_date) && !is_null($holiday->end_date)) {
+                        if (($holiday->start_date <= $week_dates[$i]) && ($holiday->end_date >= $week_dates[$i])) {
+                            $week_dates[$i] = 0;
+                        }
+                    }
+                }
+            }
+
+            if ($request->input('user_type') === 'teacher') {
+                foreach ($week_dates as $date) {
                     try {
                         $result = $this->teacher_task->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
                         ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
@@ -241,19 +245,18 @@ class TimesheetController extends Controller
                         ->whereRaw('DATE(FROM_UNIXTIME(start_date)) <= DATE(FROM_UNIXTIME('.$date.')) && DATE(FROM_UNIXTIME(end_date)) >= DATE(FROM_UNIXTIME('.$date.'))')
                         ->select('task_id', 'class', 'name')->get();
                     }
+
                     catch (Exception $e) {
                         Log::error($e->getMessage());
                     }
-					
-					foreach ($result as $key => $value) {
-						array_push($tasks, $value['task_id']);
-					}
 
-				}
+                    foreach ($result as $key => $value) {
+                        array_push($tasks, $value['task_id']);
+                    }
+                }
 
-				$tasks = array_unique($tasks);
-
-				foreach ($tasks as $task) {
+                $tasks = array_unique($tasks);
+                foreach ($tasks as $task) {
                     try {
                         $result3 = $this->teacher_task
                         ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
@@ -263,20 +266,17 @@ class TimesheetController extends Controller
                             ['teacher_tasks.task_id', '=', $task]
                         ])->select('task_id', 'class', 'name')->get();
                     }
-					catch (Exception $e) {
+
+                    catch (Exception $e) {
                         Log::error($e->getMessage());
                     }
 
-					array_push($arr, $result3);
-				}
-
-				array_push($results, $arr);
-
-				foreach ($tasks as $task) {
-
-					$res = [];
-
-					foreach ($week_dates as $date) {
+                    array_push($arr, $result3);
+                }
+                array_push($results, $arr);
+                foreach ($tasks as $task) {
+                    $res = [];
+                    foreach ($week_dates as $date) {
                         try {
                             $result2 = $this->teacher_task
                             ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
@@ -289,18 +289,18 @@ class TimesheetController extends Controller
                             ->select('task_id', 'class', 'name', 'on_date', 'total_time')
                             ->get();
                         }
-						catch (Exception $e) {
+
+                        catch (Exception $e) {
                             Log::error($e->getMessage());
                         }
 
-						array_push($res, $result2);
-					}
+                        array_push($res, $result2);
+                    }
+                    $results[$task] = $res;
+                }
+            }
 
-					$results[$task] = $res;
-				}
-			}
-
-			else if ($request->input('user_type') === 'student') {
+            else if ($request->input('user_type') === 'student') {
                 foreach ($week_dates as $date) {
                     try {
                         $result = $this->student_task
@@ -313,6 +313,7 @@ class TimesheetController extends Controller
                         ->select('student_tasks.task_id', 'teacher.firstname', 'name')
                         ->get();
                     }
+
                     catch (Exception $e) {
                         Log::error($e->getMessage());
                     }
@@ -321,9 +322,7 @@ class TimesheetController extends Controller
                         array_push($tasks, $value['task_id']);
                     }
                 }
-
                 $tasks = array_unique($tasks);
-
                 foreach ($tasks as $task) {
                     try {
                         $result3 = $this->student_task
@@ -337,6 +336,7 @@ class TimesheetController extends Controller
                         ])->select('student_tasks.task_id', 'teacher.firstname', 'name')
                         ->get();
                     }
+
                     catch (Exception $e) {
                         Log::error($e->getMessage());
                     }
@@ -345,7 +345,6 @@ class TimesheetController extends Controller
                 }
 
                 array_push($results, $arr);
-
                 foreach ($tasks as $task) {
                     $res = [];
                     foreach ($week_dates as $date) {
@@ -363,21 +362,20 @@ class TimesheetController extends Controller
                             ->select('student_tasks.task_id', 'teacher.firstname', 'name', 'student_tasks.on_date', 'student_tasks.total_time')
                             ->get();
                         }
+
                         catch (Exception $e) {
                             Log::error($e->getMessage());
                         }
 
                         array_push($res, $result2);
                     }
-
                     $results[$task] = $res;
                 }
-
-			}
-			$results['dates'] = $week_dates;
-			$results['original_dates'] = $week;
-			return(json_encode($results));
-    	}
+            }
+            $results['dates'] = $week_dates;
+            $results['original_dates'] = $week;
+            return(json_encode($results));
+        }
     }
 
     /**
@@ -398,13 +396,14 @@ class TimesheetController extends Controller
             ->select('from_id', 'of_date', 'firstname', 'username')
             ->get();
         }
-    	catch (Exception $e) {
+
+        catch (Exception $e) {
             Log::error($e->getMessage());
         }
 
-    	return view('teacher_timesheets', [
-    		'results' => $results
-    	]);
+        return view('teacher_timesheets', [
+            'results' => $results
+        ]);
     }
 
     /**
@@ -425,6 +424,7 @@ class TimesheetController extends Controller
             ->select('from_id', 'of_date', 'firstname', 'username')
             ->get();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -451,11 +451,13 @@ class TimesheetController extends Controller
             ->where('user_type', '=', 'Teacher')
             ->select('firstname', 'email', 'users.id', 'user_type', 'rate')
             ->get();
-
             $tax = $this->tax->where('name', 'GST')->select('percentage')->first();
-
-            $currency = $this->currency->where('select_status', 1)->first();
+            $currency = $this->user
+            ->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+            ->join('currencies', 'users.currency_id', '=', 'currencies.id')
+            ->where('user_type', 'Admin')->first();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -479,7 +481,6 @@ class TimesheetController extends Controller
     public function post_timesheets(Request $request)
     {
         if ($request->filled('date') && $request->filled('user_id') && $request->filled('user_type')) {
-
             $date_format = $request->input('date_format');
             $date        = $request->input('date');
             $date        = date_to_timestamp($date_format, $date);
@@ -490,6 +491,7 @@ class TimesheetController extends Controller
             if ($offset < 0) {
                 $offset = 6;
             }
+
             // calculate timestamp for the Monday
             $ts         = $ts - $offset*86400;
             $week_dates = array();
@@ -497,20 +499,17 @@ class TimesheetController extends Controller
             for ($i = 0; $i < 7; $i++, $ts += 86400) {
                 array_push($week_dates, $ts);
             }
-            
+
             $results  = array();
             $res      = array();
             $tasks    = array();
             $arr      = array();
             $week     = $week_dates;
             $counter  = 0;
-
             $holidays = $this->holiday->select()->get();
             $length   = count($week_dates);
             for ($i = 0; $i < $length; $i++) {
-
                 $dow = date('w', $week_dates[$i]);
-
                 foreach ($holidays as $holiday) {
                     if (!is_null($holiday->dow) && $dow == $holiday->dow) {
                         $week_dates[$i] = 0;
@@ -535,6 +534,7 @@ class TimesheetController extends Controller
                         ->select('task_id', 'class', 'name')
                         ->get();
                     }
+
                     catch (Exception $e) {
                         Log::error($e->getMessage());
                     }
@@ -545,7 +545,6 @@ class TimesheetController extends Controller
                 }
 
                 $tasks = array_unique($tasks);
-
                 foreach ($tasks as $task) {
                     try {
                         $result3 = $this->teacher_task
@@ -556,6 +555,7 @@ class TimesheetController extends Controller
                             ['teacher_tasks.task_id', '=', $task]
                         ])->select('task_id', 'class', 'name')->get();
                     }
+
                     catch (Exception $e) {
                         Log::error($e->getMessage());
                     }
@@ -564,7 +564,6 @@ class TimesheetController extends Controller
                 }
 
                 array_push($results, $arr);
-
                 foreach ($tasks as $task) {
                     $res = [];
                     foreach ($week_dates as $date) {
@@ -580,13 +579,13 @@ class TimesheetController extends Controller
                             ->select('task_id', 'class', 'name', 'on_date', 'total_time')
                             ->get();
                         }
+
                         catch (Exception $e) {
                             Log::error($e->getMessage());
                         }
 
                         array_push($res, $result2);
                     }
-
                     $results[$task] = $res;
                 }
             }
@@ -602,6 +601,7 @@ class TimesheetController extends Controller
                         ->select('task_id', 'class', 'name')
                         ->get();
                     }
+
                     catch (Exception $e) {
                         Log::error($e->getMessage());
                     }
@@ -612,7 +612,6 @@ class TimesheetController extends Controller
                 }
 
                 $tasks = array_unique($tasks);
-
                 foreach ($tasks as $task) {
                     try {
                         $result3 = $this->student_task
@@ -624,6 +623,7 @@ class TimesheetController extends Controller
                         ])->select('task_id', 'class', 'name')
                         ->get();
                     }
+
                     catch (Exception $e) {
                         Log::error($e->getMessage());
                     }
@@ -632,7 +632,6 @@ class TimesheetController extends Controller
                 }
 
                 array_push($results, $arr);
-
                 foreach ($tasks as $task) {
                     $res = [];
                     foreach ($week_dates as $date) {
@@ -648,13 +647,12 @@ class TimesheetController extends Controller
                             ->select('task_id', 'class', 'name', 'on_date', 'total_time')
                             ->get();
                         }
+
                         catch (Exception $e) {
                             Log::error($e->getMessage());
                         }
-
                         array_push($res, $result2);
                     }
-
                     $results[$task] = $res;
                 }
             }
@@ -689,6 +687,7 @@ class TimesheetController extends Controller
                     ])->select('name', 'class', 'total_time')
                     ->get();
                 }
+
                 catch (Exception $e) {
                     Log::error($e->getMessage());
                 }
@@ -706,6 +705,7 @@ class TimesheetController extends Controller
                     ])->select('name', 'total_time')
                     ->get();
                 }
+
                 catch (Exception $e) {
                     Log::error($e->getMessage());
                 }
@@ -726,11 +726,9 @@ class TimesheetController extends Controller
     public function add_completion_time(Request $request)
     {
         if ($request->filled('task_id') && $request->filled('user_id') && $request->filled('time') && $request->filled('user_type')) {
-
             $date_format = $request->input('date_format');
             $date        = $request->input('date');
             $date        = date_to_timestamp($date_format, $date);
-
             if ($request->input('user_type') === 'teacher') {
                 try {
                     $results = $this->teacher_task->where([
@@ -738,6 +736,7 @@ class TimesheetController extends Controller
                         ['teacher_id', $request->input('user_id')]
                     ])->select()->get();
                 }
+
                 catch (Exception $e) {
                     Log::error($e->getMessage());
                 }
@@ -751,6 +750,7 @@ class TimesheetController extends Controller
                                 ['on_date', $date]
                             ])->update(['total_time' => $request->input('time')]);
                         }
+
                         catch (Exception $e) {
                             Log::error($e->getMessage());
                         }
@@ -765,6 +765,7 @@ class TimesheetController extends Controller
                         ['student_id', $request->input('user_id')]
                     ])->select()->get();
                 }
+
                 catch (Exception $e) {
                     Log::error($e->getMessage());
                 }
@@ -777,6 +778,7 @@ class TimesheetController extends Controller
                                 ['student_id', $request->input('user_id')]
                             ])->update(['total_time' => $request->input('time'), 'on_date' => $date]);
                         }
+
                         catch (Exception $e) {
                             Log::error($e->getMessage());
                         }
@@ -790,6 +792,7 @@ class TimesheetController extends Controller
                                 ['on_date', $date]
                             ])->update(['total_time' => $request->input('time')]);
                         }
+
                         catch (Exception $e) {
                             Log::error($e->getMessage());
                         }
@@ -804,6 +807,7 @@ class TimesheetController extends Controller
                                 'total_time' => $request->input('time')
                             ]);
                         }
+
                         catch (Exception $e) {
                             Log::error($e->getMessage());
                         }
@@ -825,9 +829,7 @@ class TimesheetController extends Controller
     public function update_completion_time(Request $request)
     {
         if ($request->filled('time') && $request->filled('date') && $request->filled('task_id') && $request->filled('user_id') && $request->filled('user_type')) {
-
             if ($request->input('user_type') === 'teacher') {
-
                 try {
                     $this->teacher_task->where([
                         ['task_id', $request->input('task_id')],
@@ -838,6 +840,7 @@ class TimesheetController extends Controller
                         'total_time' => $request->input('time')
                     ]);
                 }
+
                 catch (Exception $e) {
                     Log::error($e->getMessage());
                 }
@@ -853,6 +856,7 @@ class TimesheetController extends Controller
                         'total_time' => $request->input('time')
                     ]);
                 }
+                
                 catch (Exception $e) {
                     Log::error($e->getMessage());
                 }

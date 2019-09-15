@@ -122,9 +122,12 @@ $(document).ready(function () {
 
       if (status == 'Pending' || status == 'Approved') {
         $('button').css('display', 'none');
+      } else {
+        $('button').css('display', 'block');
       }
     } else {
       $('.badge').text('');
+      $('button').css('display', 'block');
     }
   });
   load_display_data(date, user_id, user_type, date_format);
@@ -162,8 +165,15 @@ $(document).ready(function () {
       if (response[0]) {
         var status = response[0].name;
         $('.badge').text(status);
+
+        if (status == 'Pending' || status == 'Approved') {
+          $('button').css('display', 'none');
+        } else {
+          $('button').css('display', 'block');
+        }
       } else {
         $('.badge').text('');
+        $('button').css('display', 'block');
       }
     });
     $('.timetable').html("");
@@ -184,7 +194,6 @@ $(document).ready(function () {
       user: user
     }, function (result) {
       if (result == 'Pending') {
-        // $('.badge').addClass('badge-warning');
         $('button').css('display', 'none');
         $('.badge').text('Pending');
       }
@@ -223,6 +232,9 @@ function format_date(date, date_format) {
       date = date.split('.');
       date = new Date(date[2], date[1] - 1, date[0]);
       break;
+
+    default:
+      date = 0;
   }
 
   return date;
@@ -259,6 +271,9 @@ function get_year(date, date_format) {
       date = date.split('.');
       var year = date[2];
       break;
+
+    default:
+      var year = 0;
   }
 
   return year;
@@ -278,8 +293,7 @@ function load_display_data(date, user_id, user_type, date_format) {
     user_type: user_type,
     date_format: date_format
   }, function (result) {
-    var response = JSON.parse(result); //console.log(result)
-
+    var response = JSON.parse(result);
     var len = response['original_dates'].length;
 
     for (var i = 0; i < len; i++) {
@@ -320,6 +334,9 @@ function load_display_data(date, user_id, user_type, date_format) {
         case "dd.mm.yyyy":
           date = day + '.' + month + '.' + year;
           break;
+
+        default:
+          date = year + '-' + month + '-' + day;
       }
 
       $('table thead #' + i).text(date);
@@ -330,7 +347,6 @@ function load_display_data(date, user_id, user_type, date_format) {
 
     if (user_type === 'teacher') {
       for (var i = 0; i < length; i++) {
-        //console.log(response)
         var element = $(".editable").clone(true).css('display', 'table-row').removeClass('editable');
         element.attr('task_id', tasks[i][0].task_id);
         element.appendTo('.timetable');
@@ -369,7 +385,6 @@ function load_display_data(date, user_id, user_type, date_format) {
       }
     } else if (user_type === 'student') {
       for (var i = 0; i < length; i++) {
-        //console.log(response)
         var _element = $(".editable").clone(true).css('display', 'table-row').removeClass('editable');
 
         _element.attr('task_id', tasks[i][0].task_id);
@@ -391,7 +406,6 @@ function load_display_data(date, user_id, user_type, date_format) {
 
         for (var j = 0; j < len; j++) {
           if (response[task_id][j].length != 0) {
-            // console.log(response[task_id][j][0].total_time)
             var seconds = response[task_id][j][0].total_time;
 
             if (seconds > 0) {

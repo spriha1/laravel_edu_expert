@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddTriggerBeforeGoalPlansUpdate extends Migration
+class ModifyCurrenciesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,9 @@ class AddTriggerBeforeGoalPlansUpdate extends Migration
      */
     public function up()
     {
-        DB::unprepared('CREATE TRIGGER before_goal_plans_update BEFORE UPDATE ON goal_plans FOR EACH ROW BEGIN SET new.total_time = new.to_time - new.from_time; END;');
+        Schema::table('currencies', function($table) {
+            $table->dropColumn('select_status');
+        });
     }
 
     /**
@@ -23,6 +25,8 @@ class AddTriggerBeforeGoalPlansUpdate extends Migration
      */
     public function down()
     {
-        DB::unprepared('DROP TRIGGER IF EXISTS before_goal_plans_update;');
+        Schema::table('currencies', function($table) {
+           $table->integer('select_status');
+        });
     }
 }

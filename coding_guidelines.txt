@@ -9,3 +9,6 @@
 6.  Opening parentheses for control structures do not have a space after them, and closing parentheses 
 	for control structures do not have a space before.
 7.  Operators have a space before and after them.
+8.  There is one line break after each block.
+9.  Snake case convention has been followed for naming methods and variables.
+10. Pascal case convention has been followed for naming classes.

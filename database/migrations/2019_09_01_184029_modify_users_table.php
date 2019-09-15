@@ -26,6 +26,7 @@ class ModifyUsersTable extends Migration
      */
     public function down()
     {
-        //
+        $table->double('latitude', 15, 11)->change();
+        $table->double('longitude', 15, 11)->change();
     }
 }

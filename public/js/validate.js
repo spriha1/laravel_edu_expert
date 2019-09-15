@@ -142,45 +142,7 @@ $(document).ready(function () {
         $("#alert").css("display", "block");
         $("#alert").text(result);
       });
-    } // if (event.target.id === 'registration') {
-    // 	var check,c = 0,size = 0;
-    // 	$('#registration input').not('.select2-search__field').each(function(){
-    // 	    check = $(this).val().trim();
-    // 		if (check === "") {
-    // 			$(this).css("borderColor" , "red");
-    // 			c++;
-    // 			console.log(this);
-    // 		}
-    // 	});
-    // 	$('#registration').find('select').each(function(){
-    // 	    check = $(this).val();
-    // 	    console.log(check);
-    // 		// if (check === "") {
-    // 		// 	$(this).css("borderColor" , "red");
-    // 		// 	c++;
-    // 		// 	console.log(this);
-    // 		// }
-    // 	});
-    // 	if (c > 0) {
-    // 		$("#alert").text("Please fill in the highlighted fields");
-    // 		$("#alert").css("display" , "block");
-    // 		event.preventDefault();
-    // 	}
-    // 	else {
-    // 		$.post('register' , $('#registration').serialize() , function(result){
-    // 			$("#alert").css("display" , "block");
-    // 			$("#alert").text(result);
-    // 		})
-    // 		.fail(function(result) {
-    // 			console.log(result.responseText);
-    // 		    var res = JSON.parse(result.responseText);
-    // 		    var errors = res.errors;
-    // 			// $('#alert').html(errors.fname + '<br>' + errors.lname + '<br>' + errors.username + '<br>' + errors.email + '<br>' + errors.password);
-    // 			$("#alert").css("display" , "block");
-    // 		});
-    // 	}
-    // }
-
+    }
   });
   $('body').click(function () {
     if (event.target.id === 'password' && event.target.closest("form").getAttribute("id") === 'registration') {

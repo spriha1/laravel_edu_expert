@@ -1,7 +1,5 @@
 @extends('layouts.header')
-
 @section('title', 'Edu Expert')
-
 @section('content')
 <style>
     .my-error {
@@ -13,10 +11,8 @@
         <div class="register-logo">
             Edu<b>Xpert</b>
         </div>
-
         <div class="register-box-body">
             <p class="login-box-msg">Create Account</p>
-
             <form method="POST" action="" id="registration" name="registration">
                 @csrf
                 <div id="alert" class='alert alert-danger' style="display: none;">
@@ -86,15 +82,9 @@
         </div>
     </div>
 @endsection
-
 @section('footer')
-
     @include('layouts.footer')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.js"></script>
-    <!-- <script src="{{ asset('js/dist/jquery.min.js') }}"></script>
-    <script src="{{ asset('js/dist/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('js/dist/icheck.min.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script> -->
     <script id="footer" footer="footer" src="{{ mix('/js/footer.js') }}"></script>
     <script src="{{ mix('/js/validate.js') }}"></script>
 @endsection

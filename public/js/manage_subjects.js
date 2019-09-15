@@ -124,7 +124,6 @@ $(document).ready(function () {
     $("textarea").val("");
   });
   $(".remove").click(function (event) {
-    //event.preventDefault();
     var subject_id = $(this).closest('li').attr('subject_id');
     $.post('remove_subject', {
       subject_id: subject_id

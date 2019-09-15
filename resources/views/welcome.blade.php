@@ -1,7 +1,5 @@
 @extends('layouts.header')
-
 @section('title', 'Edu Expert')
-
 @section('content')
     <body class="hold-transition login-page">
     <div class="login-box">
@@ -27,7 +25,6 @@
                     <input type="password" class="form-control" placeholder="Password" id="password" name="password">
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                 </div>
-               
                 <div class="row">
                     <div class="col-xs-8">
                         <div class="checkbox icheck">
@@ -41,7 +38,6 @@
                     </div>
                 </div>
             </form>
-
             <a href="register" class="text-center">Register Here</a>
             <br>
             <button class="btn btn-light btn-block btn-flat">
@@ -57,18 +53,9 @@
                 </a>
             </button>
         </div>
-    
     </div>
 @endsection
-
 @section('footer')
     @include('layouts.footer')
     <script id="footer" footer="footer" src="{{ mix('/js/footer.js') }}"></script>
-    
-    <!-- <script src="{{ mix('/js/validate.js') }}"></script> -->
-
-   <!--  <script src="{{ asset('js/dist/jquery.min.js') }}"></script>
-    <script src="{{ asset('js/dist/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('js/dist/icheck.min.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script> -->
 @endsection

@@ -115,13 +115,12 @@ $(document).ready(function () {
   $('#teacher').change(function () {
     var teacher_id = $(this).val();
     $('.class').val('');
-    $('.class').html(''); // $('.class').select2('destroy').select2();
-
+    $('.class').html('');
     $.post('/fetch_teacher_class', {
       teacher_id: teacher_id
     }, function (result) {
       var response = JSON.parse(result);
-      var length = response.length; // console.log(response);
+      var length = response.length;
 
       for (var i = 0; i < length; i++) {
         var element = $('.clone_').clone(true).removeClass('clone_');
@@ -144,12 +143,11 @@ $(document).ready(function () {
       teacher_id: teacher_id
     }, function (result) {
       var response = JSON.parse(result);
-      var length = response.length; // console.log(response);
+      var length = response.length;
 
       for (var i = 0; i < length; i++) {
         var element = $('.clone').clone(true).removeClass('clone');
         element.attr('value', response[i].id);
-        console.log(element);
         element.text(response[i].name);
         element.appendTo('.subject');
       }

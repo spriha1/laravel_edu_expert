@@ -3,40 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Currency;
+use App\{Currency, User};
 Use Illuminate\Support\Facades\Log;
 use Exception;
 
 class CurrencyController extends Controller
 {
-    protected $currency;
+    protected $currency, $user;
 
     public function __construct()
     {
         $this->currency = new Currency;
-    }
-
-    /**
-    * 
-    * @method update_currency() 
-    * 
-    * @param Request object
-    * Desc : This method updates the select_status of the chosen currency to 1
-    */
-
-    public function update_currency(Request $request)
-    {
-    	$new = $request->input('currency');
-        try {
-            $this->currency->where('select_status', 1)
-            ->update(['select_status' => 0]);
-
-            $this->currency->where('code', $new)
-            ->update(['select_status' => 1]);
-        }
-    	catch (Exception $e) {
-            Log::error($e->getMessage());
-        }
+        $this->user = new User;
     }
 
     /**
@@ -50,28 +28,22 @@ class CurrencyController extends Controller
 
     public function convert_currency(Request $request)
     {
-    	$new    = $request->input('new_cur');
-    	$old    = $request->input('old_cur');
-    	$amount = $request->input('amount');
+        $new    = $request->input('new_cur');
+        $old    = $request->input('old_cur');
+        $amount = $request->input('amount');
+        $req_url = 'https://api.exchangerate-api.com/v4/latest/'.$old;
+        $response_json = file_get_contents($req_url);
+        if (false !== $response_json) {
+            try {
+                $response_object = json_decode($response_json);
+                $new_amount = ($amount * $response_object->rates->$new);
+                return $new_amount;
+            }
 
-		$req_url = 'https://api.exchangerate-api.com/v4/latest/'.$old;
-		$response_json = file_get_contents($req_url);
-		
-		if (false !== $response_json) {
-
-			try {
-
-				$response_object = json_decode($response_json);
-
-				$new_amount = ($amount * $response_object->rates->$new);
-				return $new_amount;
-
-			}
-			catch(Exception $e) {
+            catch(Exception $e) {
                 Log::error($e->getMessage());
-			}
-
-		}
+            }
+        }
     }
 
     /**
@@ -83,17 +55,27 @@ class CurrencyController extends Controller
     * Desc : This method fetches and returns the chosen currency
     */
 
-    public function fetch_currency()
+    public function fetch_currency(Request $request)
     {
         try {
-            $new = $this->currency->where('select_status', 1)->first();
+            $new = $this->user
+            ->join('currencies', 'users.currency_id', '=', 'currencies.id')
+            ->where('users.id', $request->input('user_id'))
+            ->select('code')
+            ->first();
+            $old = $this->user
+            ->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+            ->join('currencies', 'users.currency_id', '=', 'currencies.id')
+            ->where('user_type', 'Admin')
+            ->select('code')
+            ->first();
         }
-    	catch(Exception $e) {
+        
+        catch(Exception $e) {
             Log::error($e->getMessage());
         }
 
-    	$response = array("new"=>$new['code']);
-
-    	return(json_encode($response));
+        $response = array('new' => $new['code'], 'old' => $old['code']);
+        return(json_encode($response));
     }
 }

@@ -63,6 +63,7 @@ class ProjectController extends Controller
             $user_types = $this->user_type->where('user_type', '!=', "Admin")->get();
             $subjects   = $this->subject->all();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -104,10 +105,10 @@ class ProjectController extends Controller
                 'user_reg_status' => 1, 
                 'block_status'    => 0
             ])) {
-                    
             try {
                 $user_type = $this->user_type->where('id', Auth::user()->user_type_id)->get();
-            }      
+            }  
+
             catch (Exception $e) {
                 Log::error($e->getMessage());
             }
@@ -116,14 +117,17 @@ class ProjectController extends Controller
                 if ($val->user_type === 'Admin') {                        
                     return redirect('admin_dashboard');
                 }
+
                 else if ($val->user_type === 'Teacher') {
                     return redirect('teacher_dashboard');
                 }
+
                 else if ($val->user_type === 'Student') {
                     return redirect('student_dashboard');
                 }
             }
         }
+
         else {
             $errors = new MessageBag(['password' => ['Username and/or password invalid.']]);
             return redirect()->back()->withErrors($errors)->withInput(Input::except('password'));
@@ -145,11 +149,11 @@ class ProjectController extends Controller
             $user_types = $this->user_type->where('user_type', '!=', 'Admin')
                         ->select('user_type')
                         ->get();
-
             $results = $this->user->whereRaw("user_reg_status = 0 AND email_verification_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")
             ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
             ->get();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -177,6 +181,7 @@ class ProjectController extends Controller
                         ->select('user_type')
                         ->get();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -187,6 +192,7 @@ class ProjectController extends Controller
                 $c++;
             }
         }
+
         if ($c > 0) {
             try {
                 $results = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
@@ -196,6 +202,7 @@ class ProjectController extends Controller
                 ])->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')
                 ->get();
             }
+
             catch (Exception $e) {
                 Log::error($e->getMessage());
             }
@@ -207,6 +214,7 @@ class ProjectController extends Controller
                 ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
                 ->get();
             }
+
             catch (Exception $e) {
                 Log::error($e->getMessage());
             }
@@ -233,6 +241,7 @@ class ProjectController extends Controller
         try {
             $this->user->where('id', $id)->update(['user_reg_status' => 1]);
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -254,6 +263,7 @@ class ProjectController extends Controller
         try {
             $this->user->where('id', $id)->delete();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -275,6 +285,7 @@ class ProjectController extends Controller
         try {
             $this->user->where('id', $id)->update(['block_status' => 1]);
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -296,6 +307,7 @@ class ProjectController extends Controller
         try {
             $this->user->where('id', $id)->update(['block_status' => 0]);
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -318,11 +330,11 @@ class ProjectController extends Controller
             $user_types = $this->user_type->where('user_type', '!=', 'Admin')
                         ->select('user_type')
                         ->get();
-
             $results = $this->user->whereRaw("user_reg_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")
             ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
             ->get();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -350,6 +362,7 @@ class ProjectController extends Controller
                         ->select('user_type')
                         ->get();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -371,6 +384,7 @@ class ProjectController extends Controller
                 ])->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')
                 ->get();
             }
+
             catch (Exception $e) {
                 Log::error($e->getMessage());
             }
@@ -382,6 +396,7 @@ class ProjectController extends Controller
                 ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
                 ->get();
             }
+
             catch (Exception $e) {
                 Log::error($e->getMessage());
             }
@@ -410,6 +425,7 @@ class ProjectController extends Controller
                         ->selectRaw('count(*) as total')
                         ->get();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -425,6 +441,7 @@ class ProjectController extends Controller
             ])->selectRaw('count(*) as total')
             ->get();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -438,6 +455,7 @@ class ProjectController extends Controller
                                 ->selectRaw('count(*) as total')
                                 ->get();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -496,29 +514,35 @@ class ProjectController extends Controller
             $usertypes = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
             ->where('users.id', Auth::id())
             ->select('user_type')->get();
+            $currencies = $this->currency->get();
+            $result = $this->user
+                        ->join('currencies', 'users.currency_id', '=', 'currencies.id')
+                        ->where('users.id', Auth::id())
+                        ->select('code')
+                        ->first();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
 
         foreach ($usertypes as $usertype) {
-
             if ($usertype->user_type === 'Teacher') {
                 try {
                     $rates = $this->user->where('id', Auth::id())
                             ->select('rate')
                             ->get();
-
-                    $currencies = $this->currency->get();
                 }
+
                 catch (Exception $e) {
                     Log::error($e->getMessage());
                 }
 
                 return view('profile', [
-                    'usertype' => $usertype->user_type,
-                    'rates' => $rates,
-                    'currencies' => $currencies
+                    'usertype'    => $usertype->user_type,
+                    'rates'       => $rates,
+                    'currencies'  => $currencies, 
+                    'currency_id' => $result['code']
                 ]);
             }
 
@@ -527,18 +551,17 @@ class ProjectController extends Controller
                     $tax = $this->tax->where('name', 'GST')
                         ->select('percentage')
                         ->first();
-
-                    $currencies = $this->currency->get();
                 }
+
                 catch (Exception $e) {
                     Log::error($e->getMessage());
                 }
-                
 
                 return view('profile', [
-                    'usertype' => $usertype->user_type,
-                    'tax' => $tax['percentage'],
-                    'currencies' => $currencies
+                    'usertype'    => $usertype->user_type,
+                    'tax'         => $tax['percentage'],
+                    'currencies'  => $currencies, 
+                    'currency_id' => $result['code']
                 ]);
             }
 
@@ -567,6 +590,7 @@ class ProjectController extends Controller
                 ['email_verification_status', 0]
             ])->get();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -578,11 +602,14 @@ class ProjectController extends Controller
                     ['email_verification_status', 0]
                 ])->update(['email_verification_status' => 1]);
             }
+
             catch (Exception $e) {
                 Log::error($e->getMessage());
             }
+
             echo '<div>Your account has been activated, you can now <a href="/">login</a></div>';
         }
+
         else {
             echo '<div>The url is either invalid or you already have activated your account.</div>';
         }
@@ -606,6 +633,7 @@ class ProjectController extends Controller
                 ['email_verification_status', 0]
             ])->select('id')->get();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -618,12 +646,14 @@ class ProjectController extends Controller
                         ['email_verification_status', 0]
                     ])->update(['email_verification_status' => 1, 'email' => $email]);
                 }
+
                 catch (Exception $e) {
                     Log::error($e->getMessage());
                 }
             }
             echo '<div>Your email has been updated, you can continue';
         }
+
         else {
             echo '<div>The url is either invalid or you already have activated your account.</div>';
         }
@@ -645,6 +675,7 @@ class ProjectController extends Controller
                         ->select('id')
                         ->get();
             }
+
             catch (Exception $e) {
                 Log::error($e->getMessage());
             }
@@ -654,11 +685,11 @@ class ProjectController extends Controller
                 try {
                     $this->user->where('username', $request->input('username'))
                     ->update(['token' => $unique]);
-
                     $results = $this->user->where('username', $request->input('username'))
                             ->select('email', 'token')
                             ->get();
                 }
+
                 catch (Exception $e) {
                     Log::error($e->getMessage());
                 }
@@ -667,6 +698,7 @@ class ProjectController extends Controller
                     try {
                         Mail::to($result->email)->send(new ForgotPassword($result->token));
                     }
+
                     catch (Exception $e) {
                         Log::error($e->getMessage());
                     }
@@ -696,12 +728,14 @@ class ProjectController extends Controller
             try {
                 $this->user->where('token', $token)->update(['token' => NULL]);
             }
+
             catch (Exception $e) {
                 Log::error($e->getMessage());
             }
 
             echo "The link has expired";
         }
+
         else {
             return view('reset_password_form');
         }
@@ -724,6 +758,7 @@ class ProjectController extends Controller
                     ['user_reg_status', 1]
                 ])->select('username')->get();
             }
+
             catch (Exception $e) {
                 Log::error($e->getMessage());
             }
@@ -733,12 +768,14 @@ class ProjectController extends Controller
                 try{
                     $this->user->where('token', session('token'))->update(['password' => $password]);
                 }
+
                 catch (Exception $e) {
                     Log::error($e->getMessage());
                 }
 
                 echo '<div>Your password has been reset, you can now <a href="/"> login</a></div>';
             }
+
             else {
                 echo '<div>Your request has not been accepted by the admin yet</div>';
             }
@@ -761,9 +798,9 @@ class ProjectController extends Controller
                         ->where('user_type', 'Teacher')
                         ->select('firstname', 'users.id')
                         ->get();
-
             $classes = $this->clas->select('class')->distinct()->get();
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -789,42 +826,15 @@ class ProjectController extends Controller
             $date_format = $request->input('date_format');
             $start_date  = $request->input('start_date');
             $end_date    = $request->input('end_date');
-            switch ($date_format) {
-                case "yyyy/mm/dd":
-                    $start_date = Carbon::createFromFormat("Y/m/d" , $start_date)->timestamp;
-                    $end_date   = Carbon::createFromFormat("Y/m/d" , $end_date)->timestamp;
-                    break;
-                case "yyyy.mm.dd":
-                    $start_date = Carbon::createFromFormat("Y.m.d" , $start_date)->timestamp;
-                    $end_date   = Carbon::createFromFormat("Y.m.d" , $end_date)->timestamp;
-                    break;
-                case "yyyy-mm-dd":
-                    $start_date = Carbon::createFromFormat("Y-m-d" , $start_date)->timestamp;
-                    $end_date   = Carbon::createFromFormat("Y-m-d" , $end_date)->timestamp;
-                    break;
-                case "dd/mm/yyyy":
-                    $start_date = Carbon::createFromFormat("d/m/Y" , $start_date)->timestamp;
-                    $end_date   = Carbon::createFromFormat("d/m/Y" , $end_date)->timestamp;
-                    break;
-                case "dd-mm-yyyy":
-                    $start_date = Carbon::createFromFormat("d-m-Y" , $start_date)->timestamp;
-                    $end_date   = Carbon::createFromFormat("d-m-Y" , $end_date)->timestamp;
-                    break;
-                case "dd.mm.yyyy":
-                    $start_date = Carbon::createFromFormat("d.m.Y" , $start_date)->timestamp;
-                    $end_date   = Carbon::createFromFormat("d.m.Y" , $end_date)->timestamp;
-                    break;
-            }
-            
-            $start_date = getdate($start_date);
-            $start_date = $start_date['year'].'-'.$start_date['mon'].'-'.$start_date['mday'];
-            $start_date = strtotime($start_date);
-
-            $end_date   = getdate($end_date);
-            $end_date   = $end_date['year'].'-'.$end_date['mon'].'-'.$end_date['mday'];
-            $end_date   = strtotime($end_date);
-            $length     = count($request->input('subject'));
-
+            $start_date  = date_to_timestamp($date_format, $start_date);
+            $end_date    = date_to_timestamp($date_format, $end_date);
+            $start_date  = getdate($start_date);
+            $start_date  = $start_date['year'].'-'.$start_date['mon'].'-'.$start_date['mday'];
+            $start_date  = strtotime($start_date);
+            $end_date    = getdate($end_date);
+            $end_date    = $end_date['year'].'-'.$end_date['mon'].'-'.$end_date['mday'];
+            $end_date    = strtotime($end_date);
+            $length      = count($request->input('subject'));
             try {
                 for ($i = 0; $i < $length; $i++) {
                     $subject_id = $request->input('subject')[$i];
@@ -835,9 +845,8 @@ class ProjectController extends Controller
                             ['start_date', '<=', $a],
                             ['end_date', '>=', $a]
                         ])->select()->get();
-
                         if ($result->count()) {
-                            return("The task has already been added fro these dates");
+                            return("The task has already been added for these dates");
                         }
 
                         else {
@@ -848,14 +857,12 @@ class ProjectController extends Controller
                                 'start_date' => $start_date,
                                 'end_date' => $end_date
                             ]);
-
                             $result = $this->clas->where([
                                 ['class', $request->input('class')],
                                 ['subject_id', $subject_id]
                             ])->select('teacher_id')
                             ->distinct()
                             ->get();
-
                             foreach ($result as $key => $value) {
                                 for ($z = $start_date; $z <= $end_date; $z = $z + 86400) {
                                     $this->teacher_task->insert([
@@ -871,7 +878,6 @@ class ProjectController extends Controller
                                 ['class', $request->class]
                             ])->select('users.id')
                             ->get();
-
                             foreach ($result as $key => $value) {
                                 for ($z = $start_date; $z <= $end_date; $z = $z + 86400) {
                                     $this->student_task->insert([
@@ -881,13 +887,14 @@ class ProjectController extends Controller
                                     ]);
                                 }
                             }
+
                             return("Successfully added");
                             DB::commit();
                         }
-                        
                     }
                 }
             }
+
             catch (Exception $e) {
                 Log::error($e->getMessage());
                 DB::rollBack();
@@ -917,6 +924,7 @@ class ProjectController extends Controller
             catch (Exception $e) {
                 Log::error($e->getMessage());
             }
+            
             return(json_encode($result));
         }
     }

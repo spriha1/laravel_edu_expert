@@ -23,7 +23,8 @@ class SubjectsController extends Controller
             $result = $this->subject->add_subject($request);
             return $result;
         }
-    	catch (Exception $e) {
+
+        catch (Exception $e) {
             Log::error($e->getMessage());
         }
     }
@@ -33,6 +34,7 @@ class SubjectsController extends Controller
         try{
             $this->subject->remove_subject($request);
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -44,6 +46,7 @@ class SubjectsController extends Controller
             $result = $this->subject->display_subjects();
             return($result);
         }
+        
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
@@ -75,7 +78,7 @@ class SubjectsController extends Controller
     //     try{
     //         $this->subject->where('id', $request->input('subject_id'))->delete();
     //     }
-    // 	catch (Exception $e) {
+    //  catch (Exception $e) {
     //         Log::error($e->getMessage());
     //     }
     // }

@@ -1,7 +1,5 @@
 @extends('layouts.header')
-
 @section('title', 'Edu Expert')
-
 @section('content')
     <body class="hold-transition login-page">
         <div class="login-box">
@@ -10,17 +8,15 @@
             </div>
             <div class="login-box-body">
                 <p class="login-box-msg">Reset Password</p>
-
                 <form action="/forgot_password" method="POST" id="login" name="login">
                     @csrf
                     <div id="alert" class='alert alert-danger' style="display: none;">
                     </div>
-                    <p style="color : #ff0000"> <?php //echo $msg; ?> </p>
+                    <p style="color : #ff0000"></p>
                     <div class="form-group has-feedback">
                         <input type="text" class="form-control" placeholder="Username" id="username" name="username">
                         <span class="glyphicon glyphicon-user form-control-feedback"></span>
                     </div>
-                    
                     <div class="row">
                         <div class="col-xs-8">
                             <div class="checkbox icheck">
@@ -37,7 +33,6 @@
             </div>
         </div>
 @endsection
-
 @section('footer')
     @include('layouts.footer')
     <script id="footer" footer="forgot_password_footer" src="{{ mix('/js/footer.js') }}"></script>
