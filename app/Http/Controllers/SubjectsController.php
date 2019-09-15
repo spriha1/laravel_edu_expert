@@ -51,46 +51,4 @@ class SubjectsController extends Controller
             Log::error($e->getMessage());
         }
     }
-
-    // public function __construct()
-    // {
-    //     $this->subject = new Subject;
-    // }
-    
-    // public function add_subject(Request $request)
-    // {
-    //     try {
-    //         $id = $this->subject->insertGetId(['name' => $request->input('subject')]);
-
-    //         $result = $this->subject->where('id', $id)
-    //                 ->select()
-    //                 ->get();
-    //     }
-    //     catch (Exception $e) {
-    //         Log::error($e->getMessage());
-    //     }
-        
-    //     return(json_encode($result));
-    // }
-
-    // public function remove_subject(Request $request)
-    // {
-    //     try{
-    //         $this->subject->where('id', $request->input('subject_id'))->delete();
-    //     }
-    //  catch (Exception $e) {
-    //         Log::error($e->getMessage());
-    //     }
-    // }
-
-    // public function display_subjects()
-    // {
-    //     try {
-    //         $result = $this->subject->select()->get();
-    //         return(json_encode($result));
-    //     }
-    //     catch (Exception $e) {
-    //         Log::error($e->getMessage());
-    //     }
-    // }
 }

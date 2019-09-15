@@ -14,7 +14,7 @@ class CurrencyController extends Controller
     public function __construct()
     {
         $this->currency = new Currency;
-        $this->user = new User;
+        $this->user     = new User;
     }
 
     /**
@@ -28,15 +28,15 @@ class CurrencyController extends Controller
 
     public function convert_currency(Request $request)
     {
-        $new    = $request->input('new_cur');
-        $old    = $request->input('old_cur');
-        $amount = $request->input('amount');
-        $req_url = 'https://api.exchangerate-api.com/v4/latest/'.$old;
+        $new           = $request->input('new_cur');
+        $old           = $request->input('old_cur');
+        $amount        = $request->input('amount');
+        $req_url       = 'https://api.exchangerate-api.com/v4/latest/'.$old;
         $response_json = file_get_contents($req_url);
         if (false !== $response_json) {
             try {
                 $response_object = json_decode($response_json);
-                $new_amount = ($amount * $response_object->rates->$new);
+                $new_amount      = ($amount * $response_object->rates->$new);
                 return $new_amount;
             }
 

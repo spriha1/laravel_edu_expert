@@ -104,12 +104,12 @@ class ClassController extends Controller
     {
         if ($request->filled('class') && $request->filled('subjects')) {
             $length = count($request->input('subjects'));
-            for ($i = 0; $i < $length; $i++) {
+            for ($index = 0; $index < $length; $index++) {
                 try {
                     $id = $this->clas->insertGetId([
-                        'class' => $request->input('class'),
-                        'subject_id' => $request->input('subjects')[$i],
-                        'teacher_id' => $request->input($request->input('subjects')[$i])
+                        'class'      => $request->input('class'),
+                        'subject_id' => $request->input('subjects')[$index],
+                        'teacher_id' => $request->input($request->input('subjects')[$index])
                     ]);
                 }
 
@@ -224,12 +224,12 @@ class ClassController extends Controller
     {
         if ($request->filled('class') && $request->filled('subjects')) {
             $length = count($request->input('subjects'));
-            for ($i = 0; $i < $length; $i++) {
+            for ($index = 0; $index < $length; $index++) {
                 try {
                     $id = $this->clas->insertGetId([
                         'class'      => $request->input('class'),
-                        'subject_id' => $request->input('subjects')[$i],
-                        'teacher_id' => $request->input($request->input('subjects')[$i])
+                        'subject_id' => $request->input('subjects')[$index],
+                        'teacher_id' => $request->input($request->input('subjects')[$index])
                     ]);
                     $result = $this->user
                     ->join('class', 'users.id', '=', 'class.teacher_id')

@@ -146,11 +146,18 @@ class ProjectController extends Controller
     public function pending_requests()
     {
         try {
-            $user_types = $this->user_type->where('user_type', '!=', 'Admin')
+            $user_types = $this->user_type
+                        ->where('user_type', '!=', 'Admin')
                         ->select('user_type')
                         ->get();
-            $results = $this->user->whereRaw("user_reg_status = 0 AND email_verification_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")
-            ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
+            $results = $this->user
+            ->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+            ->where([
+                ['user_reg_status', 0],
+                ['email_verification_status', 1],
+                ['user_type', '!=', 'Admin']
+            ])
+            ->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')
             ->get();
         }
 
@@ -186,14 +193,14 @@ class ProjectController extends Controller
             Log::error($e->getMessage());
         }
 
-        $c = 0;
+        $counter = 0;
         foreach ($user_types as $key => $value) {
             if ($value['user_type'] === $request->input('user_type')) {
-                $c++;
+                $counter++;
             }
         }
 
-        if ($c > 0) {
+        if ($counter > 0) {
             try {
                 $results = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
                 ->where([
@@ -210,8 +217,13 @@ class ProjectController extends Controller
 
         else {
             try {
-                $results = $this->user->whereRaw("user_reg_status = 0 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")
-                ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
+                $results = $this->user
+                ->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+                ->where([
+                    ['user_reg_status', 0],
+                    ['user_type', '!=', 'Admin']
+                ])
+                ->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')
                 ->get();
             }
 
@@ -222,8 +234,8 @@ class ProjectController extends Controller
 
         return view('pending_requests', [
             'user_types' => $user_types,
-            'results' => $results,
-            'search' => $request->input('user_type')
+            'results'    => $results,
+            'search'     => $request->input('user_type')
         ]);
     }
 
@@ -330,8 +342,13 @@ class ProjectController extends Controller
             $user_types = $this->user_type->where('user_type', '!=', 'Admin')
                         ->select('user_type')
                         ->get();
-            $results = $this->user->whereRaw("user_reg_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")
-            ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
+            $results = $this->user
+            ->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+            ->where([
+                ['user_reg_status', 1],
+                ['user_type', '!=', 'Admin']
+            ])
+            ->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')
             ->get();
         }
 
@@ -341,8 +358,8 @@ class ProjectController extends Controller
 
         return view('regd_users', [
             'user_types' => $user_types,
-            'results' => $results,
-            'search' => ""
+            'results'    => $results,
+            'search'     => ""
         ]);
     }
 
@@ -367,17 +384,18 @@ class ProjectController extends Controller
             Log::error($e->getMessage());
         }
 
-        $c = 0;
+        $counter = 0;
 
         foreach ($user_types as $key => $value) {
             if ($value['user_type'] === $request->input('user_type')) {
-                $c++;
+                $counter++;
             }
         }
 
-        if ($c > 0) {
+        if ($counter > 0) {
             try {
-                $results = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+                $results = $this->user
+                ->join('user_types', 'users.user_type_id', '=', 'user_types.id')
                 ->where([
                     ['user_reg_status', 1], 
                     ['user_type', $request->input('user_type')]
@@ -392,8 +410,13 @@ class ProjectController extends Controller
 
         else {
             try {
-                $results = $this->user->whereRaw("user_reg_status = 1 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")
-                ->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')
+                $results = $this->user
+                ->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+                ->where([
+                    ['user_reg_status', 1],
+                    ['user_type', '!=', 'Admin']
+                ])
+                ->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')
                 ->get();
             }
 
@@ -423,50 +446,41 @@ class ProjectController extends Controller
         try {
             $regd_users = $this->user->where('user_reg_status', 1)
                         ->selectRaw('count(*) as total')
-                        ->get();
+                        ->first();
         }
 
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
 
-        foreach ($regd_users as $regd_user) {
-            $regd_user_count = $regd_user->total;
-        }
-
+        $regd_user_count = $regd_users['total'];
         try {
             $pending_users = $this->user->where([
                 ['user_reg_status', 0],
                 ['email_verification_status', 1]
             ])->selectRaw('count(*) as total')
-            ->get();
+            ->first();
         }
 
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
 
-        foreach ($pending_users as $pending_user) {
-            $pending_user_count = $pending_user->total;
-        }
-
+        $pending_user_count = $pending_users['total'];
         try {
             $shared_timesheets = $this->shared_timesheet->where('to_id', Auth::id())
                                 ->selectRaw('count(*) as total')
-                                ->get();
+                                ->first();
         }
 
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
 
-        foreach ($shared_timesheets as $shared_timesheet) {
-            $shared_timesheet_count = $shared_timesheet->total;
-        }
-
+        $shared_timesheet_count = $shared_timesheets['total'];
         return view('admin_dashboard', [
-            'regd_user_count' => $regd_user_count,
-            'pending_user_count' => $pending_user_count,
+            'regd_user_count'        => $regd_user_count,
+            'pending_user_count'     => $pending_user_count,
             'shared_timesheet_count' => $shared_timesheet_count
         ]);
     }
@@ -512,14 +526,14 @@ class ProjectController extends Controller
     {
         try {
             $usertypes = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
-            ->where('users.id', Auth::id())
-            ->select('user_type')->get();
+                        ->where('users.id', Auth::id())
+                        ->select('user_type')->get();
             $currencies = $this->currency->get();
             $result = $this->user
-                        ->join('currencies', 'users.currency_id', '=', 'currencies.id')
-                        ->where('users.id', Auth::id())
-                        ->select('code')
-                        ->first();
+                    ->join('currencies', 'users.currency_id', '=', 'currencies.id')
+                    ->where('users.id', Auth::id())
+                    ->select('code')
+                    ->first();
         }
 
         catch (Exception $e) {
@@ -644,7 +658,10 @@ class ProjectController extends Controller
                     $this->user->where([
                         ['id', $res->id],
                         ['email_verification_status', 0]
-                    ])->update(['email_verification_status' => 1, 'email' => $email]);
+                    ])->update([
+                        'email_verification_status' => 1, 
+                        'email' => $email
+                    ]);
                 }
 
                 catch (Exception $e) {
@@ -798,7 +815,7 @@ class ProjectController extends Controller
                         ->where('user_type', 'Teacher')
                         ->select('firstname', 'users.id')
                         ->get();
-            $classes = $this->clas->select('class')->distinct()->get();
+            $classes  = $this->clas->select('class')->distinct()->get();
         }
 
         catch (Exception $e) {
@@ -806,7 +823,7 @@ class ProjectController extends Controller
         }
 
         return view('task_management', [
-            'classes' => $classes,
+            'classes'  => $classes,
             'teachers' => $teachers
         ]);
     }
@@ -836,14 +853,14 @@ class ProjectController extends Controller
             $end_date    = strtotime($end_date);
             $length      = count($request->input('subject'));
             try {
-                for ($i = 0; $i < $length; $i++) {
-                    $subject_id = $request->input('subject')[$i];
-                    for($a = $start_date; $a <= $end_date; $a = $a + 86400) {
+                for ($index = 0; $index < $length; $index++) {
+                    $subject_id = $request->input('subject')[$index];
+                    for($index2 = $start_date; $index2 <= $end_date; $index2 = $index2 + 86400) {
                         $result = $this->task->where([
                             ['subject_id', $subject_id],
                             ['class', $request->input('class')],
-                            ['start_date', '<=', $a],
-                            ['end_date', '>=', $a]
+                            ['start_date', '<=', $index2],
+                            ['end_date', '>=', $index2]
                         ])->select()->get();
                         if ($result->count()) {
                             return("The task has already been added for these dates");
@@ -853,9 +870,9 @@ class ProjectController extends Controller
                             DB::beginTransaction();
                             $task_id = $this->task->insertGetId([
                                 'subject_id' => $subject_id,
-                                'class' => $request->input('class'),
+                                'class'      => $request->input('class'),
                                 'start_date' => $start_date,
-                                'end_date' => $end_date
+                                'end_date'   => $end_date
                             ]);
                             $result = $this->clas->where([
                                 ['class', $request->input('class')],
@@ -864,11 +881,11 @@ class ProjectController extends Controller
                             ->distinct()
                             ->get();
                             foreach ($result as $key => $value) {
-                                for ($z = $start_date; $z <= $end_date; $z = $z + 86400) {
+                                for ($index3 = $start_date; $index3 <= $end_date; $index3 = $index3 + 86400) {
                                     $this->teacher_task->insert([
                                         'task_id' => $task_id,
                                         'teacher_id' => $value['teacher_id'],
-                                        'on_date' => $z
+                                        'on_date' => $index3
                                     ]);
                                 }
                             }
@@ -879,11 +896,11 @@ class ProjectController extends Controller
                             ])->select('users.id')
                             ->get();
                             foreach ($result as $key => $value) {
-                                for ($z = $start_date; $z <= $end_date; $z = $z + 86400) {
+                                for ($index3 = $start_date; $index3 <= $end_date; $index3 = $index3 + 86400) {
                                     $this->student_task->insert([
                                         'task_id' => $task_id,
                                         'student_id' => $value['id'],
-                                        'on_date' => $z
+                                        'on_date' => $index3
                                     ]);
                                 }
                             }

@@ -224,12 +224,12 @@ class AjaxController extends Controller
                 if ($request->filled('subject')) {
                     $subject = $request->subject;
                     $length  = count($subject);
-                    for ($i = 0; $i < $length; $i++) {
+                    for ($index = 0; $index < $length; $index++) {
                         $teacher_subject = new TeacherSubject;
                         foreach ($results as $result) {
                             $teacher_subject->teacher_id = $result->id;
                         }
-                        $teacher_subject->subject_id = $subject[$i];
+                        $teacher_subject->subject_id = $subject[$index];
                         $teacher_subject->save();
                     }
                 }
@@ -361,6 +361,7 @@ class AjaxController extends Controller
                 $msg->success = 1;
             }
         }
+
         $res = json_encode($msg);
         return($res);
     }
@@ -378,9 +379,9 @@ class AjaxController extends Controller
     {
         if ($request->filled('day')) {
             $length = count($request->input('day'));
-            for ($i = 0; $i < $length; $i++) {
+            for ($index = 0; $index < $length; $index++) {
                 try {
-                    $this->holiday->insert(['dow' => $request->input('day')[$i]]);
+                    $this->holiday->insert(['dow' => $request->input('day')[$index]]);
                 }
 
                 catch (Exception $e) {
@@ -565,10 +566,10 @@ class AjaxController extends Controller
             else {
                 try {
                     $this->request_status->insert([
-                        'user_id' => $request->input('user_id'),
+                        'user_id'     => $request->input('user_id'),
                         'week_number' => $request->input('week'),
                         'status_code' => $status_code,
-                        'year' => $request->input('year')
+                        'year'        => $request->input('year')
                     ]);
                 }
 
@@ -609,5 +610,4 @@ class AjaxController extends Controller
 
         return(json_encode($results));
     }
-
 }

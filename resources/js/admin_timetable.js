@@ -339,7 +339,6 @@ function load_display_data(date, user_id, date_form, user_type, rate, tax) {
         var year        = parseInt(get_year(date, date_format));
         var d           = format_date(date, date_format);
         var week        = getNumberOfWeek(d);
-        console.log(amount)
         $.get('/fetch_currency', {user_id: user_id}, function(result) {
             var response = JSON.parse(result);
             var old_cur  = response['old'];
