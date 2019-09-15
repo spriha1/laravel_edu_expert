@@ -24,6 +24,7 @@ class CheckAdmin
                 return redirect()->back();
             }
         }
+        
         return $next($request);
     }
 }

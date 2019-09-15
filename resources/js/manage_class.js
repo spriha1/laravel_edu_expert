@@ -8,10 +8,10 @@ $(document).ready(function() {
     $.get('display_class', function(result) {
         var response = JSON.parse(result);
         var length   = response.length;
-        for (var i = 0; i < length; i++) {
+        for (var index = 0; index < length; index++) {
             let element = $(".clone").clone(true).css('display', 'block').removeClass('clone');
-            element.find('.text').text(response[i].class);
-            element.attr('class_id', response[i].class);
+            element.find('.text').text(response[index].class);
+            element.attr('class_id', response[index].class);
             element.appendTo('.append_class');
         }
     });
@@ -35,11 +35,11 @@ $(document).ready(function() {
             element.find('label').text(text);
             element.find('label').attr('for', id);
             element.find('select').attr('name', id);
-            for(var i = 0; i < response.length; i++)
+            for(var index = 0; index < response.length; index++)
             {
                 let element2 = $(".editable option").clone(true);
-                element2.attr('value', response[i].id);
-                element2.html(response[i].firstname);
+                element2.attr('value', response[index].id);
+                element2.html(response[index].firstname);
                 element2.appendTo(element.find('select'))
             }
             element.appendTo('#append_teacher');
@@ -49,8 +49,8 @@ $(document).ready(function() {
     $('.subject').on('select2:unselect', function(e) {
         var data = e.params.data;
         var id   = data.id;
-        $('.append_teacher label[for='+id+']').remove();
-        $('.append_teacher select[name='+id+']').remove();
+        $('.append_teacher label[for=' + id + ']').remove();
+        $('.append_teacher select[name=' + id + ']').remove();
     });
 
     $("#add").click(function(event) {
@@ -82,13 +82,13 @@ $(document).ready(function() {
             var response = JSON.parse(result);
             var length = response.length;
             $('#view_subjects').html("");
-            for (var i = 0; i < length; i++) 
+            for (var index = 0; index < length; index++) 
             {
                 var element = $('.subjects_body').clone(true).css('display', 'table-row').removeClass('subjects_body');
-                element.find('.subject_name').text(response[i].name);
-                element.find('.teacher').text(response[i].firstname);
-                element.attr('subject_id', response[i].subjectid);
-                element.attr('class_id', response[i].class);
+                element.find('.subject_name').text(response[index].name);
+                element.find('.teacher').text(response[index].firstname);
+                element.attr('subject_id', response[index].subjectid);
+                element.attr('class_id', response[index].class);
                 element.appendTo('#view_subjects');
             }
         });
@@ -120,12 +120,11 @@ $(document).ready(function() {
             element.find('label').text(text);
             element.find('label').attr('for', id);
             element.find('select').attr('name', id);
-            for(var i = 0; i < response.length; i++)
+            for(var index = 0; index < response.length; index++)
             {
                 let element2 = $("._editable option").clone(true);
-                console.log(element)
-                element2.attr('value', response[i].id);
-                element2.html(response[i].firstname);
+                element2.attr('value', response[index].id);
+                element2.html(response[index].firstname);
                 element2.appendTo(element.find('select'))
             }
             element.appendTo('#_append_teacher');
@@ -162,11 +161,11 @@ $(document).ready(function() {
         $('#edit_subject select').html("");
         $.post('fetch_teachers', {subject_id: subject_id}, function(result) {
             var response = JSON.parse(result);
-            for(var i = 0; i < response.length; i++)
+            for(var index = 0; index < response.length; index++)
             {
                 let element = $("#edit_subject ._clone").clone(true).removeClass('_clone');
-                element.attr('value', response[i].id);
-                element.html(response[i].firstname);
+                element.attr('value', response[index].id);
+                element.html(response[index].firstname);
                 element.appendTo('.teacher_')
             }
         });

@@ -199,9 +199,6 @@ $(document).ready(function () {
       $('.subject').closest('div').css('display', 'none');
     }
   });
-  $('.subject').change(function () {
-    console.log($('.subject').val());
-  });
 });
 
 /***/ }),

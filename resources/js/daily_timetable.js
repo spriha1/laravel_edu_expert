@@ -72,15 +72,15 @@ function load_display_data(date, user_id, user_type, date_format) {
                 date = 0;
         }
         
-        date       = date/1000;
+        date       = date / 1000;
         var length = response.length;
         if (user_type === 'teacher') {
-            for (var i = 0; i < length; i++) {
+            for (var index = 0; index < length; index++) {
                 let element = $(".editable").clone(true).css('display', 'table-row').removeClass('editable');
-                element.attr('task_id', response[i].task_id);
+                element.attr('task_id', response[index].task_id);
                 element.appendTo('.timetable');
-                var task_id = response[i].task_id;
-                var seconds = response[i].total_time;
+                var task_id = response[index].task_id;
+                var seconds = response[index].total_time;
                 if (seconds > 0) {
                     var hours    = Math.floor(seconds / 3600);
                     seconds      = seconds - (hours * 3600);
@@ -89,7 +89,7 @@ function load_display_data(date, user_id, user_type, date_format) {
                     var time     = hours + ':' + minutes + ':' + seconds;
                     var _date    = new Date(date * 1000);
                     _date        = _date.getDate() + '/' + (_date.getMonth()+1) + '/' + _date.getFullYear();
-                    var _on_date = response[i].on_date;
+                    var _on_date = response[index].on_date;
                     _on_date     = new Date(_on_date * 1000);
                     _on_date     = _on_date.getDate() + '/' + (_on_date.getMonth()+1) + '/' + _on_date.getFullYear();
                     if (_date === _on_date) {
@@ -97,19 +97,19 @@ function load_display_data(date, user_id, user_type, date_format) {
                     }
                 }
 
-                $("tbody tr[task_id=" + task_id + "] .name").text(response[i].name);
-                $("tbody tr[task_id=" + task_id + "] .class").text(response[i].class);
-                $("tbody tr[task_id=" + task_id + "] .stop").attr('task_id', response[i].task_id);
+                $("tbody tr[task_id=" + task_id + "] .name").text(response[index].name);
+                $("tbody tr[task_id=" + task_id + "] .class").text(response[index].class);
+                $("tbody tr[task_id=" + task_id + "] .stop").attr('task_id', response[index].task_id);
             }
         }
 
         else if (user_type === 'student') {
-            for (var i = 0; i < length; i++) {
+            for (var index = 0; index < length; index++) {
                 let element = $(".editable").clone(true).css('display', 'table-row').removeClass('editable');
-                element.attr('task_id', response[i].task_id);
+                element.attr('task_id', response[index].task_id);
                 element.appendTo('.timetable');
-                var task_id = response[i].task_id;
-                var seconds = response[i].total_time;
+                var task_id = response[index].task_id;
+                var seconds = response[index].total_time;
                 if (seconds > 0) {
                     var hours    = Math.floor(seconds / 3600);
                     seconds      = seconds - (hours * 3600);
@@ -118,7 +118,7 @@ function load_display_data(date, user_id, user_type, date_format) {
                     var time     = hours + ':' + minutes + ':' + seconds;
                     var _date    = new Date(date * 1000);
                     _date        = _date.getDate() + '/' + (_date.getMonth()+1) + '/' + _date.getFullYear();
-                    var _on_date = response[i].on_date;
+                    var _on_date = response[index].on_date;
                     _on_date     = new Date(_on_date * 1000);
                     _on_date     = _on_date.getDate() + '/' + (_on_date.getMonth()+1) + '/' + _on_date.getFullYear();
                     if (_date == _on_date) {
@@ -126,9 +126,9 @@ function load_display_data(date, user_id, user_type, date_format) {
                     }
                 }
 
-                $("tbody tr[task_id=" + task_id + "] .name").text(response[i].name);
-                $("tbody tr[task_id=" + task_id + "] .teacher").text(response[i].firstname);
-                $("tbody tr[task_id=" + task_id + "] .stop").attr('task_id', response[i].task_id);
+                $("tbody tr[task_id=" + task_id + "] .name").text(response[index].name);
+                $("tbody tr[task_id=" + task_id + "] .teacher").text(response[index].firstname);
+                $("tbody tr[task_id=" + task_id + "] .stop").attr('task_id', response[index].task_id);
             }
         }
     });

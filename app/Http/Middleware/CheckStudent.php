@@ -24,6 +24,7 @@ class CheckStudent
                 return redirect()->back();
             }
         }
+        
         return $next($request);
     }
 }

@@ -327,8 +327,8 @@ function load_display_data(date, user_id, date_form, user_type, rate, tax) {
     $('.timetable').html("");
     var len = response['original_dates'].length;
 
-    for (var i = 0; i < len; i++) {
-      var date = new Date(response['original_dates'][i] * 1000);
+    for (var index = 0; index < len; index++) {
+      var date = new Date(response['original_dates'][index] * 1000);
       var year = date.getFullYear();
       var month = date.getMonth() + 1;
       var day = date.getDate();
@@ -370,33 +370,33 @@ function load_display_data(date, user_id, date_form, user_type, rate, tax) {
           date = year + '-' + month + '-' + day;
       }
 
-      $('table thead #' + i).text(date);
+      $('table thead #' + index).text(date);
     }
 
     var tasks = response[0];
     var length = tasks.length;
     var sum = 0;
 
-    for (var i = 0; i < length; i++) {
+    for (var index = 0; index < length; index++) {
       var element = $(".editable").clone(true).css('display', 'table-row').removeClass('editable');
-      element.attr('task_id', tasks[i][0].task_id);
+      element.attr('task_id', tasks[index][0].task_id);
       element.appendTo('.timetable');
-      var task_id = tasks[i][0].task_id;
+      var task_id = tasks[index][0].task_id;
       var len = response['dates'].length;
 
-      for (var k = 0; k < len; k++) {
-        if (response['dates'][k] != 0) {
-          $("tbody tr[task_id=" + task_id + "] td[dow=" + k + "]").attr('date', response['dates'][k]);
+      for (var index2 = 0; index2 < len; index2++) {
+        if (response['dates'][index2] != 0) {
+          $("tbody tr[task_id=" + task_id + "] td[dow=" + index2 + "]").attr('date', response['dates'][index2]);
         }
       }
 
-      var task = tasks[i][0].name + ' / ' + tasks[i][0]["class"];
+      var task = tasks[index][0].name + ' / ' + tasks[index][0]["class"];
       $("tbody tr[task_id=" + task_id + "] .task").text(task);
       var len = response[task_id].length;
 
-      for (var j = 0; j < len; j++) {
-        if (response[task_id][j].length != 0) {
-          var seconds = response[task_id][j][0].total_time;
+      for (var index3 = 0; index3 < len; index3++) {
+        if (response[task_id][index3].length != 0) {
+          var seconds = response[task_id][index3][0].total_time;
           sum = sum + seconds;
 
           if (seconds != 0) {
@@ -409,8 +409,8 @@ function load_display_data(date, user_id, date_form, user_type, rate, tax) {
             var time = '00:00:00';
           }
 
-          var task_id = response[task_id][j][0].task_id;
-          $("tbody tr[task_id=" + task_id + "] td[date=" + response[task_id][j][0].on_date + "]").text(time);
+          var task_id = response[task_id][index3][0].task_id;
+          $("tbody tr[task_id=" + task_id + "] td[date=" + response[task_id][index3][0].on_date + "]").text(time);
         }
       }
     }

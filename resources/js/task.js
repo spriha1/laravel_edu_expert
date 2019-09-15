@@ -26,11 +26,11 @@ $(document).ready(function() {
         $.post('/fetch_teacher_class', {teacher_id: teacher_id}, function(result) {
             var response = JSON.parse(result);
             var length = response.length;
-            for(var i = 0; i < length; i++)
+            for(var index = 0; index < length; index++)
             {
                 var element = $('.clone_').clone(true).removeClass('clone_');
-                element.attr('value', response[i].class);
-                element.text(response[i].class);
+                element.attr('value', response[index].class);
+                element.text(response[index].class);
                 element.appendTo('.class');
             }
 
@@ -52,11 +52,11 @@ $(document).ready(function() {
         function(result) {
             var response = JSON.parse(result);
             var length = response.length;
-            for(var i = 0; i < length; i++)
+            for(var index = 0; index < length; index++)
             {
                 var element = $('.clone').clone(true).removeClass('clone');
-                element.attr('value', response[i].id);
-                element.text(response[i].name);
+                element.attr('value', response[index].id);
+                element.text(response[index].name);
                 element.appendTo('.subject');
             }
         });

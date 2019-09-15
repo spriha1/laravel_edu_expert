@@ -123,24 +123,24 @@ $(document).ready(function () {
       $('#view_timesheet').html("");
 
       if (user_type == 'teacher') {
-        for (var i = 0; i < length; i++) {
+        for (var index = 0; index < length; index++) {
           var element = $('.timesheet_body').clone(true).removeClass('timesheet_body');
-          element.find('.number').text(i + 1);
-          element.find('.subject').text(response[i].name);
-          element.find('.class').text(response[i]["class"]);
+          element.find('.number').text(index + 1);
+          element.find('.subject').text(response[index].name);
+          element.find('.class').text(response[index]["class"]);
           var time = new Date(null);
-          time.setSeconds(response[i].total_time);
+          time.setSeconds(response[index].total_time);
           var total_time = time.toISOString().substr(11, 8);
           element.find('.total_time').text(total_time);
           element.appendTo('#view_timesheet');
         }
       } else if (user_type == 'student') {
-        for (var i = 0; i < length; i++) {
+        for (var index = 0; index < length; index++) {
           var element = $('.timesheet_body').clone(true).removeClass('timesheet_body');
-          element.find('.number').text(i + 1);
-          element.find('.subject').text(response[i].name);
+          element.find('.number').text(index + 1);
+          element.find('.subject').text(response[index].name);
           var time = new Date(null);
-          time.setSeconds(response[i].total_time);
+          time.setSeconds(response[index].total_time);
           var total_time = time.toISOString().substr(11, 8);
           element.find('.total_time').text(total_time);
           element.appendTo('#view_timesheet');

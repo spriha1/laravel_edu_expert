@@ -17,7 +17,9 @@ $(document).ready(function() {
         var displayError = document.getElementById('card-errors');
         if (event.error) {
             displayError.textContent = event.error.message;
-        } else {
+        } 
+
+        else {
             displayError.textContent = '';
         }
     });

@@ -42,12 +42,12 @@ function load_display_data() {
     $.get('display_subjects', function(result) {
         var response = JSON.parse(result);
         var length   = response.length;
-        for (var i = 0; i < length; i++) {
+        for (var index = 0; index < length; index++) {
             let element = $(".editable").clone(true).css('display', 'block').removeClass('editable');
-            element.attr('subject_id', response[i].id);
+            element.attr('subject_id', response[index].id);
             element.appendTo('.todo');
-            subject_id = response[i].id;
-            $("ul li[subject_id=" + subject_id + "] .text").html(response[i].name);
+            subject_id = response[index].id;
+            $("ul li[subject_id=" + subject_id + "] .text").html(response[index].name);
         }
     });
 }

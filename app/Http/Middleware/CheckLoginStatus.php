@@ -25,6 +25,7 @@ class CheckLoginStatus
                 if ($value->user_type === 'Admin') {
                     return redirect('/admin_dashboard');
                 }
+                
                 else if ($value->user_type === 'Teacher') {
                     return redirect('/teacher_dashboard');
                 }

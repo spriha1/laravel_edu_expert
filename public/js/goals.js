@@ -183,19 +183,19 @@ function load_display_data(date, user_id) {
     var response = JSON.parse(result);
     var length = response.length;
 
-    for (var i = 0; i < length; i++) {
+    for (var index = 0; index < length; index++) {
       var element = $(".editable").clone(true).css('display', 'block').removeClass('editable');
-      element.attr('goal_id', response[i].id);
+      element.attr('goal_id', response[index].id);
       element.appendTo('.todo');
-      goal_id = response[i].id;
-      $("ul li[goal_id=" + goal_id + "] .text").html(response[i].goal);
-      $("ul li[goal_id=" + goal_id + "] .remove").attr('goal_id', response[i].id);
-      $("ul li[goal_id=" + goal_id + "] .time").attr('id', response[i].id);
+      goal_id = response[index].id;
+      $("ul li[goal_id=" + goal_id + "] .text").html(response[index].goal);
+      $("ul li[goal_id=" + goal_id + "] .remove").attr('goal_id', response[index].id);
+      $("ul li[goal_id=" + goal_id + "] .time").attr('id', response[index].id);
 
-      if (response[i].check_status == 1) {
+      if (response[index].check_status == 1) {
         $("ul li[goal_id=" + goal_id + "] .check_goal").attr('checked', true);
         var time = new Date(null);
-        time.setSeconds(response[i].total_time);
+        time.setSeconds(response[index].total_time);
         total_time = time.toISOString().substr(11, 8);
         $("ul li[goal_id=" + goal_id + "] .time").css('visibility', 'visible');
         $("ul li[goal_id=" + goal_id + "] .time .total_time").text(total_time);

@@ -24,6 +24,7 @@ class CheckTeacher
                 return redirect()->back();
             }
         }
+        
         return $next($request);
     }
 }
