@@ -67,7 +67,6 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('CheckTeacher')->group(function() {
-        Route::get('/teacher_dashboard', 'ProjectController@render_teacher_dashboard');
         Route::view('/daily_teacher_timetable', 'daily_teacher_timetable');
         Route::view('/weekly_teacher_timetable', 'weekly_teacher_timetable');
     });
@@ -90,7 +89,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/add_completion_time', 'TimesheetController@add_completion_time');
     Route::post('/update_completion_time', 'TimesheetController@update_completion_time');
     Route::post('/post_timesheets', 'TimesheetController@post_timesheets');
-    Route::get('/timesheets', 'TimesheetController@timesheets');
+    // Route::get('/timesheets', 'TimesheetController@timesheets');
     Route::post('/add_goals', 'AjaxController@add_goals');
     Route::post('/update_goals', 'AjaxController@update_goals');
     Route::post('/display_goals', 'AjaxController@display_goals');
@@ -99,6 +98,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/fetch_request_status', 'AjaxController@fetch_request_status');
     Route::post('/accept_request_status', 'AjaxController@accept_request_status');
     Route::post('/reject_request_status', 'AjaxController@reject_request_status');
+
+        Route::get('/teacher_dashboard', 'ProjectController@render_teacher_dashboard');
+
 });
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/connect', 'StripePaymentController@connect');
+Route::get('/success', 'StripePaymentController@success');

@@ -16,8 +16,7 @@ class CreateStripeDetailsTable extends Migration
         Schema::create('stripe_details', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
-            $table->string('public_key');
-            $table->string('secret_key');
+            $table->string('stripe_account_id');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
         });

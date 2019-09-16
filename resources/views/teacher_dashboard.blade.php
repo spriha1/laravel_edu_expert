@@ -6,6 +6,7 @@
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
+        <a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_FofqsPRhieqcEAWVQxdPC3LNbj5KMvaZ&scope=read_write&redirect_uri=https://eduexpert.local.com/teacher_dashboard/" class="btn btn-info pull-right">Connect with Stripe</a>
         <h1>
         Dashboard
         </h1>

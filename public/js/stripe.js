@@ -94,7 +94,7 @@
 /***/ (function(module, exports) {
 
 $(document).ready(function () {
-  var stripe = Stripe('pk_test_1dYa4GnWrcAgZaPnJncYPLYt00jjXSjUNy');
+  var stripe = Stripe('pk_test_tNVhqql2Q28RDVrtIFvDTwH700lGmUNvCR');
   var elements = stripe.elements(); // Custom styling can be passed to options when creating an Element.
 
   var style = {

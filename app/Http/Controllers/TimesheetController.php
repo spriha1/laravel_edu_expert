@@ -194,7 +194,7 @@ class TimesheetController extends Controller
             $ts          = $date;
             // calculate the number of days since Monday
             $dow         = date('w', $ts);
-            $offset = $dow - 1;
+            $offset      = $dow - 1;
             if ($offset < 0) {
                 $offset = 6;
             }
@@ -207,12 +207,12 @@ class TimesheetController extends Controller
                 array_push($week_dates, $ts);
             }
 
-            $results = array();
-            $res     = array();
-            $tasks   = array();
-            $arr     = array();
-            $week    = $week_dates;
-            $counter = 0;
+            $results  = array();
+            $res      = array();
+            $tasks    = array();
+            $arr      = array();
+            $week     = $week_dates;
+            $counter  = 0;
             $holidays = $this->holiday->select()->get();
             $length   = count($week_dates);
             for ($index = 0; $index < $length; $index++) {
@@ -233,11 +233,13 @@ class TimesheetController extends Controller
             if ($request->input('user_type') === 'teacher') {
                 foreach ($week_dates as $date) {
                     try {
-                        $result = $this->teacher_task->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
+                        $result = $this->teacher_task
+                        ->join('tasks', 'tasks.id', '=', 'teacher_tasks.task_id')
                         ->join('subjects', 'tasks.subject_id', '=', 'subjects.id')
                         ->where('teacher_id', $request->input('user_id'))
                         ->whereRaw('DATE(FROM_UNIXTIME(start_date)) <= DATE(FROM_UNIXTIME('.$date.')) && DATE(FROM_UNIXTIME(end_date)) >= DATE(FROM_UNIXTIME('.$date.'))')
-                        ->select('task_id', 'class', 'name')->get();
+                        ->select('task_id', 'class', 'name')
+                        ->get();
                     }
 
                     catch (Exception $e) {
@@ -267,6 +269,7 @@ class TimesheetController extends Controller
 
                     array_push($arr, $result3);
                 }
+                
                 array_push($results, $arr);
                 foreach ($tasks as $task) {
                     $res = [];
