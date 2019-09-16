@@ -116,6 +116,7 @@ $(document).ready(function () {
     var year = parseInt(get_year(date, date_format));
     var d = format_date(date, date_format);
     var week = getNumberOfWeek(d);
+    $('#pay_to').val(user_id);
     $.get('/fetch_request_status', {
       user_id: user_id,
       week: week,

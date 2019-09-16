@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
-use App\{User, UserType, Subject, Clas, Task, TeacherTask, StudentTask, TeacherRate, SharedTimesheet, Tax, Currency};
+use App\{User, UserType, Subject, Clas, Task, TeacherTask, StudentTask, TeacherRate, SharedTimesheet, Tax, Currency, StripeDetail};
 use Illuminate\Support\Facades\Mail;
 use App\Mail\UpdateMail;
 use App\Mail\ForgotPassword;
@@ -17,7 +17,7 @@ use Exception;
 
 class ProjectController extends Controller
 {
-    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate, $tax, $currency;
+    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate, $tax, $currency, $stripe_detail;
 
     public function __construct()
     {
@@ -32,6 +32,7 @@ class ProjectController extends Controller
         $this->teacher_rate     = new TeacherRate;
         $this->tax              = new Tax;
         $this->currency         = new Currency;
+        $this->stripe_detail    = new StripeDetail;
     }
 
     /**
@@ -494,9 +495,29 @@ class ProjectController extends Controller
     * Desc : This method fetches the information required on dashboard and returns the teacher dashboard
     */
 
-    public function render_teacher_dashboard()
+    public function render_teacher_dashboard(Request $request)
     {
-        return view('teacher_dashboard');
+        $check_query_string = 0;
+        $check              = 0;
+        if ($request->input('code')) {
+            $check_query_string = 1;
+            $this->stripe_detail->insert([
+                'user_id' => Auth::id(),
+                'code'    => $request->input('code')
+            ]);
+        }
+
+        else {
+            $result = $this->stripe_detail->where('user_id', Auth::id())->first();
+            if ($result) {
+                $check = 1;
+            }
+        }
+
+        return view('teacher_dashboard', [
+            'check_query_string' => $check_query_string, 
+            'check'              => $check
+        ]);
     }
 
     /**

@@ -131,6 +131,7 @@
                                     <form method="POST" action="/stripe_payment">
                                         @csrf
                                         <input type="hidden" name="amount" value="">
+                                        <input type="hidden" name="pay_to" id="pay_to" value="">
                                         <input type="hidden" name="currency" value={{ $currency->code }}>
                                         <button type="submit" class="btn btn-success" id="pay">Pay</button>
                                     </form>

@@ -18,6 +18,7 @@
                     <!-- A Stripe Element will be inserted here. -->
                     </div>
                     <input type="hidden" name="amount" id="amount" value={{ $amount }}>
+                    <input type="hidden" name="pay_to" id="pay_to" value={{ $pay_to }}>
                     <input type="hidden" name="currency" id="currency" value={{ $currency }}>
                     <!-- Used to display Element errors. -->
                     <div id="card-errors" role="alert"></div>
