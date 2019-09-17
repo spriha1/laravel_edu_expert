@@ -6,13 +6,10 @@
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        @if ($check === 1)
+        @if ($check === 1 || $check_query_string === 1)
             <button disabled class="btn btn-info pull-right">Connected with Stripe</button>
         @elseif ($check_query_string === 0)
             <a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_FosjP95EizSgRhMQXj5cZsX3oB8LWomi&scope=read_write&redirect_uri=https://eduexpert.local.com/teacher_dashboard/" class="btn btn-info pull-right">Connect with Stripe</a>
-        @elseif ($check_query_string === 1)
-            <button disabled class="btn btn-info pull-right">Connected with Stripe</button>
-            <button type="submit" class="btn btn-info pull-right" id="activate">Activate</button>
         @endif
         <h1>
         Dashboard

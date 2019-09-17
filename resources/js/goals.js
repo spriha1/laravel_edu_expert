@@ -21,11 +21,6 @@ $(document).ready(function() {
         $(".add_item").css("display", "none");
     });
 
-    $('#activate').click(function() {
-        event.preventDefault();
-        $.get('/connect');
-    });
-
     $(".add").click(function(event) {
         event.preventDefault();
         $("#goal").css("display", "none");
