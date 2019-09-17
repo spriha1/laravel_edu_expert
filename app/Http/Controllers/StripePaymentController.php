@@ -22,8 +22,8 @@ class StripePaymentController extends Controller
     * @method stripe() 
     * 
     * @param Request object
-    * @return string [describing the success or failure of the connection of the two stripe accounts] 
-    * Desc : This method fetches the information required on dashboard and returns the admin dashboard
+    * @return string [html view of stripe payment where the user needs to enter card details] 
+    * Desc : This method returns the stripe payment view
     */
 
     public function stripe(Request $request)
@@ -34,6 +34,15 @@ class StripePaymentController extends Controller
             'currency' => $request->input('currency')
         ]);
     }
+
+    /**
+    * 
+    * @method post_stripe() 
+    * 
+    * @param Request object
+    * @return string [describing the success or failure of the transfer of money between the two stripe accounts] 
+    * Desc : This method transfers amount from admin's stripe account to teacher's stripe account
+    */
 
     public function post_stripe(Request $request)
     {
