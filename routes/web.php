@@ -98,6 +98,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/fetch_request_status', 'AjaxController@fetch_request_status');
     Route::post('/accept_request_status', 'AjaxController@accept_request_status');
     Route::post('/reject_request_status', 'AjaxController@reject_request_status');
+    Route::get('/stripe_account_details', 'StripePaymentController@stripe_account_details');
 });
 
 Route::get('/home', 'HomeController@index')->name('home');

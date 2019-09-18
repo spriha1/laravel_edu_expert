@@ -38,3 +38,8 @@
         <i class="fa fa-th"></i> <span>System Management</span>
     </a>
 </li>
+<li>
+    <a href="/stripe_account_details">
+        <i class="fa fa-th"></i> <span>Stripe Account Details</span>
+    </a>
+</li>

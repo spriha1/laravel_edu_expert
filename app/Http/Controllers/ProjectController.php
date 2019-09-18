@@ -507,10 +507,10 @@ class ProjectController extends Controller
             ]);
             // Account Id of account to be connected
             $code = $request->input('code');
-            $stripe_sk = 'sk_test_e5fmzx4vnU7xDvy5fwtX1FeC00eyLRkRmP';
+            $stripe_sk = env('STRIPE_SECRET_KEY');
             $req_url = 'https://connect.stripe.com/oauth/token';
             $fields = array(
-                'client_secret' => urlencode('sk_test_e5fmzx4vnU7xDvy5fwtX1FeC00eyLRkRmP'),
+                'client_secret' => urlencode($stripe_sk),
                 'code' => urlencode($code),
                 'grant_type' => urlencode('authorization_code')
             );

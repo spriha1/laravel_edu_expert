@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Exception;
 use App\StripeDetail;
+use Stripe\{Stripe, Balance, Transfer};
 use Illuminate\Support\Facades\Auth;
 
 class StripePaymentController extends Controller
@@ -48,7 +49,7 @@ class StripePaymentController extends Controller
     {
         // Set your secret key: remember to change this to your live secret key in production
         // See your keys here: https://dashboard.stripe.com/account/apikeys
-        \Stripe\Stripe::setApiKey('sk_test_e5fmzx4vnU7xDvy5fwtX1FeC00eyLRkRmP');
+        Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
         // Token is created using Checkout or Elements!
         // Get the payment token ID submitted by the form:
         $token    = $request->input('stripeToken');
@@ -60,7 +61,7 @@ class StripePaymentController extends Controller
                     ->select('stripe_account_id')
                     ->first();
         try {
-            $result = \Stripe\Transfer::create([
+            $result = Transfer::create([
                 "amount"      => $amount,
                 "currency"    => $currency,
                 "destination" => $result['stripe_account_id']
@@ -73,5 +74,23 @@ class StripePaymentController extends Controller
         }
 
         return("succeeded");
+    }
+
+    /**
+    * 
+    * @method stripe_account_details() 
+    * 
+    * @param void
+    * @return string [html view of stripe account balance details] 
+    * Desc : This method retrieves details of admin's stripe account balance
+    */
+
+    public function stripe_account_details()
+    {
+        Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
+        $result = Balance::retrieve();
+        return view('stripe_details', [
+            'amount' => $result->available[0]->amount
+        ]);
     }
 }
