@@ -6,6 +6,7 @@ $(document).ready(function() {
     });
 
     var date = new Date();
+
     $('.datepicker').datepicker('setDate', date);
     date           = $('#date').val();
     date           = $(".datepicker").data('datepicker').getFormattedDate('yyyy-mm-dd');
@@ -14,6 +15,7 @@ $(document).ready(function() {
     var user_id    = $('#user_id').val();
     var total_time = 0;
     load_display_data(date, user_id);
+
     $(".add_item").click(function(event) {
         event.preventDefault();
         $("#goal").css("display", "block");
@@ -26,6 +28,7 @@ $(document).ready(function() {
         $("#goal").css("display", "none");
         $(".add").css("display", "none");
         $(".add_item").css("display", "block");
+
         date        = $('#date').val();
         date_format = $('#date_format').val();
         date        = $(".datepicker").data('datepicker').getFormattedDate('yyyy-mm-dd');
@@ -33,6 +36,7 @@ $(document).ready(function() {
         on_date     = date.getTime()/1000;
         var goal    = $("textarea").val();
         var user_id = $(".add").attr("user_id");
+
         $.post('add_goals', {
             goal: goal, 
             user_id: user_id, 
@@ -90,14 +94,17 @@ function load_display_data(date, user_id) {
     function(result) {
         var response = JSON.parse(result);
         var length   = response.length;
+
         for (var index = 0; index < length; index++) {
             let element = $(".editable").clone(true).css('display', 'block').removeClass('editable');
             element.attr('goal_id', response[index].id);
             element.appendTo('.todo');
             goal_id = response[index].id;
+
             $("ul li[goal_id=" + goal_id + "] .text").html(response[index].goal);
             $("ul li[goal_id=" + goal_id + "] .remove").attr('goal_id', response[index].id);
             $("ul li[goal_id=" + goal_id + "] .time").attr('id', response[index].id);
+
             if(response[index].check_status == 1) {
                 $("ul li[goal_id=" + goal_id + "] .check_goal").attr('checked', true);
                 var time = new Date(null);

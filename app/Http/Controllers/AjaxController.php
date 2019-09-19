@@ -381,7 +381,7 @@ class AjaxController extends Controller
             $length = count($request->input('day'));
             for ($index = 0; $index < $length; $index++) {
                 try {
-                    $this->holiday->insert(['dow' => $request->input('day')[$index]]);
+                    $test = $this->holiday->insert(['dow' => $request->input('day')[$index]]);
                 }
 
                 catch (Exception $e) {

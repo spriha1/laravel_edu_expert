@@ -16,9 +16,9 @@ class FilesController extends Controller
     {
     	if ($request->hasFile('cv')) {
     		$path = $request->file('cv')->store(
-			    '/', 's3'
+			    '/'
 			);
+           return back()->with('success', 'Image uploaded successfully');
        }
-       return back()->with('success', 'Image uploaded successfully');
     }
 }
