@@ -21,7 +21,9 @@
         <link href='https://api.mapbox.com/mapbox-gl-js/v1.2.0/mapbox-gl.css' rel='stylesheet' />
         <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.2.0/mapbox-gl-geocoder.css' type='text/css' />
     </head>
-    @yield('content')
-    @yield('footer')
-</body>
+
+        @yield('content')
+        @yield('footer')
+        @yield('js-css')
+    </body>
 </html>

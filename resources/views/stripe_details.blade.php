@@ -26,6 +26,4 @@
 @endsection
 @section('footer')
     @include('layouts.footer')
-    <!-- <script id="footer" footer="profile_footer" src="{{ mix('/js/footer.js') }}"></script> -->
-    <!-- <script src="{{ mix('/js/admin_timetable.js') }}"></script> -->
 @endsection

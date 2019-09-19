@@ -63,6 +63,12 @@ class ProjectController extends Controller
         try {
             $user_types = $this->user_type->where('user_type', '!=', "Admin")->get();
             $subjects   = $this->subject->all();
+
+            /*
+            $user_types = $this->user_type->where('user_type', '!=', "Admin")->pluck('user_type', 'user_type')->toArray();
+                    {{ Form::select('user_type', [0 => 'Select User Type'] + $user_types, '', ['class' => 'form-control', 'id' => 'user_type']) }}
+
+            */
         }
 
         catch (Exception $e) {
@@ -106,6 +112,7 @@ class ProjectController extends Controller
                 'user_reg_status' => 1, 
                 'block_status'    => 0
             ])) {
+
             try {
                 $user_type = $this->user_type->where('id', Auth::user()->user_type_id)->get();
             }  
@@ -160,17 +167,20 @@ class ProjectController extends Controller
             ])
             ->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')
             ->get();
+    
+            return view('pending_requests', [
+                'user_types' => $user_types,
+                'results'    => $results,
+                'search'     => ""
+            ]);
         }
 
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
 
-        return view('pending_requests', [
-            'user_types' => $user_types,
-            'results'    => $results,
-            'search'     => ""
-        ]);
+        session()->flash('error', 'Error in getting pending requests.');
+        return redirect('dashboard');
     }
 
     /**
@@ -192,6 +202,7 @@ class ProjectController extends Controller
 
         catch (Exception $e) {
             Log::error($e->getMessage());
+
         }
 
         $counter = 0;
@@ -296,6 +307,7 @@ class ProjectController extends Controller
     public function block_users($id)
     {
         try {
+            // StudentService::blockusers([$id]);
             $this->user->where('id', $id)->update(['block_status' => 1]);
         }
 
@@ -377,6 +389,7 @@ class ProjectController extends Controller
     {
         try {
             $user_types = $this->user_type->where('user_type', '!=', 'Admin')
+                        ->where('user_type', $request->input('user_type'))
                         ->select('user_type')
                         ->get();
         }
@@ -385,13 +398,13 @@ class ProjectController extends Controller
             Log::error($e->getMessage());
         }
 
-        $counter = 0;
+        $counter = $user_types->count();
 
-        foreach ($user_types as $key => $value) {
-            if ($value['user_type'] === $request->input('user_type')) {
-                $counter++;
-            }
-        }
+        // foreach ($user_types as $key => $value) {
+        //     if ($value['user_type'] === $request->input('user_type')) {
+        //         $counter++;
+        //     }
+        // }
 
         if ($counter > 0) {
             try {
@@ -445,7 +458,7 @@ class ProjectController extends Controller
     public function render_admin_dashboard()
     {
         try {
-            $regd_users = $this->user->where('user_reg_status', 1)
+            $regd_users = $this->user->where('user_reg_status', 1)//->count()
                         ->selectRaw('count(*) as total')
                         ->first();
         }
@@ -506,13 +519,13 @@ class ProjectController extends Controller
                 'code'    => $request->input('code')
             ]);
             // Account Id of account to be connected
-            $code = $request->input('code');
+            $code      = $request->input('code');
             $stripe_sk = env('STRIPE_SECRET_KEY');
-            $req_url = 'https://connect.stripe.com/oauth/token';
-            $fields = array(
+            $req_url   = 'https://connect.stripe.com/oauth/token';
+            $fields    = array(
                 'client_secret' => urlencode($stripe_sk),
-                'code' => urlencode($code),
-                'grant_type' => urlencode('authorization_code')
+                'code'          => urlencode($code),
+                'grant_type'    => urlencode('authorization_code')
             );
             $fields_string = '';
             //url-ify the data for the POST
@@ -693,7 +706,7 @@ class ProjectController extends Controller
 
     public function update_mail($hash, $email)
     {
-        $hash = base64_decode($hash);
+        $hash  = base64_decode($hash);
         $email = base64_decode($email);
         try {
             $result = $this->user->where([

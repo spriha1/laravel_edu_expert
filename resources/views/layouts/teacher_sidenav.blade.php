@@ -23,3 +23,8 @@
         <i class="fa fa-th"></i> <span>Student Timesheet</span>
     </a>
 </li>
+<li>
+    <a href="/upload">
+        <i class="fa fa-th"></i> <span>Upload CV</span>
+    </a>
+</li>

@@ -1,5 +1,4 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,6 +26,7 @@ Route::get('/update_mail/{hash}/{email}', 'ProjectController@update_mail');
 Route::get('/reset_password_form/{token}/{expiry_time}', 'ProjectController@reset_password_form');
 Route::post('/reset_password', 'ProjectController@reset_password');
 Route::post('/forgot_password', 'ProjectController@send_password_mail');
+
 Route::middleware('auth')->group(function () {
     Route::middleware('CheckAdmin')->group(function() {
         Route::get('/admin_dashboard', 'ProjectController@render_admin_dashboard');
@@ -65,6 +65,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/post_stripe_payment', 'StripePaymentController@post_stripe');
         Route::post('/post_timesheets', 'TimesheetController@post_timesheets');
         Route::get('/timesheets', 'TimesheetController@timesheets');
+        Route::get('/stripe_account_details', 'StripePaymentController@stripe_account_details');
     });
 
     Route::middleware('CheckTeacher')->group(function() {
@@ -98,8 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/fetch_request_status', 'AjaxController@fetch_request_status');
     Route::post('/accept_request_status', 'AjaxController@accept_request_status');
     Route::post('/reject_request_status', 'AjaxController@reject_request_status');
-    Route::get('/stripe_account_details', 'StripePaymentController@stripe_account_details');
+    Route::get('/upload', 'FilesController@upload');
+    Route::post('/post_upload', 'FilesController@post_upload');
 });
-
-Route::get('/home', 'HomeController@index')->name('home');
 
