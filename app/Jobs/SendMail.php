@@ -7,19 +7,24 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ThankYouMail;
+use App\User;
 
 class SendMail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    protected $user;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(User $user)
     {
-        //
+        $this->user = $user;
     }
 
     /**
@@ -29,6 +34,13 @@ class SendMail implements ShouldQueue
      */
     public function handle()
     {
-        //
+        try {
+            Log::error('This is a test');
+            Mail::to($this->user->email)->send(new ThankYouMail($this->user->firstname));
+        }
+
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
     }
 }

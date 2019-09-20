@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/post_timesheets', 'TimesheetController@post_timesheets');
         Route::get('/timesheets', 'TimesheetController@timesheets');
         Route::get('/stripe_account_details', 'StripePaymentController@stripe_account_details');
+        Route::post('/send_mails', 'FilesController@send_mails');
     });
 
     Route::middleware('CheckTeacher')->group(function() {

@@ -6,7 +6,7 @@
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-    <input type="hidden" id="user_id" name="user_id" value="{{ Auth::user()->id }}">
+        <input type="hidden" id="user_id" name="user_id" value="{{ Auth::user()->id }}">
     </section>
     <!-- Main content -->
     <section class="content">
@@ -53,6 +53,7 @@
                 </div>
             </div>
         </div>
+        <button class="btn btn-info pull-right" id="mail">Send Thank You Mails</button>
         <!-- /.row -->
         <!-- Main row -->
         <!-- /.row (main row) -->
@@ -65,4 +66,18 @@
 @section('footer')
     @include('layouts.footer')
     <script id="footer" footer="" src="{{ mix('/js/footer.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $('#mail').click(function() {
+                $.post('/send_mails', function() {
+
+                });
+            });
+        });
+    </script>   
 @endsection

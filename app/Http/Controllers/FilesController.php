@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\User;
+use App\Jobs\SendMail;
 
 class FilesController extends Controller
 {
@@ -20,5 +22,15 @@ class FilesController extends Controller
 			);
            return back()->with('success', 'Image uploaded successfully');
        }
+    }
+
+    public function send_mails()
+    {
+        $users = User::where('firstname', 'spriha')
+        ->orWhere('firstname', 'srivastava')
+        ->get();
+        foreach ($users as $user) {
+            SendMail::dispatch($user);
+        }
     }
 }
