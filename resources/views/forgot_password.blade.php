@@ -8,13 +8,13 @@
             </div>
             <div class="login-box-body">
                 <p class="login-box-msg">Reset Password</p>
-                <form action="/forgot_password" method="POST" id="login" name="login">
-                    @csrf
+                {{ Form::open(['url' => '/forgot_password', 'id' => 'login', 'name' => 'login']) }}
+
                     <div id="alert" class='alert alert-danger' style="display: none;">
                     </div>
                     <p style="color : #ff0000"></p>
                     <div class="form-group has-feedback">
-                        <input type="text" class="form-control" placeholder="Username" id="username" name="username">
+                        {{ Form::text('username', null, ['class' => 'form-control', 'placeholder' => 'Username', 'id' => 'username']) }}
                         <span class="glyphicon glyphicon-user form-control-feedback"></span>
                     </div>
                     <div class="row">
@@ -26,10 +26,11 @@
                             </div>
                         </div>
                         <div class="col-xs-4">
-                            <button type="submit" class="btn btn-primary btn-block btn-flat">Reset</button>
+                            {{ Form::submit('Reset', ['class' =>'btn btn-primary btn-block btn-flat']) }}
                         </div>
                     </div>
-                </form>
+
+                {{ Form::close() }}
             </div>
         </div>
 @endsection

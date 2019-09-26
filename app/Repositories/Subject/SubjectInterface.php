@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Subject;
 
-interface Repository
+interface SubjectInterface
 {
 	public function add_subject($request);
 

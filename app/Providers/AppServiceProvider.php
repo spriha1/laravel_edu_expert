@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Repositories\Subject\Repository as SubjectRepository;
-use App\Repositories\Subject\Eloquent as SubjectEloquent;
+use App\Repositories\Subject\SubjectInterface as SubjectInterface;
+use App\Repositories\Subject\Service as SubjectService;
+use App\Repositories\User\UserInterface as UserInterface;
+use App\Repositories\User\Service as UserService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->singleton(SubjectRepository::class,SubjectEloquent::class);
+        $this->app->singleton(SubjectInterface::class,SubjectService::class);
+        $this->app->singleton(UserInterface::class,UserService::class);
     }
 }

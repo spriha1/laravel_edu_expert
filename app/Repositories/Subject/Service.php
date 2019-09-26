@@ -6,7 +6,7 @@ use App\Subject;
 use Illuminate\Support\Facades\Log;
 use Exception;
 
-class Eloquent implements Repository
+class Service implements SubjectInterface
 {
 	protected $subject;
 

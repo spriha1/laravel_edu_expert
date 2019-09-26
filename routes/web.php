@@ -11,7 +11,7 @@
 */
 Route::middleware('CheckLoginStatus')->group(function() {
     Route::get('/', 'ProjectController@home');
-    Route::get('/register', 'ProjectController@register');
+    Route::get('/register', 'UserController@register');
     Route::get('/forgot_password', 'ProjectController@forgot_password');
 });
 
@@ -19,7 +19,7 @@ Route::get('/login/{service}', 'Auth\LoginController@redirectToProvider');
 Route::get('/login/{service}/callback', 'Auth\LoginController@handleProviderCallback');
 Route::get('/fetch_info', 'AjaxController@fetch_info');
 Route::post('/register', 'AjaxController@register');
-Route::post('/login', 'ProjectController@login');
+Route::post('/login', 'UserController@login');
 Route::get('/logout', 'ProjectController@logout');
 Route::get('/verify_mail/{code}', 'ProjectController@verify_mail');
 Route::get('/update_mail/{hash}/{email}', 'ProjectController@update_mail');
@@ -29,7 +29,7 @@ Route::post('/forgot_password', 'ProjectController@send_password_mail');
 
 Route::middleware('auth')->group(function () {
     Route::middleware('CheckAdmin')->group(function() {
-        Route::get('/admin_dashboard', 'ProjectController@render_admin_dashboard');
+        Route::get('/admin_dashboard', 'DashboardController@render_admin_dashboard');
         Route::view('/system_management', 'system_management');
         Route::view('/manage_subjects', 'manage_subjects');
         Route::post('/add_subject', 'SubjectsController@add_subject');
@@ -37,10 +37,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/display_subjects', 'SubjectsController@display_subjects');
         Route::view('/holiday', 'holiday');
         Route::post('/add_holiday', 'AjaxController@add_holiday');
-        Route::get('/pending_requests', 'ProjectController@pending_requests');
-        Route::post('/pending_requests', 'ProjectController@post_pending_requests');
-        Route::get('/regd_users', 'ProjectController@regd_users');
-        Route::post('/regd_users', 'ProjectController@post_regd_users');
+        Route::get('/pending_requests', 'UserController@pending_requests');
+        Route::post('/get_pending_requests', 'UserController@get_pending_requests');
+        Route::post('/pending_requests', 'UserController@post_pending_requests');
+        Route::get('/regd_users', 'UserController@regd_users');
+        Route::post('/get_regd_users', 'UserController@get_regd_users');
+        Route::post('/regd_users', 'UserController@post_regd_users');
         Route::get('/manage_class', 'ClassController@render_view');
         Route::get('/display_class', 'ClassController@display_class');
         Route::post('/fetch_teachers', 'ClassController@fetch_teachers');
@@ -54,10 +56,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/add_timetable', 'ProjectController@add_timetable');
         Route::post('/fetch_teacher_class', 'AjaxController@fetch_teacher_class');
         Route::post('/fetch_teacher_class_subjects', 'AjaxController@fetch_teacher_class_subjects');
-        Route::get('/add_users/{id}', 'ProjectController@add_users');
-        Route::get('/remove_users/{id}', 'ProjectController@remove_users');
-        Route::get('/block_users/{id}', 'ProjectController@block_users');
-        Route::get('/unblock_users/{id}', 'ProjectController@unblock_users');
+        Route::get('/add_users/{id}', 'UserController@add_users');
+        Route::get('/remove_users/{id}', 'UserController@remove_users');
+        Route::get('/block_users/{id}', 'UserController@block_users');
+        Route::get('/unblock_users/{id}', 'UserController@unblock_users');
         Route::post('/update_currency', 'CurrencyController@update_currency');
         Route::post('/convert_currency', 'CurrencyController@convert_currency');
         Route::get('/fetch_currency', 'CurrencyController@fetch_currency');
@@ -70,18 +72,18 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('CheckTeacher')->group(function() {
-        Route::get('/teacher_dashboard', 'ProjectController@render_teacher_dashboard');
+        Route::get('/teacher_dashboard', 'DashboardController@render_teacher_dashboard');
         Route::view('/daily_teacher_timetable', 'daily_teacher_timetable');
         Route::view('/weekly_teacher_timetable', 'weekly_teacher_timetable');
     });
 
     Route::middleware('CheckStudent')->group(function() {
-        Route::get('/student_dashboard', 'ProjectController@render_student_dashboard');
+        Route::get('/student_dashboard', 'DashboardController@render_student_dashboard');
         Route::view('/daily_student_timetable', 'daily_student_timetable');
         Route::view('/weekly_student_timetable', 'weekly_student_timetable');
     });
 
-    Route::get('/profile', 'ProjectController@profile');
+    Route::get('/profile', 'UserController@profile');
     Route::post('/update_profile', 'AjaxController@update_profile');
     Route::post('/fetch_subjects', 'ProjectController@fetch_subjects');
     Route::post('/add_shared_timesheets', 'TimesheetController@add_shared_timesheets');

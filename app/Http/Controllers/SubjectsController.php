@@ -6,13 +6,13 @@ use Illuminate\Http\Request;
 use App\Subject;
 Use Illuminate\Support\Facades\Log;
 use Exception;
-use App\Repositories\Subject\Repository as SubjectRepository;
+use App\Repositories\Subject\SubjectInterface as SubjectInterface;
 
 class SubjectsController extends Controller
 {
     protected $subject;
 
-    public function __construct(SubjectRepository $subject)
+    public function __construct(SubjectInterface $subject)
     {
         $this->subject = $subject;
     }

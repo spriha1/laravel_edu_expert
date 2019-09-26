@@ -14,24 +14,23 @@
     <div class="col-md-6">
         <!-- Horizontal Form -->
         <div class="box box-info">
-            <form class="form-horizontal" id="registration" name="registration" method="POST">
+            {{ Form::model(Auth::user(), ['class' => 'form-horizontal', 'id' => 'registration', 'name' => 'registration']) }}
                 <div id="alert" class='alert alert-danger' style="display: none;">
                 </div>
                 <div id="info" class='alert alert-success' style="display: none;">
                 </div>
                 <img src="/images/load.gif" id="spinner" style="display:none; width:20%; height:20%">
-                @csrf
                 <div class="box-body">
                     <div class="form-group">
                         <label for="fname" class="col-sm-3 control-label">First Name</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="fname" name="fname" readonly value="{{ Auth::user()->firstname }}">
+                            {{ Form::text('fname', Auth::user()->firstname, array('class' => 'form-control', 'id' => 'fname', 'readonly' => 'readonly')) }}
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="lname" class="col-sm-3 control-label">Last Name</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="lname" name="lname" readonly value="{{ Auth::user()->lastname }}">
+                            {{ Form::text('lname', Auth::user()->lastname, array('class' => 'form-control', 'id' => 'lname', 'readonly' => 'readonly')) }}
                         </div>
                     </div>
                     <div class="form-group">
@@ -44,13 +43,13 @@
                     <div class="form-group">
                         <label for="username" class="col-sm-3 control-label">Username</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" name="username" id="username" readonly value="{{ Auth::user()->username }}">
+                            {{ Form::text('username', Auth::user()->username, array('class' => 'form-control', 'id' => 'username', 'readonly' => 'readonly')) }}
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="email" class="col-sm-3 control-label">Email</label>
                         <div class="col-sm-9">
-                            <input type="email" class="form-control" name="email" id="email" readonly value="{{ Auth::user()->email }}">
+                            {{ Form::email('email', Auth::user()->email, array('class' => 'form-control', 'id' => 'email', 'readonly' => 'readonly')) }}
                         </div>
                     </div>
                     @if ($usertype === 'Teacher')
@@ -58,7 +57,7 @@
                     <div class="form-group">
                         <label for="rate" class="col-sm-3 control-label">Rate per hour</label>
                         <div class="col-sm-9">
-                            <input type="number" class="form-control" name="rate" id="rate" readonly value="{{ $rate->rate }}">
+                            {{ Form::number('rate', $rate->rate, array('class' => 'form-control', 'id' => 'rate', 'readonly' => 'readonly')) }}
                         </div>
                     </div>
                     @endforeach
@@ -67,11 +66,7 @@
                     <div class="form-group">
                         <label for="currency" class="col-sm-3 control-label">Currency</label>
                         <div class="col-sm-9">
-                            <select name="currency" id="currency" class="form-control">
-                                @foreach ($currencies as $currency)
-                                <option value="{{ $currency->id }}" {{ $currency->code === $currency_id ? 'selected="selected"' : '' }}>{{ $currency->name }}</option>
-                                @endforeach
-                            </select>
+                            {{ Form::select('currency', $currencies, $currency_id, array('id' => 'currency', 'class' => 'form-control')) }}
                         </div>
                     </div>
                     @endif
@@ -79,7 +74,7 @@
                     <div class="form-group">
                         <label for="tax" class="col-sm-3 control-label">GST</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" name="tax" id="tax" readonly value="{{ $tax }}">
+                            {{ Form::text('tax', $tax, array('class' => 'form-control', 'id' => 'tax', 'readonly' => 'readonly')) }}
                         </div>
                     </div>
                     @endif
@@ -104,7 +99,7 @@
                     <div class="form-group" id="pass" style="display: none">
                         <label for="password" class="col-sm-3 control-label">Password</label>
                         <div class="col-sm-9">
-                            <input type="password" class="form-control" id="password" name="password">
+                            {{ Form::password('password', array('class' => 'form-control', 'id' => 'password')) }}
                         </div>
                     </div>
                     <div class="form-group">
@@ -118,21 +113,19 @@
                     <div class="form-group">
                         <label for="address" class="col-sm-3 control-label">Address</label>
                         <div id="geocoder" class="col-sm-9">
-                            <!-- <textarea name="address" id="address" style="width: 100%" value="{{ Auth::user()->address }}"></textarea> -->
                         </div>
                     </div>
-                    <input type="hidden" name="lat" id="lat" value="{{ Auth::user()->latitude }}">
-                    <input type="hidden" name="long" id="long" value="{{ Auth::user()->longitude }}">
-                    <input type="hidden" name="address" id="address" value="{{ Auth::user()->address }}">
+                    {{ Form::hidden('lat', Auth::user()->latitude, array('id' => 'lat')) }}
+                    {{ Form::hidden('long', Auth::user()->longitude, array('id' => 'long')) }}
+                    {{ Form::hidden('address', Auth::user()->address, array('id' => 'address')) }}
                 </div>
                 <!-- /.box-body -->
                 <div class="box-footer">
-                    <button type="submit" id="change" class="btn btn-default">Change password</button>
-                    <button type="submit" id="edit" class="btn btn-info pull-right">Edit</button>
-                    <button type="submit" id="update" style="display:none;" class="btn btn-info pull-right">Update</button>
+                    {{ Form::submit('Change password', ['class' => 'btn btn-default', 'id' => 'change']) }}
+                    {{ Form::submit('Edit', ['class' => 'btn btn-info pull-right', 'id' => 'edit']) }}
+                    {{ Form::submit('Update', ['class' => 'btn btn-info pull-right', 'id' => 'update', 'style' => 'display:none;']) }}
                 </div>
-                <!-- /.box-footer -->
-            </form>
+            {{ Form::close() }}
         </div>
     </div>
     <!-- <div class="col-md-6">

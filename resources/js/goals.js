@@ -41,7 +41,7 @@ $(document).ready(function() {
             goal: goal, 
             user_id: user_id, 
             on_date: on_date
-        }, 
+        },
         function(result) {
             var response = JSON.parse(result);
             let element = $(".editable").clone(true).css('display', 'block').removeClass('editable');
@@ -49,6 +49,11 @@ $(document).ready(function() {
             element.find('.remove').attr('goal_id', response[0].id);;
             element.attr('goal_id', response[0].id);
             element.appendTo('.todo');
+        })
+        .fail(function(response) {
+            if (response.status == 422) {
+                console.log(response.status);
+            }
         });
 
         $("textarea").val("");

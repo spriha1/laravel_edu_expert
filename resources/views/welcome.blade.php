@@ -8,21 +8,23 @@
         </div>
         <div class="login-box-body">
             <p class="login-box-msg">Sign in to start</p>
-            <form action="login" method="POST" id="login" name="login">
-                @csrf
+
+            {{ Form::open(['url' => 'login', 'id' => 'login', 'name' => 'login']) }}
+
                 @if ($error = $errors->first('password'))
                     <div class="alert alert-danger">
                         {{ $error }}
                     </div>
                 @endif
+
                 <div id="alert" class='alert alert-danger' style="display: none;">
                 </div>
                 <div class="form-group has-feedback">
-                    <input type="text" class="form-control" placeholder="Username" id="username" name="username" value="{{ old('username') }}">
+                    {{ Form::text('username', old('username'), ['class' => 'form-control', 'placeholder' => 'Username', 'id' => 'username']) }}
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
                 </div>
                 <div class="form-group has-feedback">
-                    <input type="password" class="form-control" placeholder="Password" id="password" name="password">
+                    {{ Form::password('password', ['class' => 'form-control', 'placeholder' => 'Password', 'id' => 'password']) }}
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                 </div>
                 <div class="row">
@@ -34,10 +36,12 @@
                         </div>
                     </div>
                     <div class="col-xs-4">
-                        <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+                        {{ Form::submit('Sign in', ['class' =>'btn btn-primary btn-block btn-flat']) }}
                     </div>
                 </div>
-            </form>
+
+            {{ Form::close() }}
+            
             <a href="register" class="text-center">Register Here</a>
             <br>
             <button class="btn btn-light btn-block btn-flat">

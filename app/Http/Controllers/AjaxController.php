@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Support\Facades\Hash;
-
+use App\Http\Requests\AddGoal;
 class AjaxController extends Controller
 {
     protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate, $clas, $request_status, $status, $subject, $tax, $currency;
@@ -45,7 +45,7 @@ class AjaxController extends Controller
     * Desc : This method adds a goal for a user and returns the same
     */
 
-    public function add_goals(Request $request)
+    public function add_goals(AddGoal $request)
     {
         $goal_plan = new GoalPlan;
         $from_time = time();
