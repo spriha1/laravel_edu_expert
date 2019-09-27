@@ -45,21 +45,28 @@ class AjaxController extends Controller
     * Desc : This method adds a goal for a user and returns the same
     */
 
-    public function add_goals(AddGoal $request)
+    public function add_goals(Request $request)
     {
         $goal_plan = new GoalPlan;
         $from_time = time();
         try {
-            $id = $goal_plan->insertGetId([
-                'user_id'   => $request->input('user_id'),
-                'goal'      => $request->input('goal'),
-                'on_date'   => $request->input('on_date'),
-                'from_time' => $from_time
-            ]);
-            $goal_plan = $this->goal_plan->where([
-                ['user_id', $request->input('user_id')],
-                ['id', $id]
-            ])->get();
+            $goal_plan->user_id   = Auth::id();
+            $goal_plan->goal      = $request->input('goal');
+            $goal_plan->on_date   = $request->input('on_date');
+            $goal_plan->from_time = $from_time;
+            $goal_plan->save();
+            // dd($goal_plan);
+            // $id = $goal_plan->insert([
+            //     'user_id'   => Auth::id(),
+            //     'goal'      => $request->input('goal'),
+            //     'on_date'   => $request->input('on_date'),
+            //     'from_time' => $from_time
+            // ]);
+            // dd($id);
+            // $goal_plan = $this->goal_plan->where([
+            //     ['user_id', Auth::id()],
+            //     ['id', $id]
+            // ])->get();
             return(json_encode($goal_plan));
         }
 
@@ -195,14 +202,14 @@ class AjaxController extends Controller
         $usertype  = $validated['user_type'];
         $hash      = md5(uniqid());
         $msg       = "";
-        $results = $this->user->where('email', $email)
-                    ->select('id', 'block_status')
-                    ->get();
-        if (!$results->count()) {
-            $results = $this->user->where('username', $username)
-                        ->select('id')
-                        ->get();
-            if (!$results->count()) {
+        // $results = $this->user->where('email', $email)
+        //             ->select('id', 'block_status')
+        //             ->get();
+        // if (!$results->count()) {
+        //     $results = $this->user->where('username', $username)
+        //                 ->select('id')
+        //                 ->get();
+        //     if (!$results->count()) {
                 $result = $this->user_type->where('user_type', $usertype)
                             ->select('id')
                             ->get();
@@ -218,43 +225,45 @@ class AjaxController extends Controller
                 }
 
                 $user->save();
-                $results = $this->user->where('username', $username)
+                if ($usertype == 'Teacher') {
+                    $results = $this->user->where('username', $username)
                             ->select('id')
                             ->get();
-                if ($request->filled('subject')) {
-                    $subject = $request->subject;
-                    $length  = count($subject);
-                    for ($index = 0; $index < $length; $index++) {
-                        $teacher_subject = new TeacherSubject;
-                        foreach ($results as $result) {
-                            $teacher_subject->teacher_id = $result->id;
+                    if ($request->filled('subject')) {
+                        $subject = $request->input('subject');
+                        $length  = count($subject);
+                        for ($index = 0; $index < $length; $index++) {
+                            $teacher_subject = new TeacherSubject;
+                            foreach ($results as $result) {
+                                $teacher_subject->teacher_id = $result->id;
+                            }
+                            $teacher_subject->subject_id = $subject[$index];
+                            $teacher_subject->save();
                         }
-                        $teacher_subject->subject_id = $subject[$index];
-                        $teacher_subject->save();
                     }
                 }
                 
                 //mail
                 Mail::to($email)->send(new UserVerification($request, $hash));
                 $msg = "Please verify it by clicking the activation link that has been send to your email.";
-            }
+        //     }
 
-            else {
-                $msg = 'Username already exists';
-            }
-        }
+        //     else {
+        //         $msg = 'Username already exists';
+        //     }
+        // }
 
-        else {
-            foreach ($results as $result) {
-                if ($result->block_status == 1) {
-                    $msg = "This user has been blocked by the admin";
-                }
+        // else {
+        //     foreach ($results as $result) {
+        //         if ($result->block_status == 1) {
+        //             $msg = "This user has been blocked by the admin";
+        //         }
 
-                else {
-                    $msg = "Email already exists";
-                }
-            }
-        }
+        //         else {
+        //             $msg = "Email already exists";
+        //         }
+        //     }
+        // }
         return($msg);
     }
 

@@ -173,15 +173,14 @@ class UserController extends Controller
         if ($values) {
             $datatable = Datatables::of($values)
             ->addColumn('action', function($values) {
-                $status = '<div class="col-sm-6"><a href="unblock_users/'. $values->id .'"><button class="btn btn-success">Unblock</button></a></div>';
+                $status = '<div class="col-sm-4"><a href="unblock_users/'. $values->id .'"><button class="btn btn-success">Unblock</button></a></div>';
                 if ($values->block_status == 0) {
-                    $status = '<div class="col-sm-6"><a href="block_users/'. $values->id .'"><button class="btn btn-success">Block</button></a></div>';
+                    $status = '<div class="col-sm-4"><a href="block_users/'. $values->id .'"><button class="btn btn-success">Block</button></a></div>';
                 }
-                return '<div class="col-sm-6"><a href="remove_users/'. $values->id .'"><button class="btn btn-success">Remove</button></a></div><div class="col-sm-6"><a href="/add_users/'. $values->id .'"><button class="btn btn-success">Add</button></a></div>'. $status;
+                return '<div class="col-sm-4"><a href="remove_users/'. $values->id .'"><button class="btn btn-success">Remove</button></a></div><div class="col-sm-4"><a href="/add_users/'. $values->id .'"><button class="btn btn-success">Add</button></a></div>'. $status;
             })
             ->rawColumns(['action']);
 
-            // dd($datatable->make(true));
             return $datatable->make(true);
         }
 
@@ -345,14 +344,16 @@ class UserController extends Controller
     {
         $values = $this->user->profile();
 
-        $values['currencies'] = $values['currencies']->mapWithKeys(function ($items) {
-            return [$items['id'] => $items['code']];
-        });
+        if ($values['usertype'] !== 'Student') {
+            $values['currencies'] = $values['currencies']->mapWithKeys(function ($items) {
+                return [$items['id'] => $items['code']];
+            });
+            $data = ['usertype'    => $values['usertype'],
+                    'currencies'  => $values['currencies'], 
+                    'currency_id' => $values['currency_id']
+                ];
+        }
 
-        $data = ['usertype'    => $values['usertype'],
-                'currencies'  => $values['currencies'], 
-                'currency_id' => $values['currency_id']
-            ];
         if ($values) {
             if ($values['usertype'] === 'Teacher') {
                 return view('profile', array_merge($data,['rates' => $values['rates']]));

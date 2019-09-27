@@ -141,6 +141,21 @@ $(document).ready(function () {
         $('#spinner').css('display', 'none');
         $("#alert").css("display", "block");
         $("#alert").text(result);
+      }).fail(function (response) {
+        if (response.status == 422) {
+          $("#spinner").css('display', 'none');
+          var errors = response.responseJSON.errors;
+
+          for (var error in errors) {
+            console.log('#' + error + '-error', errors[error][0]);
+            $('#' + error + '-error').html(errors[error][0]);
+            $('#' + error + '-error').show();
+          }
+
+          toastr.error('Please fill the fields properly');
+        } else {
+          toastr.error('These details could not be registered');
+        }
       });
     }
   });
@@ -163,30 +178,22 @@ $(document).ready(function () {
         $("#info_password").css("display", "none");
       } else if (event.target.id === 'username') {
         $("#info_username").css("display", "none");
-        var username = $('#username').val();
-        $.get("/fetch_info", {
-          q1: "username",
-          q2: username
-        }, function (data) {
-          if (Number(data) === 1) {
-            $('#username').css("borderColor", "red");
-            $("#alert").text("This username already exists");
-            $("#alert").css("display", "block");
-          }
-        });
+        var username = $('#username').val(); // $.get("/fetch_info" , {q1: "username", q2: username} , function(data) {
+        //     if (Number(data) === 1) {
+        //         $('#username').css("borderColor" , "red");
+        //         $("#alert").text("This username already exists");
+        //         $("#alert").css("display" , "block");
+        //     }
+        // });
       } else if (event.target.id === 'email') {
         $("#info_email").css("display", "none");
-        var email = $('#email').val();
-        $.get("/fetch_info", {
-          q1: "email",
-          q2: email
-        }, function (data) {
-          if (Number(data) === 1) {
-            $('#email').css("borderColor", "red");
-            $("#alert").text("This email already exists");
-            $("#alert").css("display", "block");
-          }
-        });
+        var email = $('#email').val(); // $.get("/fetch_info" , {q1: "email", q2: email} , function(data) {
+        //     if (Number(data) === 1) {
+        //         $('#email').css("borderColor" , "red");
+        //         $("#alert").text("This email already exists");
+        //         $("#alert").css("display" , "block");
+        //     }
+        // });
       }
     }
   });

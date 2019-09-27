@@ -4,7 +4,6 @@ $(document).ready(function() {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
     var date = new Date();
 
     $('.datepicker').datepicker('setDate', date);
@@ -45,14 +44,18 @@ $(document).ready(function() {
         function(result) {
             var response = JSON.parse(result);
             let element = $(".editable").clone(true).css('display', 'block').removeClass('editable');
-            element.find('.text').html(response[0].goal);
-            element.find('.remove').attr('goal_id', response[0].id);;
-            element.attr('goal_id', response[0].id);
+            element.find('.text').html(response.goal);
+            element.find('.remove').attr('goal_id', response.id);
+            element.attr('goal_id', response.id);
             element.appendTo('.todo');
+            toastr.success('Goal added successfully');
+
         })
         .fail(function(response) {
             if (response.status == 422) {
-                console.log(response.status);
+                toastr.error('Please fill the fields properly');
+            } else {
+                toastr.error('Goal could not be added');
             }
         });
 
@@ -70,6 +73,11 @@ $(document).ready(function() {
             var total_time = time.toISOString().substr(11, 8);
             $("ul li[goal_id=" + goal_id + "]").find('.time').css('visibility', 'visible');
             $("ul li[goal_id=" + goal_id + "]").find('.total_time').text(total_time);
+        })
+        .fail(function(response) {
+            if (response.status == 422) {
+                toastr.error('Goal could not be updated');
+            }
         });
     });
 
@@ -77,6 +85,11 @@ $(document).ready(function() {
         var goal_id = $(this).attr('goal_id');
         $.post('remove_goals', {goal_id: goal_id}, function() {
             $("ul li[goal_id=" + goal_id + "]").remove();
+        })
+        .fail(function(response) {
+            if (response.status == 422) {
+                alert('Goal could not be added');
+            }
         });
     });
 

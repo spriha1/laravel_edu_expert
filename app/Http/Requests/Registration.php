@@ -26,10 +26,11 @@ class Registration extends FormRequest
         return [
             'fname'     => 'required|alpha',
             'lname'     => 'required|alpha',
-            'username'  => 'required|regex:/^([a-zA-Z0-9@_]+)$/',
-            'email'     => 'required|email',
+            'username'  => 'required|regex:/^([a-zA-Z0-9@_]+)$/|unique:users,username',
+            'email'     => 'required|email|unique:users,email',
             'password'  => 'required|regex:/^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/',
             'user_type' => 'required',
+            'subject'   => 'required_if:user_type,Teacher',
         ];
     }
 

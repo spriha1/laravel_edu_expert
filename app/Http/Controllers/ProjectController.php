@@ -13,14 +13,16 @@ use App\Mail\UpdateMail;
 use App\Mail\ForgotPassword;
 use DB;
 use Illuminate\Support\Facades\Log;
+use App\Repositories\User\UserInterface;
 use Exception;
 
 class ProjectController extends Controller
 {
-    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate, $tax, $currency, $stripe_detail;
+    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate, $tax, $currency, $stripe_detail, $user_service;
 
-    public function __construct()
+    public function __construct(UserInterface $user_service)
     {
+        $this->user_service     = $user_service;
         $this->user             = new User;
         $this->user_type        = new UserType;
         $this->subject          = new Subject;
@@ -75,36 +77,13 @@ class ProjectController extends Controller
 
     public function verify_mail($code)
     {
-        $hash = base64_decode($code);
-        try {
-            $results = $this->user->where([
-                ['email_verification_code', $hash],
-                ['email_verification_status', 0]
-            ])->get();
+        $res = $this->user_service->verify_mail($code);
+        $msg = 'The url is either invalid or you already have activated your account.';
+        if ($res) {
+            $msg = 'Your account has been activated';
         }
-
-        catch (Exception $e) {
-            Log::error($e->getMessage());
-        }
-
-        if($results->count()) {
-            try {
-                $this->user->where([
-                    ['email_verification_code', $hash],
-                    ['email_verification_status', 0]
-                ])->update(['email_verification_status' => 1]);
-            }
-
-            catch (Exception $e) {
-                Log::error($e->getMessage());
-            }
-
-            echo '<div>Your account has been activated, you can now <a href="/">login</a></div>';
-        }
-
-        else {
-            echo '<div>The url is either invalid or you already have activated your account.</div>';
-        }
+        session()->flash('login_msg', $msg);
+        return view('welcome');
     }
 
     /**
@@ -119,39 +98,13 @@ class ProjectController extends Controller
     {
         $hash  = base64_decode($hash);
         $email = base64_decode($email);
-        try {
-            $result = $this->user->where([
-                ['email_verification_code', $hash],
-                ['email_verification_status', 0]
-            ])->select('id')->get();
+        $msg = 'The url is invalid';
+        $res = $this->user_service->update_mail($hash, $email);
+        if ($res) {
+            $msg = 'Your email has been updated, you can continue';
         }
-
-        catch (Exception $e) {
-            Log::error($e->getMessage());
-        }
-
-        if($result->count()) {
-            foreach ($result as $res) {
-                try {
-                    $this->user->where([
-                        ['id', $res->id],
-                        ['email_verification_status', 0]
-                    ])->update([
-                        'email_verification_status' => 1, 
-                        'email' => $email
-                    ]);
-                }
-
-                catch (Exception $e) {
-                    Log::error($e->getMessage());
-                }
-            }
-            echo '<div>Your email has been updated, you can continue';
-        }
-
-        else {
-            echo '<div>The url is either invalid or you already have activated your account.</div>';
-        }
+        session()->flash('profile_msg', $msg);
+        return redirect('/profile');
     }
 
     /**
@@ -164,44 +117,13 @@ class ProjectController extends Controller
 
     public function send_password_mail(Request $request)
     {
-        if($request->filled('username')) {
-            try {
-                $result = $this->user->where('username', $request->input('username'))
-                        ->select('id')
-                        ->get();
-            }
-
-            catch (Exception $e) {
-                Log::error($e->getMessage());
-            }
-
-            if($result->count()) {
-                $unique = uniqid();
-                try {
-                    $this->user->where('username', $request->input('username'))
-                    ->update(['token' => $unique]);
-                    $results = $this->user->where('username', $request->input('username'))
-                            ->select('email', 'token')
-                            ->get();
-                }
-
-                catch (Exception $e) {
-                    Log::error($e->getMessage());
-                }
-
-                foreach ($results as $result) {
-                    try {
-                        Mail::to($result->email)->send(new ForgotPassword($result->token));
-                    }
-
-                    catch (Exception $e) {
-                        Log::error($e->getMessage());
-                    }
-
-                    echo "Please reset your password by clicking the link that has been sent to your email.";
-                }
-            }
+        $res = $this->user_service->send_password_mail($request->input('username'));
+        $msg = '';
+        if ($res) {
+            $msg = 'Please reset your password by clicking the link that has been sent to your email.';
         }
+        session()->flash('reset_msg', $msg);
+        return view('forgot_password');
     }
 
     /**
@@ -216,23 +138,16 @@ class ProjectController extends Controller
     public function reset_password_form($token, $expiry_time)
     {
         $token = base64_decode($token);
-        session(['token' => $token]);
         $expiry_time = base64_decode($expiry_time);
-        $current_time = time();
-        if ($current_time > $expiry_time) {
-            try {
-                $this->user->where('token', $token)->update(['token' => NULL]);
-            }
-
-            catch (Exception $e) {
-                Log::error($e->getMessage());
-            }
-
-            echo "The link has expired";
+        $res = $this->user_service->reset_password_form($token, $expiry_time);
+        if ($res) {
+            return view('reset_password_form');
         }
 
         else {
-            return view('reset_password_form');
+            $msg = 'The link has expired';
+            session()->flash('reset_msg', $msg);
+            return view('forgot_password');
         }
     }
 
@@ -246,35 +161,17 @@ class ProjectController extends Controller
 
     public function reset_password(Request $request)
     {
-        if($request->filled('password')) {
-            try {
-                $result = $this->user->where([
-                    ['token', session('token')],
-                    ['user_reg_status', 1]
-                ])->select('username')->get();
-            }
-
-            catch (Exception $e) {
-                Log::error($e->getMessage());
-            }
-
-            if($result->count()) {
-                $password = Hash::make($request->input('password'));
-                try{
-                    $this->user->where('token', session('token'))->update(['password' => $password]);
-                }
-
-                catch (Exception $e) {
-                    Log::error($e->getMessage());
-                }
-
-                echo '<div>Your password has been reset, you can now <a href="/"> login</a></div>';
-            }
-
-            else {
-                echo '<div>Your request has not been accepted by the admin yet</div>';
-            }
+        $res = $this->user_service->reset_password($request->input('password'));
+        if ($res) {
+            $msg = 'Your password has been reset';
         }
+
+        else {
+            $msg = 'Your request has not been accepted by the admin yet';
+        }
+
+        session()->flash('login_msg', $msg);
+        return view('welcome');
     }
 
     /**
@@ -331,6 +228,7 @@ class ProjectController extends Controller
             $end_date    = strtotime($end_date);
             $length      = count($request->input('subject'));
             try {
+                DB::beginTransaction();
                 for ($index = 0; $index < $length; $index++) {
                     $subject_id = $request->input('subject')[$index];
                     for($index2 = $start_date; $index2 <= $end_date; $index2 = $index2 + 86400) {
@@ -345,7 +243,6 @@ class ProjectController extends Controller
                         }
 
                         else {
-                            DB::beginTransaction();
                             $task_id = $this->task->insertGetId([
                                 'subject_id' => $subject_id,
                                 'class'      => $request->input('class'),
@@ -384,10 +281,10 @@ class ProjectController extends Controller
                             }
 
                             return("Successfully added");
-                            DB::commit();
                         }
                     }
                 }
+                DB::commit();
             }
 
             catch (Exception $e) {

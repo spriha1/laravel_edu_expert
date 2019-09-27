@@ -29,4 +29,15 @@ interface UserInterface
 	public function render_teacher_dashboard($code);
 
 	public function profile();
+
+	public function verify_mail($code);
+
+	public function update_mail($hash, $email);
+
+	public function send_password_mail($username);
+
+	public function reset_password_form($token, $expiry_time);
+
+	public function reset_password($password);
+
 }

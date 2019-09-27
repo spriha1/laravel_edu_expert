@@ -8,6 +8,10 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UpdateMail;
+use App\Mail\ForgotPassword;
+use Illuminate\Support\Facades\Hash;
 
 class Service implements UserInterface
 {
@@ -156,7 +160,7 @@ class Service implements UserInterface
                 ['user_reg_status', 1],
                 ['user_type', '!=', 'Admin']
             ])
-            ->select($select_data);
+            ->select($select_data)->get();
 
             return $values;
         }
@@ -489,13 +493,136 @@ class Service implements UserInterface
                 $tax = $this->tax->where('name', 'GST')
                     ->select('percentage')
                     ->first();
-                $values['tax']         = $tax['percentage'];
+                $values['tax'] = $tax['percentage'];
             }
 
-            $values['usertype']    = $user_type['user_type'];
+            $values['usertype'] = $user_type['user_type'];
 
             return $values;
         }
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function verify_mail($code)
+    {
+        $msg = false;
+        $hash = base64_decode($code);
+        try {
+            $results = $this->user->where([
+                ['email_verification_code', $hash],
+                ['email_verification_status', 0]
+            ])->first();
+
+            if($results) {
+                $this->user->where([
+                    ['email_verification_code', $hash],
+                    ['email_verification_status', 0]
+                ])->update(['email_verification_status' => 1]);
+
+                $msg = true;
+            }
+            return $msg;
+        }
+
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function update_mail($hash, $email)
+    {
+        $msg = false;
+        try {
+            $result = $this->user->where([
+                ['email_verification_code', $hash],
+                ['email_verification_status', 0]
+            ])->select('id')->first();
+        
+            if($result) {
+                $this->user->where([
+                    ['id', $result['id']],
+                    ['email_verification_status', 0]
+                ])->update([
+                    'email_verification_status' => 1, 
+                    'email' => $email
+                ]);
+                $msg = true;
+            }
+            return $msg;
+        }
+
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function send_password_mail($username)
+    {
+        $msg = false;
+        try {
+            $result = $this->user->where('username', $username)
+                ->select('id', 'email')
+                ->first();
+            if($result) {
+                $unique = uniqid();
+                $this->user->where('username', $username)
+                    ->update(['token' => $unique]);
+
+                Mail::to($result['email'])->send(new ForgotPassword($unique));
+                $msg = true;
+            }
+            return $msg;
+        }
+
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function reset_password_form($token, $expiry_time)
+    {
+        $res = true;
+        session(['token' => $token]);
+        $current_time = time();
+        if ($current_time > $expiry_time) {
+            try {
+                $this->user->where('token', $token)->update(['token' => NULL]);
+            }
+
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+                return false;
+            }
+            $res = false;
+        }
+        return $res;
+    }
+
+    public function reset_password($password)
+    {
+        $msg = false;
+        try {
+            $result = $this->user->where([
+                ['token', session('token')],
+                ['user_reg_status', 1]
+            ])
+            ->select('username')
+            ->first();
+            if($result) {
+                $password = Hash::make($password);
+                $this->user->where('token', session('token'))->update(['password' => $password]);
+                $msg = true;
+            }
+
+            return $msg;
+        }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
             return false;

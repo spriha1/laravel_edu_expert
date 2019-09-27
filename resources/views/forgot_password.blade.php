@@ -9,7 +9,7 @@
             <div class="login-box-body">
                 <p class="login-box-msg">Reset Password</p>
                 {{ Form::open(['url' => '/forgot_password', 'id' => 'login', 'name' => 'login']) }}
-
+                    {{ session()->get('reset_msg') }}
                     <div id="alert" class='alert alert-danger' style="display: none;">
                     </div>
                     <p style="color : #ff0000"></p>

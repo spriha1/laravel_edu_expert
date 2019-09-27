@@ -89,11 +89,12 @@
                             <li name="goal" id="goal" style="display:none;">
                                 <textarea style="width: 100%"></textarea>
                             </li>
+                            <span id="error_goal"></span>
                         </ul>
                     </div>
                     <!-- /.box-body -->
                     <div class="box-footer clearfix no-border">
-                        <button type="button" style="display: none" class="btn btn-success pull-right add" user_id="{{ Auth::user()->id }}">Add</button>
+                        <button type="button" style="display: none" class="btn btn-success pull-right add" >Add</button>
                         <button type="button" class="btn btn-default add_item pull-right"><i class="fa fa-plus"></i> Add item</button>
                     </div>
                 </div>

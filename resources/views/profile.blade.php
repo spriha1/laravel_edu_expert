@@ -15,6 +15,8 @@
         <!-- Horizontal Form -->
         <div class="box box-info">
             {{ Form::model(Auth::user(), ['class' => 'form-horizontal', 'id' => 'registration', 'name' => 'registration']) }}
+                {{ session()->get('profile_msg') }}
+
                 <div id="alert" class='alert alert-danger' style="display: none;">
                 </div>
                 <div id="info" class='alert alert-success' style="display: none;">

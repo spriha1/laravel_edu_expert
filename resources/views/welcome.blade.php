@@ -17,6 +17,8 @@
                     </div>
                 @endif
 
+                {{ session()->get('login_msg') }}
+
                 <div id="alert" class='alert alert-danger' style="display: none;">
                 </div>
                 <div class="form-group has-feedback">
