@@ -19,6 +19,7 @@
         "laravelcollective/html": "^5.8.0",
         "league/flysystem-aws-s3-v3": "~1.0",
         "league/flysystem-cached-adapter": "~1.0",
+        "spatie/laravel-medialibrary": "^7.0.0",
         "stripe/stripe-php": "^7.0",
         "yajra/laravel-datatables-oracle": "~9.0"
     },

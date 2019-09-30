@@ -35,15 +35,15 @@ class UserController extends Controller
         $user_type = $this->user->login($data['username'], $data['password']);
 
         if ($user_type) {
-            if ($user_type === 'Admin') {
+            if ($user_type === config('default.Admin')) {
                 $view = 'admin_dashboard';
             }
 
-            else if ($user_type === 'Teacher') {
+            else if ($user_type === config('default.Teacher')) {
                 $view = 'teacher_dashboard';
             }
 
-            else if ($user_type === 'Student') {
+            else if ($user_type === config('default.Student')) {
                 $view = 'student_dashboard';
             }
 
@@ -331,7 +331,7 @@ class UserController extends Controller
     public function profile()
     {
         $values = $this->user->profile();
-        if ($values['usertype'] !== 'Student') {
+        if ($values['usertype'] !== config('default.Student')) {
             $values['currencies'] = $values['currencies']->mapWithKeys(function ($items) {
                 return [$items['id'] => $items['code']];
             });
@@ -344,11 +344,11 @@ class UserController extends Controller
         }
 
         if ($values) {
-            if ($values['usertype'] === 'Teacher') {
+            if ($values['usertype'] === config('default.Teacher')) {
                 return view('profile', array_merge($data,['rates' => $values['rates']]));
             }
 
-            else if ($values['usertype'] === 'Admin') {
+            else if ($values['usertype'] === config('default.Admin')) {
                 return view('profile', array_merge($data,['tax' => $values['tax']]));
             }
 

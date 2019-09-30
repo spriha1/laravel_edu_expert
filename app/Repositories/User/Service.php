@@ -70,7 +70,7 @@ class Service implements UserInterface
     {
         try {
             $values = [];
-            $values['user_types'] = UserType::where('user_type', '!=', "Admin")->get();
+            $values['user_types'] = UserType::where('user_type', '!=', config('default.Admin'))->get();
             $values['subjects']   = Subject::all();
             return $values;
         }
@@ -94,7 +94,7 @@ class Service implements UserInterface
     {
         try {
             $values = [];
-            $values['user_types'] = UserType::where('user_type', '!=', 'Admin')
+            $values['user_types'] = UserType::where('user_type', '!=', config('default.Admin'))
                 ->select('user_type')
                 ->get();
         
@@ -120,7 +120,7 @@ class Service implements UserInterface
     {
         try {
             $values = [];
-            $values['user_types'] = UserType::where('user_type', '!=', 'Admin')
+            $values['user_types'] = UserType::where('user_type', '!=', config('default.Admin'))
                         ->select('user_type')
                         ->get();
 
@@ -149,7 +149,7 @@ class Service implements UserInterface
             $users = User::join('user_types', 'users.user_type_id', '=', 'user_types.id');
             $where = [
                 ['user_reg_status', 1],
-                ['user_type', '!=', 'Admin']
+                ['user_type', '!=', config('default.Admin')]
             ];
 
             if($search != -1) {
@@ -189,7 +189,7 @@ class Service implements UserInterface
             ->where([
                 ['user_reg_status', 0],
                 ['email_verification_status', 1],
-                ['user_type', '!=', 'Admin']
+                ['user_type', '!=', config('default.Admin')]
             ])
             ->select($select_data);
 
@@ -215,7 +215,7 @@ class Service implements UserInterface
     {
         try {
             $values = [];
-            $values['user_types'] = UserType::where('user_type', '!=', 'Admin')
+            $values['user_types'] = UserType::where('user_type', '!=', config('default.Admin'))
                 ->select('user_type')
                 ->get();
 
@@ -465,17 +465,17 @@ class Service implements UserInterface
                 ->select('currency_id','rate')
                 ->first();
 
-            if ($user_type['user_type'] !== 'Student') {
+            if ($user_type['user_type'] !== config('default.Student')) {
                 $currencies = Currency::get();
                 $values['currencies']  = $currencies;
                 $values['currency_id'] = $result['currency_id'];
             }
 
-            if ($user_type['user_type'] === 'Teacher') {
+            if ($user_type['user_type'] === config('default.Teacher')) {
                 $values['rates'] = $rates;
             }
 
-            else if ($user_type['user_type'] === 'Admin') {
+            else if ($user_type['user_type'] === config('default.Admin')) {
                 $tax = Tax::where('name', 'GST')
                     ->select('percentage')
                     ->first();
