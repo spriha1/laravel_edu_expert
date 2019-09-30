@@ -71,19 +71,23 @@ class LoginController extends Controller
         ])->first();
 
         $user_type = UserType::where('id', $user->user_type_id)->first();
+
         if ($user) {
             Auth::login($user);
             if ($user_type->user_type === 'Admin') {   
                 return redirect('/admin_dashboard');                     
                 // return redirect('/admin_dashboard');
             }
+
             else if ($user_type->user_type === 'Teacher') {
                 return redirect('/teacher_dashboard');
             }
+            
             else if ($user_type->user_type === 'Student') {
                 return redirect('/student_dashboard');
             }
         }
+
         else {
             $errors = new MessageBag(['password' => ['Username and/or password invalid.']]);
             return redirect()->back()->withErrors($errors)->withInput(Input::except('password'));

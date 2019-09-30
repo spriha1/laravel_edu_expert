@@ -58,8 +58,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/fetch_teacher_class_subjects', 'AjaxController@fetch_teacher_class_subjects');
         Route::get('/add_users/{id}', 'UserController@add_users');
         Route::get('/remove_users/{id}', 'UserController@remove_users');
-        Route::get('/block_users/{id}', 'UserController@block_users');
-        Route::get('/unblock_users/{id}', 'UserController@unblock_users');
+        Route::get('/change_user_type/{id}/{type}', 'UserController@change_user_type');
         Route::post('/update_currency', 'CurrencyController@update_currency');
         Route::post('/convert_currency', 'CurrencyController@convert_currency');
         Route::get('/fetch_currency', 'CurrencyController@fetch_currency');

@@ -43,6 +43,9 @@ $(document).ready(function() {
                 element2.appendTo(element.find('select'))
             }
             element.appendTo('#append_teacher');
+        })
+        .fail(function() {
+            toastr.error('The required information for the specified teachers could not be fetched');
         });
     });
 
@@ -62,6 +65,9 @@ $(document).ready(function() {
             element.find('.text').text(response[0].class);
             element.attr('class_id', response[0].class);
             element.appendTo('.append_class');
+        })
+        .fail(function() {
+            toastr.error('The class could not be added');
         });
     });
 
@@ -69,6 +75,9 @@ $(document).ready(function() {
         var class_id = $(this).closest('li').attr('class_id');
         $.post('remove_class', {class_id: class_id}, function() {
             $("ul li[class_id=" + class_id + "]").remove();
+        })
+        .fail(function() {
+            toastr.error('The class could not be removed');
         });
     });
 
@@ -91,6 +100,9 @@ $(document).ready(function() {
                 element.attr('class_id', response[index].class);
                 element.appendTo('#view_subjects');
             }
+        })
+        .fail(function() {
+            toastr.error('The class details could not be fetched');
         });
     });
 
@@ -99,6 +111,9 @@ $(document).ready(function() {
         var subject_id = $(this).closest('tr').attr('subject_id');
         $.post('remove_class_subject', {class_id: class_id, subject_id: subject_id}, function() {
             $("table tr[subject_id=" + subject_id + "]").remove();
+        })
+        .fail(function() {
+            toastr.error('The subject could not be removed');
         });
     });
 
@@ -128,6 +143,9 @@ $(document).ready(function() {
                 element2.appendTo(element.find('select'))
             }
             element.appendTo('#_append_teacher');
+        })
+        .fail(function() {
+            toastr.error('The required information could not be fetched');
         });
     });
 
@@ -149,6 +167,9 @@ $(document).ready(function() {
             element.attr('subject_id', response[0].subjectid);
             element.attr('class_id', response[0].class);
             element.appendTo('#view_subjects');
+        })
+        .fail(function() {
+            toastr.error('The subject could not be added');
         });
     });
 
@@ -168,6 +189,9 @@ $(document).ready(function() {
                 element.html(response[index].firstname);
                 element.appendTo('.teacher_')
             }
+        })
+        .fail(function() {
+            toastr.error('The required information could not be fetched');
         });
     });
 
@@ -179,6 +203,9 @@ $(document).ready(function() {
         $.post('update_teacher', {subject_id: subject_id, class_id: class_id, teacher_id: teacher_id}, function(result) {
             var response = JSON.parse(result);
             $('.modal-body tr[subject_id='+subject_id+'] .teacher').text(response[0].firstname);
+        })
+        .fail(function() {
+            toastr.error('The teacher details could not be updated');
         });
     });
 });

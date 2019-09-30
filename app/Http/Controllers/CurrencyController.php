@@ -3,20 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{Currency, User};
-Use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Log;
+use App\Currency as Currency;
+use App\User as User;
 use Exception;
 
 class CurrencyController extends Controller
 {
-    protected $currency, $user;
-
-    public function __construct()
-    {
-        $this->currency = new Currency;
-        $this->user     = new User;
-    }
-
     /**
     * 
     * @method convert_currency() 
@@ -58,24 +51,24 @@ class CurrencyController extends Controller
     public function fetch_currency(Request $request)
     {
         try {
-            $new = $this->user
-            ->join('currencies', 'users.currency_id', '=', 'currencies.id')
-            ->where('users.id', $request->input('user_id'))
-            ->select('code')
-            ->first();
-            $old = $this->user
-            ->join('user_types', 'users.user_type_id', '=', 'user_types.id')
-            ->join('currencies', 'users.currency_id', '=', 'currencies.id')
-            ->where('user_type', 'Admin')
-            ->select('code')
-            ->first();
+            $new = User::join('currencies', 'users.currency_id', '=', 'currencies.id')
+                ->where('users.id', $request->input('user_id'))
+                ->select('code')
+                ->first();
+
+            $old = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')
+                ->join('currencies', 'users.currency_id', '=', 'currencies.id')
+                ->where('user_type', 'Admin')
+                ->select('code')
+                ->first();
+                
+            $response = array('new' => $new['code'], 'old' => $old['code']);
+            return(json_encode($response));
         }
         
         catch(Exception $e) {
             Log::error($e->getMessage());
         }
 
-        $response = array('new' => $new['code'], 'old' => $old['code']);
-        return(json_encode($response));
     }
 }

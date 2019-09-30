@@ -14,9 +14,7 @@ interface UserInterface
 
 	public function add_users($id);
 
-	public function block_users($id);
-
-	public function unblock_users($id);
+	public function change_user_type($id, $type);
 
 	public function remove_users($id);
 

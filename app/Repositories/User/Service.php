@@ -2,39 +2,32 @@
 
 namespace App\Repositories\User;
 
-use App\{User, UserType, Subject, SharedTimesheet, StripeDetail, Currency, Tax};
-use Illuminate\Support\Facades\Log;
-use Exception;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\MessageBag;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\MessageBag;
 use App\Mail\UpdateMail;
 use App\Mail\ForgotPassword;
-use Illuminate\Support\Facades\Hash;
+use App\Currency as Currency;
+use App\SharedTimesheet as SharedTimesheet;
+use App\StripeDetail as StripeDetail;
+use App\Subject as Subject;
+use App\Tax as Tax;
+use App\User as User;
+use App\UserType as UserType;
+use Exception;
 
 class Service implements UserInterface
 {
-	protected $user, $user_type, $subject, $shared_timesheet, $stripe_detail, $currency, $tax;
-
-    public function __construct()
-    {
-        $this->user             = new User;
-        $this->user_type        = new UserType;
-        $this->subject          = new Subject;
-        $this->shared_timesheet = new SharedTimesheet;
-        $this->stripe_detail    = new StripeDetail;
-        $this->currency         = new Currency;
-        $this->tax              = new Tax;
-    }
-
     /**
     * 
     * @method login() 
     * 
-    * @param Request object
-    * @return string [html view of dashboard]
-    * Desc : This method authenticates a user and redirects to the respective dashboard
+    * @param String [username, password]
+    * @return string [usertype of the logged in user or false if the user is not authenticated]
+    * Desc : This method authenticates a user
     */
 
     public function login($username, $password)
@@ -46,9 +39,9 @@ class Service implements UserInterface
                 'user_reg_status' => 1, 
                 'block_status'    => 0
             ])) {
-
         
-                $user_type = $this->user_type->where('id', Auth::user()->user_type_id)->first();
+                $user_type = UserType::where('id', Auth::user()->user_type_id)
+                    ->first();
                 return $user_type['user_type'];
             }
 
@@ -69,16 +62,16 @@ class Service implements UserInterface
     * @method register() 
     * 
     * @param void
-    * @return string [html view of registration page]  
-    * Desc : This method returns the registration page
+    * @return usertypes and subjects information required in the registration form
+    * Desc : This method returns the information required on registration page
     */
 
     public function register()
     {
         try {
             $values = [];
-            $values['user_types'] = $this->user_type->where('user_type', '!=', "Admin")->get();
-            $values['subjects']   = $this->subject->all();
+            $values['user_types'] = UserType::where('user_type', '!=', "Admin")->get();
+            $values['subjects']   = Subject::all();
             return $values;
         }
 
@@ -93,16 +86,15 @@ class Service implements UserInterface
     * @method pending_requests() 
     * 
     * @param void
-    * @return string [html view of pending_requests page] 
-    * Desc : This method returns the pending_requests page
+    * @return array of usertypes or false in case of exception 
+    * Desc : This method returns the information required on the pending_requests page
     */
 
     public function pending_requests()
     {
         try {
             $values = [];
-            $values['user_types'] = $this->user_type
-                ->where('user_type', '!=', 'Admin')
+            $values['user_types'] = UserType::where('user_type', '!=', 'Admin')
                 ->select('user_type')
                 ->get();
         
@@ -128,7 +120,7 @@ class Service implements UserInterface
     {
         try {
             $values = [];
-            $values['user_types'] = $this->user_type->where('user_type', '!=', 'Admin')
+            $values['user_types'] = UserType::where('user_type', '!=', 'Admin')
                         ->select('user_type')
                         ->get();
 
@@ -143,24 +135,24 @@ class Service implements UserInterface
 
     /**
     * 
-    * @method regd_users() 
+    * @method get_regd_users() 
     * 
     * @param void
-    * @return string [html view of regd_users page] 
-    * Desc : This method returns the regd_users page
+    * @return collection of all the regsitered users
+    * Desc : This method returns information of all the registered users
     */
 
     public function get_regd_users()
     {
         try {
             $select_data = ['firstname', 'lastname', 'email', 'username', 'users.id', 'block_status'];
-            $values = $this->user
-            ->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+            $values = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')
             ->where([
                 ['user_reg_status', 1],
                 ['user_type', '!=', 'Admin']
             ])
-            ->select($select_data)->get();
+            ->select($select_data)
+            ->get();
 
             return $values;
         }
@@ -173,19 +165,18 @@ class Service implements UserInterface
 
     /**
     * 
-    * @method regd_users() 
+    * @method get_pending_requests() 
     * 
     * @param void
-    * @return string [html view of regd_users page] 
-    * Desc : This method returns the regd_users page
+    * @return collection of all the pending requests
+    * Desc : This method returns information of all the pending requests
     */
 
     public function get_pending_requests()
     {
         try {
             $select_data = ['firstname', 'lastname', 'email', 'username', 'users.id', 'block_status'];
-            $values = $this->user
-            ->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+            $values = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')
             ->where([
                 ['user_reg_status', 0],
                 ['email_verification_status', 1],
@@ -206,21 +197,20 @@ class Service implements UserInterface
     * 
     * @method post_pending_requests() 
     * 
-    * @param Request object
-    * @return string [html view of pending_requests page] 
-    * Desc : This method fetches the users of a specific type with pending requests and returns the pending_requests page
+    * @param String[usertype]
+    * @return Collection of user information for all the pending requests for a specific usertype
+    * Desc : This method fetches the users of a specific type with pending requests and returns the same
     */
 
     public function post_pending_requests($user_type)
     {
         try {
             $values = [];
-            $values['user_types'] = $this->user_type
-                ->where('user_type', '!=', 'Admin')
+            $values['user_types'] = UserType::where('user_type', '!=', 'Admin')
                 ->select('user_type')
                 ->get();
 
-            $values['results'] = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+            $values['results'] = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')
                 ->where([
                     ['user_reg_status', 0],
                     ['email_verification_status', 1],
@@ -243,20 +233,19 @@ class Service implements UserInterface
     * @method post_regd_users() 
     * 
     * @param Request object
-    * @return string [html view of regd_users page] 
-    * Desc : This method fetches the registered users of a specific type and returns the regd_users page
+    * @return Collection of user information for all the registered users for a specific usertype
+    * Desc : This method fetches the registered users of a specific type and returns the same
     */
 
     public function post_regd_users($user_type)
     {
         try {
             $values = [];
-            $values['user_types'] = $this->user_type
-                ->where('user_type', '!=', 'Admin')
+            $values['user_types'] = UserType::where('user_type', '!=', 'Admin')
                 ->select('user_type')
                 ->get();
 
-            $values['results'] = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
+            $values['results'] = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')
                 ->where([
                     ['user_reg_status', 1],
                     ['user_type', $user_type]
@@ -278,14 +267,14 @@ class Service implements UserInterface
     * @method add_users() 
     * 
     * @param integer (id of the user to be added)
-    * @return view of the calling page 
+    * @return boolean 
     * Desc : This method adds a user to the system when the admin accepts their pending request
     */
 
     public function add_users($id)
     {
         try {
-            $this->user->where('id', $id)->update(['user_reg_status' => 1]);
+            User::where('id', $id)->update(['user_reg_status' => 1]);
             return true;
         }
 
@@ -300,14 +289,14 @@ class Service implements UserInterface
     * @method remove_users() 
     * 
     * @param integer (id of the user to be removed)
-    * @return view of the calling page 
+    * @return boolean 
     * Desc : This method removes a user from the system
     */
 
     public function remove_users($id)
     {
         try {
-            $this->user->where('id', $id)->delete();
+            User::where('id', $id)->delete();
             return true;
         }
 
@@ -319,39 +308,25 @@ class Service implements UserInterface
 
     /**
     * 
-    * @method block_users() 
+    * @method change_user_type() 
     * 
-    * @param integer (id of the user to be blocked)
-    * @return view of the calling page 
-    * Desc : This method blocks a user in the system
+    * @param integer (id of the user to be blocked/unblocked)
+    * @return boolean 
+    * Desc : This method blocks/unblocks a user in the system
     */
 
-    public function block_users($id)
+    public function change_user_type($id, $type)
     {
         try {
-            $this->user->where('id', $id)->update(['block_status' => 1]);
-            return true;
-        }
+            $user = User::where('id', $id);
+            if ($type == 'unblock') {
+                $user->update(['block_status' => 0]);
+            }
 
-        catch (Exception $e) {
-            Log::error($e->getMessage());
-            return false;
-        }
-    }
+            else {
+                $user->update(['block_status' => 1]);
+            }
 
-    /**
-    * 
-    * @method unblock_users() 
-    * 
-    * @param integer (id of the user to be unblocked)
-    * @return view of the calling page 
-    * Desc : This method unblocks a user in the system
-    */
-
-    public function unblock_users($id)
-    {
-        try {
-            $this->user->where('id', $id)->update(['block_status' => 0]);
             return true;
         }
 
@@ -366,22 +341,22 @@ class Service implements UserInterface
     * @method render_admin_dashboard() 
     * 
     * @param void
-    * @return string [html view of admin dashboard] 
-    * Desc : This method fetches the information required on dashboard and returns the admin dashboard
+    * @return array that keeps count of the registered users and pending requests
+    * Desc : This method fetches the information required on dashboard and returns the same
     */
 
     public function render_admin_dashboard()
     {
         try {
             $count = [];
-            $count['regd_users'] = $this->user->where('user_reg_status', 1)->count();
+            $count['regd_users'] = User::where('user_reg_status', 1)->count();
 
-            $count['pending_users'] = $this->user->where([
+            $count['pending_users'] = User::where([
                     ['user_reg_status', 0],
                     ['email_verification_status', 1]
                 ])->count();
         
-            $count['shared_timesheets'] = $this->shared_timesheet->where('to_id', Auth::id())->count();
+            $count['shared_timesheets'] = SharedTimesheet::where('to_id', Auth::id())->count();
             return $count;
         }
 
@@ -396,8 +371,8 @@ class Service implements UserInterface
     * @method render_teacher_dashboard() 
     * 
     * @param void
-    * @return string [html view of teacher dashboard] 
-    * Desc : This method checks if the URL contains the query parameter for authorization code generated by stripe and if it contains that, this method connects the teacher's stripe account to the admin's stripe account and also fetches the information required on dashboard and returns the teacher dashboard
+    * @return user details of the user that connects to stripe
+    * Desc : This method checks if the URL contains the query parameter for authorization code generated by stripe and if it contains that, this method connects the teacher's stripe account to the admin's stripe account and also fetches the information required on dashboard and returns the same
     */
 
     public function render_teacher_dashboard($code)
@@ -406,7 +381,7 @@ class Service implements UserInterface
         $result['check']              = 0;
         if ($code) {
             $result['check_query_string'] = 1;
-            $this->stripe_detail->insert([
+            StripeDetail::insert([
                 'user_id' => Auth::id(),
                 'code'    => $code
             ]);
@@ -436,17 +411,21 @@ class Service implements UserInterface
             //execute post
             $result            = curl_exec($ch);
             $http_info         = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $stripe_account_id = json_decode($result)->stripe_user_id;
-            $this->stripe_detail->where('user_id', Auth::id())
-            ->update([
-                'stripe_account_id' => $stripe_account_id
-            ]);
+
+            if ($http_info == 200) {
+                $stripe_account_id = json_decode($result)->stripe_user_id;
+
+                StripeDetail::where('user_id', Auth::id())
+                ->update([
+                    'stripe_account_id' => $stripe_account_id
+                ]);
+            }
             //close connection
             curl_close($ch);
         }
 
         else {
-            $result = $this->stripe_detail->where('user_id', Auth::id())->first();
+            $result = StripeDetail::where('user_id', Auth::id())->first();
             if ($result) {
                 $result['check'] = 1;
             }
@@ -460,64 +439,70 @@ class Service implements UserInterface
     * @method profile() 
     * 
     * @param void
-    * @return string [html view of profile page] 
-    * Desc : This method fetches the information required on profile page and returns its view
+    * @return array 
+    * Desc : This method fetches the information required on profile page and returns it
     */
 
     public function profile()
     {
         try {
             $values = [];
-            $user_type = $this->user_type->where('id', Auth::user()->user_type_id)
+            $user_type = UserType::where('id', Auth::user()->user_type_id)
                 ->select('user_type')
                 ->first();
 
-
-            $result = $this->user
-                ->join('currencies', 'users.currency_id', '=', 'currencies.id')
+            $result = User::join('currencies', 'users.currency_id', '=', 'currencies.id')
                 ->where('users.id', Auth::id())
                 ->select('currency_id','rate')
                 ->first();
 
             if ($user_type['user_type'] !== 'Student') {
-                $currencies = $this->currency->get();
+                $currencies = Currency::get();
                 $values['currencies']  = $currencies;
                 $values['currency_id'] = $result['currency_id'];
             }
 
             if ($user_type['user_type'] === 'Teacher') {
-                $values['rates']       = $rates;
+                $values['rates'] = $rates;
             }
 
             else if ($user_type['user_type'] === 'Admin') {
-                $tax = $this->tax->where('name', 'GST')
+                $tax = Tax::where('name', 'GST')
                     ->select('percentage')
                     ->first();
                 $values['tax'] = $tax['percentage'];
             }
 
             $values['usertype'] = $user_type['user_type'];
-
             return $values;
         }
+
         catch (Exception $e) {
             Log::error($e->getMessage());
             return false;
         }
     }
 
+    /**
+    * 
+    * @method verify_mail() 
+    * @return boolean
+    * @param string (email verification code)
+    * Desc : This method verifies the user's email id
+    */
+
     public function verify_mail($code)
     {
-        $msg = false;
+        $msg  = false;
         $hash = base64_decode($code);
         try {
-            $results = $this->user->where([
+            $results = User::where([
                 ['email_verification_code', $hash],
                 ['email_verification_status', 0]
             ])->first();
 
             if($results) {
-                $this->user->where([
+                User::where([
                     ['email_verification_code', $hash],
                     ['email_verification_status', 0]
                 ])->update(['email_verification_status' => 1]);
@@ -533,25 +518,36 @@ class Service implements UserInterface
         }
     }
 
+    /**
+    * 
+    * @method update_mail() 
+    * 
+    * @param string (verification code and email id)
+    * Desc : This method verifies the user's mail on update request
+    */
+
     public function update_mail($hash, $email)
     {
         $msg = false;
+
         try {
-            $result = $this->user->where([
+            $result = User::where([
                 ['email_verification_code', $hash],
                 ['email_verification_status', 0]
             ])->select('id')->first();
         
             if($result) {
-                $this->user->where([
+                User::where([
                     ['id', $result['id']],
                     ['email_verification_status', 0]
                 ])->update([
                     'email_verification_status' => 1, 
                     'email' => $email
                 ]);
+
                 $msg = true;
             }
+
             return $msg;
         }
 
@@ -561,16 +557,25 @@ class Service implements UserInterface
         }
     }
 
+    /**
+    * 
+    * @method send_password_mail() 
+    * @return boolean
+    * @param Request object
+    * Desc : This method sends a mail to the user to reset password
+    */
+
     public function send_password_mail($username)
     {
         $msg = false;
         try {
-            $result = $this->user->where('username', $username)
+            $result = User::where('username', $username)
                 ->select('id', 'email')
                 ->first();
+
             if($result) {
                 $unique = uniqid();
-                $this->user->where('username', $username)
+                User::where('username', $username)
                     ->update(['token' => $unique]);
 
                 Mail::to($result['email'])->send(new ForgotPassword($unique));
@@ -585,6 +590,15 @@ class Service implements UserInterface
         }
     }
 
+    /**
+    * 
+    * @method reset_password_form() 
+    * 
+    * @param string (token to identify the user), integer (expiry time of the link)
+    * @return boolean
+    * Desc : This method checks if the link sent to the user has expired or not
+    */
+
     public function reset_password_form($token, $expiry_time)
     {
         $res = true;
@@ -592,31 +606,42 @@ class Service implements UserInterface
         $current_time = time();
         if ($current_time > $expiry_time) {
             try {
-                $this->user->where('token', $token)->update(['token' => NULL]);
+                User::where('token', $token)->update(['token' => NULL]);
             }
 
             catch (Exception $e) {
                 Log::error($e->getMessage());
                 return false;
             }
+
             $res = false;
         }
+
         return $res;
     }
+
+    /**
+    * 
+    * @method reset_password() 
+    * @return boolean
+    * @param string [password]
+    * Desc : This method resets the password
+    */
 
     public function reset_password($password)
     {
         $msg = false;
         try {
-            $result = $this->user->where([
+            $result = User::where([
                 ['token', session('token')],
                 ['user_reg_status', 1]
             ])
             ->select('username')
             ->first();
+
             if($result) {
                 $password = Hash::make($password);
-                $this->user->where('token', session('token'))->update(['password' => $password]);
+                User::where('token', session('token'))->update(['password' => $password]);
                 $msg = true;
             }
 

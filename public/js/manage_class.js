@@ -140,6 +140,8 @@ $(document).ready(function () {
       }
 
       element.appendTo('#append_teacher');
+    }).fail(function () {
+      toastr.error('The required information for the specified teachers could not be fetched');
     });
   });
   $('.subject').on('select2:unselect', function (e) {
@@ -157,6 +159,8 @@ $(document).ready(function () {
       element.find('.text').text(response[0]["class"]);
       element.attr('class_id', response[0]["class"]);
       element.appendTo('.append_class');
+    }).fail(function () {
+      toastr.error('The class could not be added');
     });
   });
   $(".remove").click(function (event) {
@@ -165,6 +169,8 @@ $(document).ready(function () {
       class_id: class_id
     }, function () {
       $("ul li[class_id=" + class_id + "]").remove();
+    }).fail(function () {
+      toastr.error('The class could not be removed');
     });
   });
   $('.edit').click(function (event) {
@@ -188,6 +194,8 @@ $(document).ready(function () {
         element.attr('class_id', response[index]["class"]);
         element.appendTo('#view_subjects');
       }
+    }).fail(function () {
+      toastr.error('The class details could not be fetched');
     });
   });
   $(".remove_subject").click(function (event) {
@@ -198,6 +206,8 @@ $(document).ready(function () {
       subject_id: subject_id
     }, function () {
       $("table tr[subject_id=" + subject_id + "]").remove();
+    }).fail(function () {
+      toastr.error('The subject could not be removed');
     });
   });
   $(".add_subject").click(function (event) {
@@ -229,6 +239,8 @@ $(document).ready(function () {
       }
 
       element.appendTo('#_append_teacher');
+    }).fail(function () {
+      toastr.error('The required information could not be fetched');
     });
   });
   $('._subject').on('select2:unselect', function (e) {
@@ -248,6 +260,8 @@ $(document).ready(function () {
       element.attr('subject_id', response[0].subjectid);
       element.attr('class_id', response[0]["class"]);
       element.appendTo('#view_subjects');
+    }).fail(function () {
+      toastr.error('The subject could not be added');
     });
   });
   $('.edit_subject').click(function () {
@@ -268,6 +282,8 @@ $(document).ready(function () {
         element.html(response[index].firstname);
         element.appendTo('.teacher_');
       }
+    }).fail(function () {
+      toastr.error('The required information could not be fetched');
     });
   });
   $('#edit_subject button').click(function () {
@@ -282,6 +298,8 @@ $(document).ready(function () {
     }, function (result) {
       var response = JSON.parse(result);
       $('.modal-body tr[subject_id=' + subject_id + '] .teacher').text(response[0].firstname);
+    }).fail(function () {
+      toastr.error('The teacher details could not be updated');
     });
   });
 });

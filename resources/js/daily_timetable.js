@@ -21,6 +21,9 @@ $(document).ready(function() {
             user_id: user_id, 
             date: date, 
             date_format: date_format
+        })
+        .fail(function() {
+            toastr.error('The timesheet could not be submitted');
         });
     });
 
@@ -131,5 +134,8 @@ function load_display_data(date, user_id, user_type, date_format) {
                 $("tbody tr[task_id=" + task_id + "] .stop").attr('task_id', response[index].task_id);
             }
         }
+    })
+    .fail(function() {
+        toastr.error('The timetable could not be displayed');
     });
 }

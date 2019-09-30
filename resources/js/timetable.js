@@ -38,6 +38,9 @@ $(document).ready(function() {
             $('.badge').text('');
             $('button').css('display', 'block');
         }
+    })
+    .fail(function() {
+        toastr.error('The request status cannot be determined');
     });
 
     load_display_data(date, user_id, user_type, date_format);
@@ -54,7 +57,11 @@ $(document).ready(function() {
             date: date, 
             user_id: user_id, 
             task_id: task_id, 
-            user_type: user_type});
+            user_type: user_type
+        })
+        .fail(function() {
+            toastr.error('The time could not be updated');
+        });
     });
 
     $('.datepicker').datepicker().on('changeDate', function(e) {
@@ -88,6 +95,9 @@ $(document).ready(function() {
                 $('.badge').text('');
                 $('button').css('display', 'block');
             }
+        })
+        .fail(function() {
+            toastr.error('The request status could not be determined');
         });
 
         $('.timetable').html("");
@@ -113,6 +123,9 @@ $(document).ready(function() {
                 $('button').css('display', 'none');
                 $('.badge').text('Pending');
             }
+        })
+        .fail(function() {
+            toastr.error('The request status could not be updated');
         });
     });
 });
@@ -324,5 +337,8 @@ function load_display_data(date,user_id,user_type,date_format) {
                 }
             }
         }
+    })
+    .fail(function() {
+        toastr.error('The timetable could not be displayed');
     });
 }

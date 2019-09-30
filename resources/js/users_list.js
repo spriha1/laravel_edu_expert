@@ -4,6 +4,7 @@ $(document).ready(function(){
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
     $(function () {
         let view = $('#view').val();
         if (view == 'regd') {
@@ -30,6 +31,48 @@ $(document).ready(function(){
                 { data: 'email', name: 'email'},
                 { data: 'action', name: 'action', orderable:false, searchable:false}
             ]
+        });
+        
+        $('body').on('click', '.change_status', function() {
+            let id   = $(this).attr('user_id');
+            let type = $(this).attr('type');
+            $.get('/change_user_type/'+id+'/'+type, function(result) {
+                if (result.success) {
+                    toastr.success('The user has beenv' + type + 'ed');
+                }
+                else {
+                    toastr.error('The user could not be ' + type + 'ed');
+                }
+                regd_users_table.draw();
+            });
+        });
+
+        $('body').on('click', '.remove', function() {
+            let id   = $(this).attr('user_id');
+            $.get('/remove_users/'+id, function(result) {
+                if (result.success) {
+                    toastr.success('The user has been removed');
+                }
+
+                else {
+                    toastr.error('The user could not be removed');
+                }
+                regd_users_table.draw();
+            });
+        });
+
+        $('body').on('click', '.add', function() {
+            let id   = $(this).attr('user_id');
+            $.get('/add_users/', function(result) {
+                if (result.success) {
+                    toastr.success('The user has been added');
+                }
+
+                else {
+                    toastr.error('The user could not be added');
+                }
+                regd_users_table.draw();
+            });
         });
     });
 });

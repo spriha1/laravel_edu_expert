@@ -166,6 +166,8 @@ $(document).ready(function () {
         user_type: user_type,
         date: date,
         date_format: date_format
+      }).fail(function () {
+        toastr.error('The time could not be added');
       });
     });
     $('.resume').click(function () {
@@ -216,6 +218,8 @@ $(document).ready(function () {
             } else {
               $('#login').submit();
             }
+          }).fail(function () {
+            toastr.error('The required information could not be fetched');
           });
         }
       });

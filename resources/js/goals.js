@@ -132,5 +132,10 @@ function load_display_data(date, user_id) {
                 $("ul li[goal_id=" + goal_id + "] .time .total_time").text(total_time);
             }
         }
+    })
+    .fail(function(response) {
+        if (response.status == 422) {
+            toastr.error('Goal could not be displayed');
+        }
     });
 }

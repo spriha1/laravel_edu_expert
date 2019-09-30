@@ -16,19 +16,26 @@ class FilesController extends Controller
 
     public function post_upload(Request $request)
     {
-    	if ($request->hasFile('cv')) {
-    		$path = $request->file('cv')->store(
-			    '/'
-			);
-           return back()->with('success', 'Image uploaded successfully');
-       }
+        try {
+        	if ($request->hasFile('cv')) {
+        		$path = $request->file('cv')->store(
+    			    '/'
+    			);
+               return back()->with('success', 'Image uploaded successfully');
+           }
+        }
+
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
     }
 
     public function send_mails()
     {
         $users = User::where('firstname', 'spriha')
-        ->orWhere('firstname', 'srivastava')
-        ->get();
+            ->orWhere('firstname', 'srivastava')
+            ->get();
+            
         foreach ($users as $user) {
             SendMail::dispatch($user);
         }

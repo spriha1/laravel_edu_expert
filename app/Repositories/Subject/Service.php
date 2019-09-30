@@ -2,8 +2,8 @@
 
 namespace App\Repositories\Subject;
 
-use App\Subject;
 use Illuminate\Support\Facades\Log;
+use App\Subject;
 use Exception;
 
 class Service implements SubjectInterface

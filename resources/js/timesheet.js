@@ -57,6 +57,9 @@ $(document).ready(function() {
                     element.appendTo('#view_timesheet');
                 }
             }
+        })
+        .fail(function() {
+            toastr.error('The timesheet could not be displayed');
         });
     });
 });

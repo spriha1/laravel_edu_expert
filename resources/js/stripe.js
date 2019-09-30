@@ -58,6 +58,9 @@ $(document).ready(function() {
             else {
                 alert(result);
             }
+        })
+        .fail(function() {
+            toastr.error('The payment could not be processed');
         });
     }
 });

@@ -16,6 +16,9 @@ $(document).ready(function() {
             $('.subject').html('');
             $('.subject').select2('destroy').select2();
             $('#class').val('');
+        })
+        .fail(function() {
+            toastr.error('The task could not be added');
         });
     });
 
@@ -35,6 +38,9 @@ $(document).ready(function() {
             }
 
             $('#class').trigger('change');
+        })
+        .fail(function() {
+            toastr.error('The information corresponding to the teacher could not be fetched');
         });
 
     }).trigger('change')
@@ -59,6 +65,9 @@ $(document).ready(function() {
                 element.text(response[index].name);
                 element.appendTo('.subject');
             }
+        })
+        .fail(function() {
+            toastr.error('The required information could not be fetched');
         });
     });
 });

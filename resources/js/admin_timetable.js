@@ -55,6 +55,9 @@ $(document).ready(function() {
                 $('#accept').css('display', 'none');
                 $('#reject').css('display', 'none');
             }
+        })
+        .fail(function() {
+            toastr.error('The request status could not be fetched');
         });
 
         load_display_data(date, user_id, date_format, user_type, rate,tax);
@@ -80,6 +83,9 @@ $(document).ready(function() {
                 $('#reject').css('display', 'inline');
                 $('.badge').text('Approved');
             }
+        })
+        .fail(function() {
+            toastr.error('The request status could not be updated');
         });
     });
 
@@ -103,6 +109,9 @@ $(document).ready(function() {
                 $('#accept').css('display', 'none');
                 $('#reject').css('display', 'none');
             }
+        })
+        .fail(function() {
+            toastr.error('The request status could not be updated');
         });
     });
 
@@ -145,6 +154,9 @@ $(document).ready(function() {
                 $('#accept').css('display', 'none');
                 $('#reject').css('display', 'none');
             }
+        })
+        .fail(function() {
+            toastr.error('The request status could not be fetched');
         });
 
         $('.timetable').html("");
@@ -352,7 +364,16 @@ function load_display_data(date, user_id, date_form, user_type, rate, tax) {
             function(result) {
                 $('#amount').text(parseFloat(result).toFixed(2));
                 $('input[name="amount"]').val(parseFloat(result).toFixed(2));
+            })
+            .fail(function() {
+                toastr.error('The currency could not be converted');
             });
+        })
+        .fail(function() {
+            toastr.error('The currency details could not be fetched');
         });
+    })
+    .fail(function() {
+        toastr.error('The timesheet could not be displayed');
     });
 }

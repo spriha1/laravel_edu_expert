@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\User;
 Use Illuminate\Support\Facades\Log;
-use Exception;
 use App\Repositories\User\UserInterface as UserInterface;
+use App\User;
+use Exception;
 
 class DashboardController extends Controller
 {
@@ -54,6 +54,7 @@ class DashboardController extends Controller
     public function render_teacher_dashboard(Request $request)
     {
     	$result = $this->user->render_teacher_dashboard($request->input('code'));
+        
         if ($result) {
 	        return view('teacher_dashboard', [
 	            'check_query_string' => $result['check_query_string'], 

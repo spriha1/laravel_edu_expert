@@ -1,42 +1,28 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\MessageBag;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Hash;
-use App\{User, UserType, Subject, Clas, Task, TeacherTask, StudentTask, TeacherRate, SharedTimesheet, Tax, Currency, StripeDetail};
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\MessageBag;
 use App\Mail\UpdateMail;
 use App\Mail\ForgotPassword;
-use DB;
-use Illuminate\Support\Facades\Log;
 use App\Repositories\User\UserInterface;
+use App\Clas as Clas;
+use App\StudentTask as StudentTask;
+use App\Subject as Subject;
+use App\Task as Task;
+use App\TeacherTask as TeacherTask;
+use App\User as User;
+use Carbon\Carbon;
+use DB;
 use Exception;
 
 class ProjectController extends Controller
 {
-    protected $user_type, $teacher_subject, $holiday, $goal_plan, $user, $teacher_rate, $tax, $currency, $stripe_detail, $user_service;
-
-    public function __construct(UserInterface $user_service)
-    {
-        $this->user_service     = $user_service;
-        $this->user             = new User;
-        $this->user_type        = new UserType;
-        $this->subject          = new Subject;
-        $this->clas             = new Clas;
-        $this->task             = new Task;
-        $this->teacher_task     = new TeacherTask;
-        $this->student_task     = new StudentTask;
-        $this->shared_timesheet = new SharedTimesheet;
-        $this->teacher_rate     = new TeacherRate;
-        $this->tax              = new Tax;
-        $this->currency         = new Currency;
-        $this->stripe_detail    = new StripeDetail;
-    }
-
     /**
     * 
     * @method home() 
@@ -50,8 +36,6 @@ class ProjectController extends Controller
     {
         return view('welcome');
     }
-
-    
 
     /**
     * 
@@ -72,16 +56,18 @@ class ProjectController extends Controller
     * @method verify_mail() 
     * 
     * @param string (email verification code)
-    * Desc : This method verifies the user's email id
+    * Desc : This method returns the view of the login page with a message based on the result of the verification of  the user's email id
     */
 
     public function verify_mail($code)
     {
         $res = $this->user_service->verify_mail($code);
         $msg = 'The url is either invalid or you already have activated your account.';
+
         if ($res) {
             $msg = 'Your account has been activated';
         }
+
         session()->flash('login_msg', $msg);
         return view('welcome');
     }
@@ -91,18 +77,20 @@ class ProjectController extends Controller
     * @method update_mail() 
     * 
     * @param string (verification code and email id)
-    * Desc : This method verifies the user's mail on update request
+    * Desc : This method redirects to the profile page based on the result of the verification of the user's mail on update request
     */
 
     public function update_mail($hash, $email)
     {
         $hash  = base64_decode($hash);
         $email = base64_decode($email);
-        $msg = 'The url is invalid';
-        $res = $this->user_service->update_mail($hash, $email);
+        $msg   = 'The url is invalid';
+        $res   = $this->user_service->update_mail($hash, $email);
+
         if ($res) {
             $msg = 'Your email has been updated, you can continue';
         }
+
         session()->flash('profile_msg', $msg);
         return redirect('/profile');
     }
@@ -112,16 +100,18 @@ class ProjectController extends Controller
     * @method send_password_mail() 
     * 
     * @param Request object
-    * Desc : This method sends a mail to the user to reset password
+    * Desc : This method returns the view of the forgot password page
     */
 
     public function send_password_mail(Request $request)
     {
         $res = $this->user_service->send_password_mail($request->input('username'));
         $msg = '';
+
         if ($res) {
             $msg = 'Please reset your password by clicking the link that has been sent to your email.';
         }
+
         session()->flash('reset_msg', $msg);
         return view('forgot_password');
     }
@@ -137,9 +127,10 @@ class ProjectController extends Controller
 
     public function reset_password_form($token, $expiry_time)
     {
-        $token = base64_decode($token);
+        $token       = base64_decode($token);
         $expiry_time = base64_decode($expiry_time);
-        $res = $this->user_service->reset_password_form($token, $expiry_time);
+        $res         = $this->user_service->reset_password_form($token, $expiry_time);
+
         if ($res) {
             return view('reset_password_form');
         }
@@ -156,12 +147,13 @@ class ProjectController extends Controller
     * @method reset_password() 
     * 
     * @param Request object
-    * Desc : This method resets the password
+    * Desc : This method returns the view of the login page
     */
 
     public function reset_password(Request $request)
     {
         $res = $this->user_service->reset_password($request->input('password'));
+
         if ($res) {
             $msg = 'Your password has been reset';
         }
@@ -186,21 +178,22 @@ class ProjectController extends Controller
     public function task_management()
     {
         try {
-            $teachers = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')
-                        ->where('user_type', 'Teacher')
-                        ->select('firstname', 'users.id')
-                        ->get();
-            $classes  = $this->clas->select('class')->distinct()->get();
+            $teachers = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')
+                ->where('user_type', 'Teacher')
+                ->select('firstname', 'users.id')
+                ->get();
+
+            $classes  = Clas::select('class')->distinct()->get();
+
+            return view('task_management', [
+                'classes'  => $classes,
+                'teachers' => $teachers
+            ]);
         }
 
         catch (Exception $e) {
             Log::error($e->getMessage());
         }
-
-        return view('task_management', [
-            'classes'  => $classes,
-            'teachers' => $teachers
-        ]);
     }
 
     /**
@@ -215,6 +208,7 @@ class ProjectController extends Controller
     public function add_timetable(Request $request)
     {
         if ($request->filled('class') && $request->filled('subject') && $request->filled('start_date') && $request->filled('end_date')) {
+
             $date_format = $request->input('date_format');
             $start_date  = $request->input('start_date');
             $end_date    = $request->input('end_date');
@@ -227,37 +221,43 @@ class ProjectController extends Controller
             $end_date    = $end_date['year'].'-'.$end_date['mon'].'-'.$end_date['mday'];
             $end_date    = strtotime($end_date);
             $length      = count($request->input('subject'));
+
             try {
                 DB::beginTransaction();
                 for ($index = 0; $index < $length; $index++) {
                     $subject_id = $request->input('subject')[$index];
                     for($index2 = $start_date; $index2 <= $end_date; $index2 = $index2 + 86400) {
-                        $result = $this->task->where([
+                        $result = Task::where([
                             ['subject_id', $subject_id],
                             ['class', $request->input('class')],
                             ['start_date', '<=', $index2],
                             ['end_date', '>=', $index2]
-                        ])->select()->get();
+                        ])
+                        ->select()
+                        ->get();
+
                         if ($result->count()) {
                             return("The task has already been added for these dates");
                         }
 
                         else {
-                            $task_id = $this->task->insertGetId([
+                            $task_id = Task::insertGetId([
                                 'subject_id' => $subject_id,
                                 'class'      => $request->input('class'),
                                 'start_date' => $start_date,
                                 'end_date'   => $end_date
                             ]);
-                            $result = $this->clas->where([
+                            $result = Clas::where([
                                 ['class', $request->input('class')],
                                 ['subject_id', $subject_id]
-                            ])->select('teacher_id')
+                            ])
+                            ->select('teacher_id')
                             ->distinct()
                             ->get();
+
                             foreach ($result as $key => $value) {
                                 for ($index3 = $start_date; $index3 <= $end_date; $index3 = $index3 + 86400) {
-                                    $this->teacher_task->insert([
+                                    TeacherTask::insert([
                                         'task_id' => $task_id,
                                         'teacher_id' => $value['teacher_id'],
                                         'on_date' => $index3
@@ -265,14 +265,16 @@ class ProjectController extends Controller
                                 }
                             }
 
-                            $result = $this->user->join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([
-                                ['user_type', 'Student'],
-                                ['class', $request->class]
-                            ])->select('users.id')
-                            ->get();
+                            $result = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([
+                                    ['user_type', 'Student'],
+                                    ['class', $request->class]
+                                ])
+                                ->select('users.id')
+                                ->get();
+
                             foreach ($result as $key => $value) {
                                 for ($index3 = $start_date; $index3 <= $end_date; $index3 = $index3 + 86400) {
-                                    $this->student_task->insert([
+                                    StudentTask::insert([
                                         'task_id' => $task_id,
                                         'student_id' => $value['id'],
                                         'on_date' => $index3
@@ -284,6 +286,7 @@ class ProjectController extends Controller
                         }
                     }
                 }
+                
                 DB::commit();
             }
 
@@ -307,17 +310,17 @@ class ProjectController extends Controller
     {
         if ($request->filled('class_id')) {
             try {
-                $result = $this->subject->join('class', 'subjects.id', '=', 'class.subject_id')
-                        ->where('class.class', $request->input('class_id'))
-                        ->select('subjects.id', 'name')
-                        ->get();
+                $result = Subject::join('class', 'subjects.id', '=', 'class.subject_id')
+                    ->where('class.class', $request->input('class_id'))
+                    ->select('subjects.id', 'name')
+                    ->get();
+
+                return(json_encode($result));
             }
 
             catch (Exception $e) {
                 Log::error($e->getMessage());
             }
-            
-            return(json_encode($result));
         }
     }
 

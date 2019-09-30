@@ -90,6 +90,9 @@ $(document).ready(function() {
                 $('#alert').text("Error");
                 $("#alert").css("display" , "block");
             }
+        })
+        .fail(function() {
+            toastr.error('The details could not be updated');
         });
     });
 
@@ -124,6 +127,9 @@ $(document).ready(function() {
                         $("#alert").text("This username already exists");
                         $("#alert").css("display" , "block");
                     }
+                })
+                .fail(function() {
+                    toastr.error('The required information could not be fetched');
                 });
 
                 if ($('#username').val() === "") {
@@ -171,6 +177,9 @@ $(document).ready(function() {
                         $("#alert").text("This email already exists");
                         $("#alert").css("display" , "block");
                     }
+                })
+                .fail(function() {
+                    toastr.error('The required information could not be fetched');
                 });
 
                 if ($('#email').val() === "") {
