@@ -21,7 +21,11 @@ $(document).ready(function(){
             responsive: true,
             ajax: {
                 url: url,
-                method: 'POST'
+                method: 'POST',
+                data: function(s){
+                    s.user_type = $('#user_type').val() 
+
+                }
             },
             order: [[0, 'asc']],
             columns: [
@@ -38,7 +42,7 @@ $(document).ready(function(){
             let type = $(this).attr('type');
             $.get('/change_user_type/'+id+'/'+type, function(result) {
                 if (result.success) {
-                    toastr.success('The user has beenv' + type + 'ed');
+                    toastr.success('The user has been' + type + 'ed');
                 }
                 else {
                     toastr.error('The user could not be ' + type + 'ed');
@@ -57,6 +61,7 @@ $(document).ready(function(){
                 else {
                     toastr.error('The user could not be removed');
                 }
+
                 regd_users_table.draw();
             });
         });
@@ -74,5 +79,11 @@ $(document).ready(function(){
                 regd_users_table.draw();
             });
         });
+
+        $('#go').on('click', function() {
+            event.preventDefault();
+            regd_users_table.draw();
+        });
+
     });
 });

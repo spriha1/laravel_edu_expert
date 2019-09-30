@@ -142,15 +142,24 @@ class Service implements UserInterface
     * Desc : This method returns information of all the registered users
     */
 
-    public function get_regd_users()
+    public function get_regd_users($search)
     {
         try {
             $select_data = ['firstname', 'lastname', 'email', 'username', 'users.id', 'block_status'];
-            $values = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')
-            ->where([
+            $users = User::join('user_types', 'users.user_type_id', '=', 'user_types.id');
+            $where = [
                 ['user_reg_status', 1],
                 ['user_type', '!=', 'Admin']
-            ])
+            ];
+
+            if($search != -1) {
+                $where = [
+                    ['user_reg_status', 1],
+                    ['user_type', $search]
+                ];
+            }
+
+            $values = $users->where($where)
             ->select($select_data)
             ->get();
 
@@ -228,39 +237,39 @@ class Service implements UserInterface
         }
     }
 
-    /**
-    * 
-    * @method post_regd_users() 
-    * 
-    * @param Request object
-    * @return Collection of user information for all the registered users for a specific usertype
-    * Desc : This method fetches the registered users of a specific type and returns the same
-    */
+    // /**
+    // * 
+    // * @method post_regd_users() 
+    // * 
+    // * @param Request object
+    // * @return Collection of user information for all the registered users for a specific usertype
+    // * Desc : This method fetches the registered users of a specific type and returns the same
+    // */
 
-    public function post_regd_users($user_type)
-    {
-        try {
-            $values = [];
-            $values['user_types'] = UserType::where('user_type', '!=', 'Admin')
-                ->select('user_type')
-                ->get();
+    // public function post_regd_users($user_type)
+    // {
+    //     try {
+    //         $values = [];
+    //         $values['user_types'] = UserType::where('user_type', '!=', 'Admin')
+    //             ->select('user_type')
+    //             ->get();
 
-            $values['results'] = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')
-                ->where([
-                    ['user_reg_status', 1],
-                    ['user_type', $user_type]
-                ])
-                ->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')
-                ->get();
+    //         $values['results'] = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')
+    //             ->where([
+    //                 ['user_reg_status', 1],
+    //                 ['user_type', $user_type]
+    //             ])
+    //             ->select('users.id', 'firstname', 'lastname', 'email', 'username', 'block_status')
+    //             ->get();
 
-            return $values;
-        }
+    //         return $values;
+    //     }
 
-        catch (Exception $e) {
-            Log::error($e->getMessage());
-            return false;
-        }
-    }
+    //     catch (Exception $e) {
+    //         Log::error($e->getMessage());
+    //         return false;
+    //     }
+    // }
 
     /**
     * 

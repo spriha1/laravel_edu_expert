@@ -20,7 +20,7 @@ interface UserInterface
 
 	public function regd_users();
 
-	public function post_regd_users($user_type);
+	// public function post_regd_users($user_type);
 
 	public function render_admin_dashboard();
 

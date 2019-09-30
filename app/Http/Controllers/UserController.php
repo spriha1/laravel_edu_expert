@@ -150,10 +150,12 @@ class UserController extends Controller
     * Desc : This method returns the datatable view of the regd_users page
     */
 
-    public function get_regd_users()
-    {
-        $values = $this->user->get_regd_users();
-
+    public function get_regd_users(Request $request)
+    {   
+        $search = $request->input('user_type');
+        // dd($search);
+        $values = $this->user->get_regd_users($search);
+        
         if ($values) {
             $datatable = Datatables::of($values)
                 ->addColumn('action', function($values) {
@@ -192,13 +194,13 @@ class UserController extends Controller
         if ($values) {
             $datatable = Datatables::of($values)
                 ->addColumn('action', function($values) {
-                    $status = '<div class="col-sm-4 unblock" user_id='. $values->id .'><a href="unblock_users/'. $values->id .'"><button class="btn btn-info">Unblock</button></a></div>';
+                    $status = '<div class="col-sm-4"><button class="btn btn-info change_status" user_id='. $values->id .'>Unblock</button></div>';
 
                     if ($values->block_status == 0) {
-                        $status = '<div class="col-sm-4 block" user_id='. $values->id .'><a href="block_users/'. $values->id .'"><button class="btn btn-warning">Block</button></a></div>';
+                        $status = '<div class="col-sm-4"><button class="btn btn-warning change_status" user_id='. $values->id .'>Block</button></div>';
                     }
 
-                    return '<div class="col-sm-4 remove" user_id='. $values->id .'><a href="remove_users/'. $values->id .'"><button class="btn btn-danger">Remove</button></a></div><div class="col-sm-4 add" user_id='. $values->id .'><a href="/add_users/'. $values->id .'"><button class="btn btn-success">Add</button></a></div>'. $status;
+                    return '<div class="col-sm-4"><button class="btn btn-danger remove" user_id='. $values->id .'>Remove</button></div><div class="col-sm-4"><button class="btn btn-success add" user_id='. $values->id .'>Add</button></div>'. $status;
                 })
                 ->rawColumns(['action']);
 
@@ -249,19 +251,9 @@ class UserController extends Controller
 
     public function post_regd_users(Request $request)
     {
-        if ($request->input('user_type') != -1) {
-            $values = $this->user->post_regd_users($request->input('user_type'));
-            if ($values) {
-                return view('regd_users', [
-                    'user_types' => $values['user_types'],
-                    'results'    => $values['results'],
-                    'search'     => $request->input('user_type')
-                ]);
-            }
+        if ($request->input('search') != -1) {
+            $values = $this->get_regd_users($request->input('search'));
         }
-
-        session()->flash('error', 'Please select a valid user type');
-        return redirect()->back();
     }
 
     /**

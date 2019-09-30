@@ -5,7 +5,7 @@
 @section('content')
 <div class="content-wrapper">
     <br><br>
-    <form class="form-inline" method="POST" action="/regd_users">
+    <form class="form-inline">
         @csrf
         <div>
             @if(Session::has('error'))
@@ -22,7 +22,7 @@
         </select>
         </div>
         <div class="form-group mx-auto">
-            <button class="btn btn-success form-control mr-sm-2 mb-2" type="submit">Go</button>
+            <button class="btn btn-success form-control mr-sm-2 mb-2" id="go" type="submit">Go</button>
         </div>
     </form>
     <section class="content">
