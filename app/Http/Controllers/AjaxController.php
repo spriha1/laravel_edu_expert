@@ -242,99 +242,107 @@ class AjaxController extends Controller
     {
         $msg = (object) null;
 
-        if($request->filled('fname')) {
-            User::where('id', Auth::user()->id)
-                ->update(['firstname' => $request->input('fname')]);
+        if ($request->hasFile('profile_pic')) {
+            $user = User::find(Auth::id());
+            $t = $user->addMedia($request->file('profile_pic'))->toMediaCollection('images', 's3');
             $msg->success = 1;
         }
 
-        if($request->filled('lname')) {
-            User::where('id', Auth::user()->id)
-                ->update(['lastname' => $request->input('lname')]);
-            $msg->success = 1;
-        }
+        // if($request->filled('fname')) {
+        //     User::where('id', Auth::user()->id)
+        //         ->update(['firstname' => $request->input('fname')]);
+        //     $msg->success = 1;
+        // }
 
-        if($request->filled('date_format')) {
-            User::where('id', Auth::user()->id)
-                ->update(['date_format' => $request->input('date_format')]);
-            $msg->success = 1;
-        }
+        // if($request->filled('lname')) {
+        //     User::where('id', Auth::user()->id)
+        //         ->update(['lastname' => $request->input('lname')]);
+        //     $msg->success = 1;
+        // }
 
-        if($request->filled('password')) {
-            User::where('id', Auth::user()->id)
-                ->update(['password' => Hash::make($request->input('password'))]);
-            $msg->success = 1;
-        }
+        // if($request->filled('date_format')) {
+        //     User::where('id', Auth::user()->id)
+        //         ->update(['date_format' => $request->input('date_format')]);
+        //     $msg->success = 1;
+        // }
 
-        if($request->filled('currency')) {
-            User::where('id', Auth::user()->id)
-                ->update(['currency_id' => $request->input('currency')]);
-            $msg->success = 1;
-        }
+        // if($request->filled('password')) {
+        //     User::where('id', Auth::user()->id)
+        //         ->update(['password' => Hash::make($request->input('password'))]);
+        //     $msg->success = 1;
+        // }
 
-        if($request->filled('lat')) {
-            User::where('id', Auth::user()->id)
-                ->update(['latitude' => $request->input('lat')]);
-            $msg->success = 1;
-        }
+        // if($request->filled('currency')) {
+        //     User::where('id', Auth::user()->id)
+        //         ->update(['currency_id' => $request->input('currency')]);
+        //     $msg->success = 1;
+        // }
 
-        if($request->filled('long')) {
-            User::where('id', Auth::user()->id)
-                ->update(['longitude' => $request->input('long')]);
-            $msg->success = 1;
-        }
+        // if($request->filled('lat')) {
+        //     User::where('id', Auth::user()->id)
+        //         ->update(['latitude' => $request->input('lat')]);
+        //     $msg->success = 1;
+        // }
 
-        if($request->filled('rate')) {
-            $rates = User::where('id', Auth::user()->id)
-                ->update(['rate' => $request->input('rate')]);
-            $msg->success = 1;
-        }
+        // if($request->filled('long')) {
+        //     User::where('id', Auth::user()->id)
+        //         ->update(['longitude' => $request->input('long')]);
+        //     $msg->success = 1;
+        // }
 
-        if($request->filled('address')) {
-            User::where('id', Auth::user()->id)
-                ->update(['address' => $request->input('address')]);
-            $msg->success = 1;
-        }
+        // if($request->filled('rate')) {
+        //     $rates = User::where('id', Auth::user()->id)
+        //         ->update(['rate' => $request->input('rate')]);
+        //     $msg->success = 1;
+        // }
 
-        if($request->filled('tax')) {
-            Tax::where('name', 'GST')
-                ->update(['percentage' => $request->input('tax')]);
-            $msg->success = 1;
-        }
+        // if($request->filled('address')) {
+        //     User::where('id', Auth::user()->id)
+        //         ->update(['address' => $request->input('address')]);
+        //     $msg->success = 1;
+        // }
 
-        if($request->filled('email')) {
-            $result = User::where('email', $request->input('email'))
-                ->select('id')
-                ->get();
+        // if($request->filled('tax')) {
+        //     Tax::where('name', 'GST')
+        //         ->update(['percentage' => $request->input('tax')]);
+        //     $msg->success = 1;
+        // }
 
-            if ($result->count()) {
-                $msg->email = 0;
-            }
+        // if($request->filled('email')) {
+        //     $result = User::where('email', $request->input('email'))
+        //         ->select('id')
+        //         ->get();
 
-            else {
-                //mail
-                $hash = Auth::user()->email_verification_code;
-                User::where('id', Auth::user()->id)->update(['email_verification_status' => 0]);
-                Mail::to($request->input('email'))->send(new UpdateMail($hash, $request->input('email')));
-                $msg->email = 1;
-            }
-        }
+        //     if ($result->count()) {
+        //         $msg->email = 0;
+        //     }
 
-        if($request->filled('username')) {
-            $result = User::where('username', $request->input('username'))
-                ->select('id')
-                ->get();
+        //     else {
+        //         //mail
+        //         $hash = Auth::user()->email_verification_code;
+        //         User::where('id', Auth::user()->id)->update(['email_verification_status' => 0]);
+        //         Mail::to($request->input('email'))->send(new UpdateMail($hash, $request->input('email')));
+        //         $msg->email = 1;
+        //     }
+        // }
 
-            if ($result->count()) {
-                $msg->username = 0;
-            }
+        // if($request->filled('username')) {
+        //     $result = User::where('username', $request->input('username'))
+        //         ->select('id')
+        //         ->get();
 
-            else {
-                User::where('id', Auth::user()->id)
-                    ->update(['username' => $request->input('username')]);
-                $msg->success = 1;
-            }
-        }
+        //     if ($result->count()) {
+        //         $msg->username = 0;
+        //     }
+
+        //     else {
+        //         User::where('id', Auth::user()->id)
+        //             ->update(['username' => $request->input('username')]);
+        //         $msg->success = 1;
+        //     }
+        // }
+
+
 
         $res = json_encode($msg);
         return($res);

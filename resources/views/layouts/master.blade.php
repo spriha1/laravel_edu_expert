@@ -52,6 +52,14 @@
                                     <p>
                                         {{ Auth::user()->firstname }}
                                     </p>
+                                    @php 
+                                    $test = Auth::user()->getFirstMedia('images');
+                                    $url = $test->getTemporaryUrl(\Carbon\Carbon::now()->addMinutes(5));
+                                     @endphp
+                                    <img src="{{ 
+                                    (Auth::user()->getMedia('images')->count() > 0) ? $url : 
+                                    asset('images/google.png') 
+                                    }}" alt="Image" class="img-fluid mb-5">
                                 </li>
                                 <!-- Menu Body -->
                                 <!-- Menu Footer-->

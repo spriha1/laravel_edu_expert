@@ -58,41 +58,49 @@ $(document).ready(function() {
     $("#registration").submit(function() {
         event.preventDefault();
         $("#spinner").css('display','block');
-        $.post('/update_profile', $('#registration').serialize() , function(result) {
-            $('#spinner').css('display', 'none');
-            var response = JSON.parse(result);
-            if (response.email == 1) {
-                $('#alert').text("Please verify it by clicking the activation link that has been send to your email.");
-                $("#alert").css("display" , "block");
-            }
+        var form_data = new FormData(this);
+        $.ajax({
+            url        : '/update_profile',
+            type       : "post",
+            data       : form_data,
+            processData: false,
+            contentType: false,
+            success: function(result){
+                $('#spinner').css('display', 'none');
+                var response = JSON.parse(result);
+                if (response.email == 1) {
+                    $('#alert').text("Please verify it by clicking the activation link that has been send to your email.");
+                    $("#alert").css("display" , "block");
+                }
 
-            else if (response.success == 1) {
-                $('#info').text("Updated successfully");
-                $("#info").css("display" , "block");
-            }
+                else if (response.success == 1) {
+                    $('#info').text("Updated successfully");
+                    $("#info").css("display" , "block");
+                }
 
-            else if (response.email == 0) {
-                $('#alert').text("Invalid email format");
-                $("#alert").css("display" , "block");
-            }
+                else if (response.email == 0) {
+                    $('#alert').text("Invalid email format");
+                    $("#alert").css("display" , "block");
+                }
 
-            else if (response.username == 0) {
-                $('#alert').text("Invalid username format");
-                $("#alert").css("display" , "block");
-            }
+                else if (response.username == 0) {
+                    $('#alert').text("Invalid username format");
+                    $("#alert").css("display" , "block");
+                }
 
-            else if (Object.keys(response).length === 0 && response.constructor === Object) {
-                $('#alert').text("You need to fill in atleast one field to update");
-                $("#alert").css("display" , "block");
-            }
+                else if (Object.keys(response).length === 0 && response.constructor === Object) {
+                    $('#alert').text("You need to fill in atleast one field to update");
+                    $("#alert").css("display" , "block");
+                }
 
-            else {
-                $('#alert').text("Error");
-                $("#alert").css("display" , "block");
+                else {
+                    $('#alert').text("Error");
+                    $("#alert").css("display" , "block");
+                }
+            },
+            error: function() {
+                toastr.error('The details could not be updated');
             }
-        })
-        .fail(function() {
-            toastr.error('The details could not be updated');
         });
     });
 

@@ -14,7 +14,7 @@
     <div class="col-md-6">
         <!-- Horizontal Form -->
         <div class="box box-info">
-            {{ Form::model(Auth::user(), ['class' => 'form-horizontal', 'id' => 'registration', 'name' => 'registration']) }}
+            {{ Form::open(['class' => 'form-horizontal', 'id' => 'registration', 'name' => 'registration', 'files' => true]) }}
                 {{ session()->get('profile_msg') }}
 
                 <div id="alert" class='alert alert-danger' style="display: none;">
@@ -115,6 +115,12 @@
                     <div class="form-group">
                         <label for="address" class="col-sm-3 control-label">Address</label>
                         <div id="geocoder" class="col-sm-9">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile_pic" class="col-sm-3 control-label">Add Profile Picture</label>
+                        <div class="col-sm-9">
+                            {{ Form::file('profile_pic', array('class' => 'form-control', 'id' => 'profile_pic')) }}
                         </div>
                     </div>
                     {{ Form::hidden('lat', Auth::user()->latitude, array('id' => 'lat')) }}

@@ -18,9 +18,7 @@ class FilesController extends Controller
     {
         try {
         	if ($request->hasFile('cv')) {
-        		$path = $request->file('cv')->store(
-    			    '/'
-    			);
+        		$path = $request->file('cv')->store('/');
                return back()->with('success', 'Image uploaded successfully');
            }
         }
