@@ -1,212 +1,130 @@
 $(document).ready(function() {
-	$('body').submit(function(event) {
-		//event.preventDefault();
-		//if (event.target.id === 'login') {
-			// var username = $('#username').val().trim();
-			// var password = $('#password').val().trim();
-			// if (username === "") {
-			// 	$('#username').css("borderColor" , "red");
-			// }
+    function validation()
+    {
+        jQuery.validator.addMethod("onlyalpha", function(value, element) {
+            return this.optional( element ) || /^([a-zA-Z]+)$/.test( value );
+        }, 
+        'Only alphabetic characters are allowed');
 
-			// if (password === "") {
-			// 	$('#password').css("borderColor" , "red");
-			// }
+        jQuery.validator.addMethod("username", function(value, element) {
+            return this.optional( element ) || /^([a-zA-Z0-9@_]+)$/.test( value );
+        }, 
+        'Please enter a valid username');
 
-			// if (username === "" || password === "") {
-			// 	$("#alert").text("Please fill in the highlighted fields");
-			// 	$("#alert").css("display" , "block");
-			// }
-			// else {
-				// $.post('ajax_login.php', $('#login').serialize(), function(result) {
-				// 	var response = JSON.parse(result)["msg"];
-				// 	var newToken = JSON.parse(result)["token"];
-				// 	$('#token').val(newToken);
-				// 	console.log(response);
-				// 	if (response === "Admin") {
-				// 		window.location.href = 'admin_dashboard.php';
-				// 	}
-				// 	else if (response === "Student") {
-				// 		window.location.href = 'student_dashboard.php';
-				// 	}
-				// 	else if (response === "Teacher") {
-				// 		window.location.href = 'teacher_dashboard.php';
-				// 	}
-				// 	else {
-				// 		$('#alert').text(response);
-				// 		$("#alert").css("display" , "block");
-				// 	}
-				// });
-			// }
-		//}
+        jQuery.validator.addMethod("password", function(value, element) {
+            return this.optional( element ) || /^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/.test( value );
+        }, 
+        'Please enter a valid password');
 
-		if (event.target.id === 'registration') {
-			
-			event.preventDefault();
+        $("#registration").validate({
+            rules: {
+                'fname': {
+                    'required': true,
+                    'onlyalpha': true
+                },
+                'lname': {
+                    'required': true,
+                    'onlyalpha': true
+                },
+                'user_type': 'required',
+                'email': {
+                    'required': true,
+                    'email': true
+                },
+                'password': {
+                    'required': true,
+                    'password': true
+                },
+                'username': {
+                    'required': true,
+                    'username': true
+                }
+            }
+        });
+    }
 
-			$.post('register' , $('#registration').serialize() , function(result){
-				console.log('success');
-			})
-			.fail(function(result) {
-				console.log(result.responseText);
-			    var res = JSON.parse(result.responseText);
-			    var errors = res.errors;
-				$('#alert').html(errors.fname + '<br>' + errors.lname + '<br>' + errors.username + '<br>' + errors.email + '<br>' + errors.password);
-				
-				$("#alert").css("display" , "block");
-			});
-		}
-	});
+    $('body').submit(function(event) {
+        event.preventDefault();
+        validation();
+        if ($('#registration').valid()) {
+            $("#spinner").css('display','block');
+            $.post('/register' , $('#registration').serialize() , function(result){
+                $('#spinner').css('display', 'none');
+                $("#alert").css("display" , "block");
+                $("#alert").text(result);
+            })
+            .fail(function(response) {
+                if (response.status == 422) {
+                    $("#spinner").css('display','none');
 
-	$('body').click(function() {
-		if (event.target.id === 'password' && event.target.closest("form").getAttribute("id") === 'registration') {
-			var msg = "The password :<br> Must be a minimum of 8 characters<br>Must contain at least 1 number<br>Must contain at least one uppercase character<br>Must contain at least one lowercase character";
-			$("#info_password").html(msg);
-			$("#info_password").css("display" , "block");
-		}
+                    let errors = response.responseJSON.errors;
+                    for(var error in errors) {
+                        console.log('#'+error+'-error',errors[error][0]);
+                        $('#'+error+'-error').html(errors[error][0]);
+                        $('#'+error+'-error').show();
+                    } 
+                    toastr.error('Please fill the fields properly');
+                }
+                else {
+                    toastr.error('These details could not be registered');
+                }
+            });
+        }
+    });
 
-		if (event.target.id === 'username' && event.target.closest("form").getAttribute("id") === 'registration') {
-			var msg = "The username can contain letters, digits, @ and _";
-			$("#info_username").text(msg);
-			$("#info_username").css("display" , "block");
-		}
-	});
+    $('body').click(function() {
+        if (event.target.id === 'password' && event.target.closest("form").getAttribute("id") === 'registration') {
+            var msg = "The password :<br> Must be a minimum of 8 characters<br>Must contain at least 1 number<br>Must contain at least one uppercase character<br>Must contain at least one lowercase character";
+            $("#info_password").html(msg);
+            $("#info_password").css("display" , "block");
+        }
 
+        if (event.target.id === 'username' && event.target.closest("form").getAttribute("id") === 'registration') {
+            var msg = "The username can contain letters, digits, @ and _";
+            $("#info_username").text(msg);
+            $("#info_username").css("display" , "block");
+        }
+    });
 
-	$('input').blur(function() {
-		
-		if (event.target.closest("form").getAttribute("id") === 'registration') {
-			if (event.target.id === 'password') {
-				$("#info_password").css("display" , "none");
-			}
-			else if (event.target.id === 'username') {
-				$("#info_username").css("display" , "none");
-				var username_pattern = /^([a-zA-Z0-9@_]+)$/;
-				var username = $('#username').val();
-				$.get("fetch_info" , {q1: "username", q2: username} , function(data) {
-					if (Number(data) === 1) {
-						$('#username').css("borderColor" , "red");
-						$("#alert").text("This username already exists");
-						$("#alert").css("display" , "block");
-					}
-				})
-			}
-		}
-	});	
-	// 		if (event.target.id === 'username') {
-	// 			$("#info_username").css("display" , "none");
-	// 			var username_pattern = /^([a-zA-Z0-9@_]+)$/;
-	// 			var username = $('#username').val();
-	// 			$.get("fetch_info.php" , {q1: "username", q2: username} , function(data) {
-	// 				if (Number(data) === 1) {
-	// 					$('#username').css("borderColor" , "red");
-	// 					$("#alert").text("This username already exists");
-	// 					$("#alert").css("display" , "block");
-	// 				}
-	// 			})
+    $('input').blur(function() {
+        if (event.target.closest("form").getAttribute("id") === 'registration') {
+            if (event.target.id === 'password') {
+                $("#info_password").css("display" , "none");
+            }
 
-	// 			if ($('#username').val() === "") {
-	// 				$('#username').css("borderColor" , "rgba(0,0,0,.125)");
-	// 			}
+            else if (event.target.id === 'username') {
+                $("#info_username").css("display" , "none");
+                var username = $('#username').val();
+                $.get("/fetch_info" , {q1: "username", q2: username} , function(data) {
+                    if (Number(data) === 1) {
+                        $('#username').css("borderColor" , "red");
+                        $("#alert").text("This username already exists");
+                        $("#alert").css("display" , "block");
+                    }
+                });
+            }
 
-	// 			else if (!username_pattern.test($('#username').val())) {
-	// 				$('#username').css("borderColor" , "red");
-	// 				$("#alert").text("Invalid username");
-	// 				$("#alert").css("display" , "block");
-	// 			}
+            else if (event.target.id === 'email') {
+                $("#info_email").css("display" , "none");
+                var email = $('#email').val();
+                $.get("/fetch_info" , {q1: "email", q2: email} , function(data) {
+                    if (Number(data) === 1) {
+                        $('#email').css("borderColor" , "red");
+                        $("#alert").text("This email already exists");
+                        $("#alert").css("display" , "block");
+                    }
+                });
+            }
+        }
+    }); 
 
-	// 			else {
-	// 				$('#username').css("borderColor" , "green");
-	// 			}
-	// 		}
-
-	// 		else if (event.target.id === 'password') {
-	// 			$("#info_password").css("display" , "none");
-	// 			var password_pattern = /^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/;
-	// 			if ($('#password').val() === "") {
-	// 				$('#password').css("borderColor" , "rgba(0,0,0,.125)");
-	// 			}
-
-	// 			else if (!password_pattern.test($('#password').val())) {
-	// 				$('#password').css("borderColor" , "red");
-	// 				$("#alert").text("Invalid password");
-	// 				$("#alert").css("display" , "block");
-	// 			}
-
-	// 			else {
-	// 				$('#password').css("borderColor" , "green");
-	// 			}
-	// 		}
-
-	// 		else if (event.target.id ==="email") {
-	// 			var email = $('#email').val();
-	// 			$.get("fetch_info.php", {q1: "email", q2: email}, function(data) {
-	// 				if (Number(data) === 1) {
-	// 					$('#email').css("borderColor" , "red");
-	// 					$("#alert").text("This email already exists");
-	// 					$("#alert").css("display" , "block");
-	// 				}
-	// 			})
-
-	// 			if ($('#email').val() === "") {
-	// 				$('#email').css("borderColor" , "rgba(0,0,0,.125)");
-	// 			}
-
-	// 			else if ($('#email').val().indexOf("@") < 0 || $('#email').val().indexOf(".") < 0) {
-	// 				$('#email').css("borderColor" , "red");
-	// 				$("#alert").text("Invalid email");
-	// 				$("#alert").css("display" , "block");
-	// 			}
-
-	// 			else {
-	// 				$('#email').css("borderColor" , "green");
-	// 			}
-	// 		}
-
-	// 		else if (event.target.id === 'fname') {
-	// 			var name_pattern = /^([a-zA-Z]+)$/;
-	// 			if ($('#fname').val() === "") {
-	// 				$('#fname').css("borderColor" , "rgba(0,0,0,.125)");
-	// 			}
-
-	// 			else if (!name_pattern.test($('#fname').val())) {
-	// 				$('#fname').css("borderColor" , "red");
-	// 				$("#alert").text("Invalid first name");
-	// 				$("#alert").css("display" , "block");
-	// 			}
-
-	// 			else {
-	// 				$('#fname').css("borderColor" , "green");
-	// 			}
-	// 		}
-
-	// 		else if (event.target.id === 'lname') {
-	// 			var name_pattern = /^([a-zA-Z]+)$/;
-	// 			if ($('#lname').val() === "") {
-	// 				$('#lname').css("borderColor" , "rgba(0,0,0,.125)");
-	// 			}
-
-	// 			else if (!name_pattern.test($('#lname').val())) {
-	// 				$('#lname').css("borderColor" , "red");
-	// 				$("#alert").text("Invalid last name");
-	// 				$("#alert").css("display" , "block");
-	// 			}
-
-	// 			else {
-	// 				$('#lname').css("borderColor" , "green");
-	// 			}
-	// 		}
-	// 	}
-	// });
-	$('#user_type').change(function(event) {
-		if ($('#user_type').val() === 'Teacher') {
-			$('.subject').closest('div').css('display', 'block');
-		}
-		if ($('#user_type').val() === 'Student') {
-			$('.subject').closest('div').css('display', 'none');
-		}
-	});
-
-	$('.subject').change(function() {
-		console.log($('.subject').val());
-	})
+    $('#user_type').change(function(event) {
+        if ($('#user_type').val() === 'Teacher') {
+            $('.subject').closest('div').css('display', 'block');
+        }
+        
+        if ($('#user_type').val() === 'Student') {
+            $('.subject').closest('div').css('display', 'none');
+        }
+    });
 })

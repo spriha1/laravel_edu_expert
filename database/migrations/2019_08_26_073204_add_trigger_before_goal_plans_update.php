@@ -13,7 +13,7 @@ class AddTriggerBeforeGoalPlansUpdate extends Migration
      */
     public function up()
     {
-    DB::unprepared('CREATE TRIGGER before_goal_plans_update BEFORE UPDATE ON goal_plans FOR EACH ROW BEGIN SET new.total_time = new.to_time - new.from_time; END;');
+        DB::unprepared('CREATE TRIGGER before_goal_plans_update BEFORE UPDATE ON goal_plans FOR EACH ROW BEGIN SET new.total_time = new.to_time - new.from_time; END;');
     }
 
     /**

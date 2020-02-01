@@ -1,139 +1,149 @@
 @extends('layouts.master')
-
-@extends('layouts.sidenav')
-
 @section('sidenav_content')
-
-
-<li>
-	<a href="admin_dashboard">
-		<i class="fa fa-address-card"></i> <span>Dashboard</span>
-	</a>
-</li>
-
-<li>
-	<a href="profile">
-		<i class="fa fa-address-card"></i> <span>My Profile</span>
-	</a>
-</li>
-<li>
-	<a href="pending_requests">
-		<i class="fa fa-th"></i> <span>New Requests</span>
-	</a>
-</li>
-<li>
-	<a href="regd_users">
-		<i class="fa fa-users"></i> <span>Registered Users</span>
-	</a>
-</li>
-<li>
-	<a href="teacher_timesheets.php">
-		<i class="fa fa-th"></i> <span>Teacher Timesheet</span>
-	</a>
-</li>
-
-<li>
-	<a href="task_management.php">
-		<i class="fa fa-th"></i> <span>Task Management</span>
-	</a>
-</li>
-<li>
-	<a href="system_management.php">
-		<i class="fa fa-th"></i> <span>System Management</span>
-	</a>
-</li>
-
+@if ($usertype === 'Admin')
+    @include('layouts.admin_sidenav')
+@elseif ($usertype === 'Teacher')
+    @include('layouts.teacher_sidenav')
+@elseif ($usertype === 'Student')
+    @include('layouts.student_sidenav')
+@endif
 @endsection
-
-
 @section('content')
 <div class="content-wrapper">
-	<br><br>
-	<div class="col-md-6">
-		<!-- Horizontal Form -->
-		<div class="box box-info">
-			<form class="form-horizontal" id="registration" name="registration" method="POST">
-				<div id="alert" class='alert alert-danger' style="display: none;">
-				</div>
-				@csrf
-				<div class="box-body">
-					@foreach ($results as $result)
-					<div class="form-group">
-						<label for="fname" class="col-sm-3 control-label">First Name</label>
-						<div class="col-sm-9">
-							<input type="text" class="form-control" id="fname" name="fname" readonly value="{{ $result->firstname }}">
-						</div>
-					</div>
-					<div class="form-group">
-						<label for="lname" class="col-sm-3 control-label">Last Name</label>
-						<div class="col-sm-9">
-							<input type="text" class="form-control" id="lname" name="lname" readonly value="{{ $result->lastname }}">
-						</div>
-					</div>
-					<div class="form-group">
-						<label for="username" class="col-sm-3 control-label">Username</label>
-						<div class="col-sm-9">
-							<input type="text" class="form-control" name="username" id="username" readonly value="{{ $result->username }}">
-						</div>
-					</div>
-					<div class="form-group">
-						<label for="email" class="col-sm-3 control-label">Email</label>
-						<div class="col-sm-9">
-							<input type="email" class="form-control" name="email" id="email" readonly value="{{ $result->email }}">
-						</div>
-					</div>
-					<div class="form-group">
-						<label for="date_format" class="col-sm-3 control-label">Date Format</label>
-						<div class="col-sm-9">
-							<select name="date_format" id="date_format" class="form-control" disabled>
-								<option value="yyyy-mm-dd" {{ $result->date_format === 'yyyy-mm-dd' ? 'selected="selected"' : '' }}>yyyy-mm-dd</option>
+    <br><br>
+    <div class="col-md-6">
+        <!-- Horizontal Form -->
+        <div class="box box-info">
+            {{ Form::open(['class' => 'form-horizontal', 'id' => 'registration', 'name' => 'registration', 'files' => true]) }}
+                {{ session()->get('profile_msg') }}
 
-								<option value="yyyy/mm/dd" {{ $result->date_format === 'yyyy/mm/dd' ? 'selected="selected"' : '' }}>yyyy/mm/dd</option>
+                <div id="alert" class='alert alert-danger' style="display: none;">
+                </div>
+                <div id="info" class='alert alert-success' style="display: none;">
+                </div>
+                <img src="/images/load.gif" id="spinner" style="display:none; width:20%; height:20%">
+                <div class="box-body">
+                    <div class="form-group">
+                        <label for="fname" class="col-sm-3 control-label">First Name</label>
+                        <div class="col-sm-9">
+                            {{ Form::text('fname', Auth::user()->firstname, array('class' => 'form-control', 'id' => 'fname', 'readonly' => 'readonly')) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="lname" class="col-sm-3 control-label">Last Name</label>
+                        <div class="col-sm-9">
+                            {{ Form::text('lname', Auth::user()->lastname, array('class' => 'form-control', 'id' => 'lname', 'readonly' => 'readonly')) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-9">
+                            <div id="info_username" class='text-info' style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="username" class="col-sm-3 control-label">Username</label>
+                        <div class="col-sm-9">
+                            {{ Form::text('username', Auth::user()->username, array('class' => 'form-control', 'id' => 'username', 'readonly' => 'readonly')) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="col-sm-3 control-label">Email</label>
+                        <div class="col-sm-9">
+                            {{ Form::email('email', Auth::user()->email, array('class' => 'form-control', 'id' => 'email', 'readonly' => 'readonly')) }}
+                        </div>
+                    </div>
+                    @if ($usertype === 'Teacher')
+                    @foreach ($rates as $rate)
+                    <div class="form-group">
+                        <label for="rate" class="col-sm-3 control-label">Rate per hour</label>
+                        <div class="col-sm-9">
+                            {{ Form::number('rate', $rate->rate, array('class' => 'form-control', 'id' => 'rate', 'readonly' => 'readonly')) }}
+                        </div>
+                    </div>
+                    @endforeach
+                    @endif
+                    @if ($usertype === 'Admin' || $usertype === 'Teacher')
+                    <div class="form-group">
+                        <label for="currency" class="col-sm-3 control-label">Currency</label>
+                        <div class="col-sm-9">
+                            {{ Form::select('currency', $currencies, $currency_id, array('id' => 'currency', 'class' => 'form-control')) }}
+                        </div>
+                    </div>
+                    @endif
+                    @if ($usertype === 'Admin')
+                    <div class="form-group">
+                        <label for="tax" class="col-sm-3 control-label">GST</label>
+                        <div class="col-sm-9">
+                            {{ Form::text('tax', $tax, array('class' => 'form-control', 'id' => 'tax', 'readonly' => 'readonly')) }}
+                        </div>
+                    </div>
+                    @endif
+                    <div class="form-group">
+                        <label for="date_format" class="col-sm-3 control-label">Date Format</label>
+                        <div class="col-sm-9">
+                            <select name="date_format" id="date_format" class="form-control" disabled>
+                                <option value="yyyy-mm-dd" {{ Auth::user()->date_format === 'yyyy-mm-dd' ? 'selected="selected"' : '' }}>yyyy-mm-dd</option>
 
-								<option value="yyyy.mm.dd" {{ $result->date_format === 'yyyy.mm.dd' ? 'selected="selected"' : '' }}>yyyy.mm.dd</option>
+                                <option value="yyyy/mm/dd" {{ Auth::user()->date_format === 'yyyy/mm/dd' ? 'selected="selected"' : '' }}>yyyy/mm/dd</option>
 
-								<option value="dd-mm-yyyy" {{ $result->date_format === 'dd-mm-yyyy' ? 'selected="selected"' : '' }}>dd-mm-yyyy</option>
+                                <option value="yyyy.mm.dd" {{ Auth::user()->date_format === 'yyyy.mm.dd' ? 'selected="selected"' : '' }}>yyyy.mm.dd</option>
 
-								<option value="dd/mm/yyyy" {{ $result->date_format === 'dd/mm/yyyy' ? 'selected="selected"' : '' }}>dd/mm/yyyy</option>
+                                <option value="dd-mm-yyyy" {{ Auth::user()->date_format === 'dd-mm-yyyy' ? 'selected="selected"' : '' }}>dd-mm-yyyy</option>
 
-								<option value="dd.mm.yyyy" {{ $result->date_format === 'dd.mm.yyyy' ? 'selected="selected"' : '' }}>dd.mm.yyyy</option>
-							</select>
-						</div>
-					</div>
-					<div class="form-group" id="pass" style="display: none">
-						<label for="password" class="col-sm-3 control-label">Password</label>
-						<div class="col-sm-9">
-							<input type="password" class="form-control" id="password" name="password">
-						</div>
-					</div>
-				@endforeach
-				</div>
-				<!-- /.box-body -->
-				<div class="box-footer">
-					<button type="submit" id="change" class="btn btn-default">Change password</button>
-					<button type="submit" id="edit" class="btn btn-info pull-right">Edit</button>
-					<button type="submit" id="update" style="display:none;" class="btn btn-info pull-right">Update</button>
-				</div>
-				<!-- /.box-footer -->
-			</form>
-		</div>
-	</div>
+                                <option value="dd/mm/yyyy" {{ Auth::user()->date_format === 'dd/mm/yyyy' ? 'selected="selected"' : '' }}>dd/mm/yyyy</option>
+
+                                <option value="dd.mm.yyyy" {{ Auth::user()->date_format === 'dd.mm.yyyy' ? 'selected="selected"' : '' }}>dd.mm.yyyy</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="pass" style="display: none">
+                        <label for="password" class="col-sm-3 control-label">Password</label>
+                        <div class="col-sm-9">
+                            {{ Form::password('password', array('class' => 'form-control', 'id' => 'password')) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-9">
+                            <div id="info_password" class='text-info' style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div id="info_password" class='text-info' style="display: none;">
+                    </div>
+                    <div class="form-group">
+                        <label for="address" class="col-sm-3 control-label">Address</label>
+                        <div id="geocoder" class="col-sm-9">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile_pic" class="col-sm-3 control-label">Add Profile Picture</label>
+                        <div class="col-sm-9">
+                            {{ Form::file('profile_pic', array('class' => 'form-control', 'id' => 'profile_pic')) }}
+                        </div>
+                    </div>
+                    {{ Form::hidden('lat', Auth::user()->latitude, array('id' => 'lat')) }}
+                    {{ Form::hidden('long', Auth::user()->longitude, array('id' => 'long')) }}
+                    {{ Form::hidden('address', Auth::user()->address, array('id' => 'address')) }}
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer">
+                    {{ Form::submit('Change password', ['class' => 'btn btn-default', 'id' => 'change']) }}
+                    {{ Form::submit('Edit', ['class' => 'btn btn-info pull-right', 'id' => 'edit']) }}
+                    {{ Form::submit('Update', ['class' => 'btn btn-info pull-right', 'id' => 'update', 'style' => 'display:none;']) }}
+                </div>
+            {{ Form::close() }}
+        </div>
+    </div>
+    <!-- <div class="col-md-6">
+        <div id="googleMap" style="width:400px;height:400px;"></div>
+    </div> -->
+    <div class="col-md-6" id="map" style="height:60vh"></div>
 </div>
 @endsection
-
-
 @section('footer')
-
-<script src="{{ asset('js/dist/jquery.min.js') }}"></script>
-<script src="{{ asset('js/dist/bootstrap.min.js') }}"></script>
-<script src="{{ asset('js/dist/jquery-ui.min.js') }}"></script>
-<script src="{{ asset('js/dist/adminlte.min.js') }}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/timer.jquery/0.7.0/timer.jquery.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-<script id="footer" footer="profile_footer" src="{{ mix('/js/footer.js') }}"></script>
-
-<script src="{{ mix('/js/edit.js') }}"></script>
-
+    @include('layouts.footer')
+    <script id="footer" footer="profile_footer" src="{{ mix('/js/footer.js') }}"></script>
+    <script src="{{ mix('/js/edit.js') }}"></script>
 @endsection

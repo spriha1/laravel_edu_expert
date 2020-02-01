@@ -94,51 +94,129 @@
 /***/ (function(module, exports) {
 
 $(document).ready(function () {
+  $.ajaxSetup({
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+  });
+
+  var lat, _long;
+
+  lat = $('#lat').val();
+  _long = $('#long').val();
+  address = $('#address').val();
+
+  if (lat == 0 && _long == 0) {
+    lat = 20.2961;
+    _long = 85.8245;
+  }
+
+  mapboxgl.accessToken = 'pk.eyJ1Ijoic3ByaWhhMSIsImEiOiJjanp4dTByZ28wbHp6M2RvNHdua3g0MWQ1In0.pNLPJ7GyhwFcegQMZhfXJA';
+  var map = new mapboxgl.Map({
+    container: 'map',
+    // Container ID
+    style: 'mapbox://styles/mapbox/streets-v11',
+    // Map style to use
+    //center: [85.8245, 20.2961], // Starting position [lng, lat]
+    center: [_long, lat],
+    zoom: 12 // Starting zoom level
+
+  });
+  var marker = new mapboxgl.Marker() // Initialize a new marker
+  .setLngLat([_long, lat]) // Marker [lng, lat] coordinates
+  .addTo(map); // Add the marker to the map
+
+  var geocoder = new MapboxGeocoder({
+    // Initialize the geocoder
+    accessToken: mapboxgl.accessToken,
+    // Set the access token
+    marker: {
+      color: 'orange'
+    },
+    mapboxgl: mapboxgl,
+    // Set the mapbox-gl instance
+    placeholder: 'Search for places',
+    // Placeholder text for the search bar
+    proximity: {
+      longitude: _long,
+      latitude: lat // Coordinates of UC Berkeley
+
+    }
+  });
+  document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+  $('.mapboxgl-ctrl-geocoder--input').val(address); // After the map style has loaded on the page,
+  // add a source layer and default styling for a single point
+
+  map.on('load', function () {
+    geocoder.on('result', function (ev) {
+      _long = ev.result.center[0];
+      lat = ev.result.center[1];
+      address = ev.result.place_name;
+      $('#lat').val(lat);
+      $('#long').val(_long);
+      $('#address').val(address);
+      map.getSource('single-point').setData(ev.result.geometry);
+    });
+  });
   $("#registration").submit(function () {
     event.preventDefault();
-    $.post('update_profile', $('#registration').serialize(), function (result) {
-      var response = JSON.parse(result);
+    $("#spinner").css('display', 'block');
+    var form_data = new FormData(this);
+    $.ajax({
+      url: '/update_profile',
+      type: "post",
+      data: form_data,
+      processData: false,
+      contentType: false,
+      success: function success(result) {
+        $('#spinner').css('display', 'none');
+        var response = JSON.parse(result);
 
-      if (response.email == 1) {
-        $('#alert').text("Please verify it by clicking the activation link that has been send to your email.");
-        $("#alert").css("display", "block");
-      } else if (response.success == 1) {
-        $('#alert').text("Updated successfully");
-        $("#alert").css("display", "block");
-      } else if (response.email == 0) {
-        $('#alert').text("Invalid email format");
-        $("#alert").css("display", "block");
-      } else if (response.username == 0) {
-        $('#alert').text("Invalid username format");
-        $("#alert").css("display", "block");
-      } else if (Object.keys(response).length === 0 && response.constructor === Object) {
-        $('#alert').text("You need to fill in atleast one field to update");
-        $("#alert").css("display", "block");
-      } else {
-        $('#alert').text("Error");
-        $("#alert").css("display", "block");
+        if (response.email == 1) {
+          $('#alert').text("Please verify it by clicking the activation link that has been send to your email.");
+          $("#alert").css("display", "block");
+        } else if (response.success == 1) {
+          $('#info').text("Updated successfully");
+          $("#info").css("display", "block");
+        } else if (response.email == 0) {
+          $('#alert').text("Invalid email format");
+          $("#alert").css("display", "block");
+        } else if (response.username == 0) {
+          $('#alert').text("Invalid username format");
+          $("#alert").css("display", "block");
+        } else if (Object.keys(response).length === 0 && response.constructor === Object) {
+          $('#alert').text("You need to fill in atleast one field to update");
+          $("#alert").css("display", "block");
+        } else {
+          $('#alert').text("Error");
+          $("#alert").css("display", "block");
+        }
+      },
+      error: function error() {
+        toastr.error('The details could not be updated');
       }
     });
   });
   $('body').click(function () {
     if (event.target.id === 'password' && event.target.closest("form").getAttribute("id") === 'registration') {
       var msg = "The password :<br> Must be a minimum of 8 characters<br>Must contain at least 1 number<br>Must contain at least one uppercase character<br>Must contain at least one lowercase character";
-      $("#info").text(msg);
-      $("#info").css("display", "block");
+      $("#info_password").html(msg);
+      $("#info_password").css("display", "block");
     }
 
     if (event.target.id === 'username' && event.target.closest("form").getAttribute("id") === 'registration') {
       var msg = "The username can contain letters, digits, @ and _";
-      $("#info").text(msg);
-      $("#info").css("display", "block");
+      $("#info_username").html(msg);
+      $("#info_username").css("display", "block");
     }
   });
   $('input').blur(function () {
     if (event.target.closest("form").getAttribute("id") === 'registration') {
       if (event.target.id === 'username') {
+        $("#info_username").css("display", "none");
         var username_pattern = /^([a-zA-Z0-9@_]+)$/;
         var username = $('#username').val();
-        $.get("fetch_info.php", {
+        $.get("/fetch_info", {
           q1: "username",
           q2: username
         }, function (data) {
@@ -147,6 +225,8 @@ $(document).ready(function () {
             $("#alert").text("This username already exists");
             $("#alert").css("display", "block");
           }
+        }).fail(function () {
+          toastr.error('The required information could not be fetched');
         });
 
         if ($('#username').val() === "") {
@@ -159,6 +239,7 @@ $(document).ready(function () {
           $('#username').css("borderColor", "green");
         }
       } else if (event.target.id === 'password') {
+        $("#info_password").css("display", "none");
         var password_pattern = /^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/;
 
         if ($('#password').val() === "") {
@@ -172,7 +253,7 @@ $(document).ready(function () {
         }
       } else if (event.target.id === "email") {
         var email = $('#email').val();
-        $.get("fetch_info.php", {
+        $.get("/fetch_info", {
           q1: "email",
           q2: email
         }, function (data) {
@@ -181,6 +262,8 @@ $(document).ready(function () {
             $("#alert").text("This email already exists");
             $("#alert").css("display", "block");
           }
+        }).fail(function () {
+          toastr.error('The required information could not be fetched');
         });
 
         if ($('#email').val() === "") {

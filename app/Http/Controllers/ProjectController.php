@@ -1,186 +1,341 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\MessageBag;
+use App\Mail\UpdateMail;
+use App\Mail\ForgotPassword;
+use App\Repositories\User\UserInterface;
+use App\Clas as Clas;
+use App\StudentTask as StudentTask;
+use App\Subject as Subject;
+use App\Task as Task;
+use App\TeacherTask as TeacherTask;
+use App\User as User;
+use Carbon\Carbon;
+use DB;
+use Exception;
 
 class ProjectController extends Controller
 {
-
-	// public function forgot_password($id)
- //    {
- //        return view('user.profile', ['user' => User::findOrFail($id)]);
- //    }
-    public function check_login_status()
-    {
-        if (session()->has('username')) {
-            $user_type = \App\User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->select('user_types.user_type')->get();
-            foreach ($user_type as $value) {
-                if ($value->user_type === 'Admin') {
-                    return redirect('admin_dashboard');
-                }
-                else if ($value->user_type === 'Teacher') {
-                    return redirect('teacher_dashboard');
-                }
-                else if ($value->user_type === 'Student') {
-                    return redirect('student_dashboard');
-                }
-            }
-        }
-        else {
-            return true;
-        }
-    }
+    /**
+    * 
+    * @method home() 
+    * 
+    * @param void
+    * @return string [html view of login page] 
+    * Desc : This method returns the login page
+    */
 
     public function home()
     {
-        if ($this->check_login_status())
-        {
-            return view('welcome');
-        }
+        return view('welcome');
     }
 
-    public function register()
-    {
-        if ($this->check_login_status())
-        {
-            $user_types = \App\UserType::where('user_type', '!=', "Admin")->get();
-            $subjects = \App\Subject::all();
-
-            return view('register', [
-                'user_types' => $user_types, 
-                'subjects' => $subjects
-            ]);
-        }
-    }
+    /**
+    * 
+    * @method forgot_password() 
+    * 
+    * @param void
+    * @return string [html view of forgot_password page] 
+    * Desc : This method returns the forgot_password page
+    */
 
     public function forgot_password()
     {
-        if ($this->check_login_status()) {
+        return view('forgot_password');
+    }
+
+    /**
+    * 
+    * @method verify_mail() 
+    * 
+    * @param string (email verification code)
+    * Desc : This method returns the view of the login page with a message based on the result of the verification of  the user's email id
+    */
+
+    public function verify_mail($code)
+    {
+        $res = $this->user_service->verify_mail($code);
+        $msg = 'The url is either invalid or you already have activated your account.';
+
+        if ($res) {
+            $msg = 'Your account has been activated';
+        }
+
+        session()->flash('login_msg', $msg);
+        return view('welcome');
+    }
+
+    /**
+    * 
+    * @method update_mail() 
+    * 
+    * @param string (verification code and email id)
+    * Desc : This method redirects to the profile page based on the result of the verification of the user's mail on update request
+    */
+
+    public function update_mail($hash, $email)
+    {
+        $hash  = base64_decode($hash);
+        $email = base64_decode($email);
+        $msg   = 'The url is invalid';
+        $res   = $this->user_service->update_mail($hash, $email);
+
+        if ($res) {
+            $msg = 'Your email has been updated, you can continue';
+        }
+
+        session()->flash('profile_msg', $msg);
+        return redirect('/profile');
+    }
+
+    /**
+    * 
+    * @method send_password_mail() 
+    * 
+    * @param Request object
+    * Desc : This method returns the view of the forgot password page
+    */
+
+    public function send_password_mail(Request $request)
+    {
+        $res = $this->user_service->send_password_mail($request->input('username'));
+        $msg = '';
+
+        if ($res) {
+            $msg = 'Please reset your password by clicking the link that has been sent to your email.';
+        }
+
+        session()->flash('reset_msg', $msg);
+        return view('forgot_password');
+    }
+
+    /**
+    * 
+    * @method reset_password_form() 
+    * 
+    * @param string (token to identify the user), integer (expiry time of the link)
+    * @return string [html view of password reset form page] 
+    * Desc : This method returns the view of password reset form page
+    */
+
+    public function reset_password_form($token, $expiry_time)
+    {
+        $token       = base64_decode($token);
+        $expiry_time = base64_decode($expiry_time);
+        $res         = $this->user_service->reset_password_form($token, $expiry_time);
+
+        if ($res) {
+            return view('reset_password_form');
+        }
+
+        else {
+            $msg = 'The link has expired';
+            session()->flash('reset_msg', $msg);
             return view('forgot_password');
         }
     }
 
-    public function login(Request $request)
+    /**
+    * 
+    * @method reset_password() 
+    * 
+    * @param Request object
+    * Desc : This method returns the view of the login page
+    */
+
+    public function reset_password(Request $request)
     {
-        if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'user_reg_status' => 1, 'block_status' => 0])) {
-            $user = \App\User::where('username', $request->username)->get();
-            foreach ($user as $value) {                
-                session(['firstname' => $value->firstname, 'username' => $value->username, 'id' => $value->id]);                
-                $user_type = \App\UserType::where('id', $value->user_type_id)->get();
-                foreach ($user_type as $val) {                    
-                    if ($val->user_type === 'Admin') {                        
-                        return redirect('admin_dashboard');
-                    }
-                    else if ($val->user_type === 'Teacher') {
-                        return redirect('teacher_dashboard');
-                    }
-                    else if ($val->user_type === 'Student') {
-                        return redirect('student_dashboard');
+        $res = $this->user_service->reset_password($request->input('password'));
+
+        if ($res) {
+            $msg = 'Your password has been reset';
+        }
+
+        else {
+            $msg = 'Your request has not been accepted by the admin yet';
+        }
+
+        session()->flash('login_msg', $msg);
+        return view('welcome');
+    }
+
+    /**
+    * 
+    * @method task_management() 
+    * 
+    * @param void
+    * @return string [html view of task_management page]
+    * Desc : This method returns the view of task_management page
+    */
+
+    public function task_management()
+    {
+        try {
+            $teachers = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')
+                ->where('user_type', 'Teacher')
+                ->select('firstname', 'users.id')
+                ->get();
+
+            $classes  = Clas::select('class')->distinct()->get();
+
+            return view('task_management', [
+                'classes'  => $classes,
+                'teachers' => $teachers
+            ]);
+        }
+
+        catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
+    }
+
+    /**
+    * 
+    * @method add_timetable() 
+    * 
+    * @param Request object
+    * @return string 
+    * Desc : This method adds task for users if it has not been added earlier
+    */
+
+    public function add_timetable(Request $request)
+    {
+        if ($request->filled('class') && $request->filled('subject') && $request->filled('start_date') && $request->filled('end_date')) {
+
+            $date_format = $request->input('date_format');
+            $start_date  = $request->input('start_date');
+            $end_date    = $request->input('end_date');
+            $start_date  = date_to_timestamp($date_format, $start_date);
+            $end_date    = date_to_timestamp($date_format, $end_date);
+            $start_date  = getdate($start_date);
+            $start_date  = $start_date['year'].'-'.$start_date['mon'].'-'.$start_date['mday'];
+            $start_date  = strtotime($start_date);
+            $end_date    = getdate($end_date);
+            $end_date    = $end_date['year'].'-'.$end_date['mon'].'-'.$end_date['mday'];
+            $end_date    = strtotime($end_date);
+            $length      = count($request->input('subject'));
+
+            try {
+                DB::beginTransaction();
+                for ($index = 0; $index < $length; $index++) {
+                    $subject_id = $request->input('subject')[$index];
+                    for($index2 = $start_date; $index2 <= $end_date; $index2 = $index2 + 86400) {
+                        $result = Task::where([
+                            ['subject_id', $subject_id],
+                            ['class', $request->input('class')],
+                            ['start_date', '<=', $index2],
+                            ['end_date', '>=', $index2]
+                        ])
+                        ->select()
+                        ->get();
+
+                        if ($result->count()) {
+                            return("The task has already been added for these dates");
+                        }
+
+                        else {
+                            $task_id = Task::insertGetId([
+                                'subject_id' => $subject_id,
+                                'class'      => $request->input('class'),
+                                'start_date' => $start_date,
+                                'end_date'   => $end_date
+                            ]);
+                            $result = Clas::where([
+                                ['class', $request->input('class')],
+                                ['subject_id', $subject_id]
+                            ])
+                            ->select('teacher_id')
+                            ->distinct()
+                            ->get();
+
+                            foreach ($result as $key => $value) {
+                                for ($index3 = $start_date; $index3 <= $end_date; $index3 = $index3 + 86400) {
+                                    TeacherTask::insert([
+                                        'task_id' => $task_id,
+                                        'teacher_id' => $value['teacher_id'],
+                                        'on_date' => $index3
+                                    ]);
+                                }
+                            }
+
+                            $result = User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where([
+                                    ['user_type', 'Student'],
+                                    ['class', $request->class]
+                                ])
+                                ->select('users.id')
+                                ->get();
+
+                            foreach ($result as $key => $value) {
+                                for ($index3 = $start_date; $index3 <= $end_date; $index3 = $index3 + 86400) {
+                                    StudentTask::insert([
+                                        'task_id' => $task_id,
+                                        'student_id' => $value['id'],
+                                        'on_date' => $index3
+                                    ]);
+                                }
+                            }
+
+                            return("Successfully added");
+                        }
                     }
                 }
+                
+                DB::commit();
+            }
+
+            catch (Exception $e) {
+                Log::error($e->getMessage());
+                DB::rollBack();
             }
         }
-        else {
-            return redirect('/');
-        }
     }
 
-    public function pending_requests()
-    {
-        $user_types = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
-        $results = \App\User::whereRaw("user_reg_status = 0 AND user_type_id NOT IN (SELECT id FROM user_types WHERE user_type = 'Admin')")->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
-        return view('pending_requests', [
-            'user_types' => $user_types,
-            'results' => $results,
-            'search' => ""
-        ]);
-    }
+    /**
+    * 
+    * @method fetch_subjects() 
+    * 
+    * @param Request object
+    * @return json 
+    * Desc : This method fetches and returns the subjects corresponding to a specific class
+    */
 
-    public function post_pending_requests(Request $request)
+    public function fetch_subjects(Request $request)
     {
-        $user_types = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
+        if ($request->filled('class_id')) {
+            try {
+                $result = Subject::join('class', 'subjects.id', '=', 'class.subject_id')
+                    ->where('class.class', $request->input('class_id'))
+                    ->select('subjects.id', 'name')
+                    ->get();
 
-        $c = 0;
-        $result = \App\UserType::where('user_type', '!=', 'Admin')->select('user_type')->get();
-        foreach ($result as $key => $value) {
-            if ($value['user_type'] === $request->input('user_type')) {
-                $c++;
+                return(json_encode($result));
+            }
+
+            catch (Exception $e) {
+                Log::error($e->getMessage());
             }
         }
-        if ($c > 0) {
-            $results = \App\User::join('user_types', 'users.user_type_id', '=', 'user_types.id')->where(['user_reg_status', 0], ['user_type', $request->input('user_type')])->select('id', 'firstname', 'lastname', 'email', 'username', 'block_status')->get();
-        }
-        return view('pending_requests', [
-            'user_types' => $user_types,
-            'results' => $results,
-            'search' => $request->input('user_type')
-        ]);
     }
 
-    public function add_users($id)
-    {
-        \App\User::where('id', $id)->update(['user_reg_status', 1]);
-        return redirect(Request::server('HTTP_REFERER'));
-    }
-
-    public function remove_users($id)
-    {
-        \App\User::where('id', $id)->delete();
-        return redirect(Request::server('HTTP_REFERER'));
-    }
-
-    public function block_users($id)
-    {
-        \App\User::where('id', $id)->update('block_status', 1);
-        return redirect(Request::server('HTTP_REFERER'));
-    }
-
-    public function unblock_users($id)
-    {
-        \App\User::where('id', $id)->update('block_status', 0);
-        return redirect(Request::server('HTTP_REFERER'));
-    }
-
-    public function regd_users()
-    {
-
-    }
-
-    public function render_admin_dashboard()
-    {
-        $result = \App\User::where('username', session('username'))->select('date_format')->get();
-        return view('admin_dashboard', [
-            'result' => $result
-        ]);
-    }
-
-    public function render_teacher_dashboard()
-    {
-        return view('teacher_dashboard');
-    }
-
-    public function render_student_dashboard()
-    {
-        return view('student_dashboard');
-    }
-
-    public function profile()
-    {
-        $results = \App\User::where('username', session('username'))->select('firstname', 'lastname', 'username', 'email', 'date_format')->get();
-        return view('profile', [
-            'results' => $results
-        ]);
-    }
+    /**
+    * 
+    * @method logout() 
+    * 
+    * @param void
+    * @return view of login page 
+    * Desc : This method performs logout functionality for a user and redirects to the login page
+    */
 
     public function logout()
     {
-        if (session()->has('username')) {
-            // Auth::logout();
-            session()->forget('username');
-            session()->flush();
-            return redirect('/');
-        }
+        Auth::logout();
+        return redirect('/');
     }
 }
